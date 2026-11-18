@@ -273,7 +273,7 @@ Une ardoise noire, des craies neutres légèrement chaudes, et trois couleurs sa
 
 ## Layout
 
-Une colonne mobile de 390 px de référence, avec une marge latérale de 18 px (`gutter`) sur tous les écrans. La feuille est une seule page qui défile, dans l'ordre de la feuille papier : en-tête d'une ligne, bloc vital, Armes, Effets, Besace, Derniers combats, Notes, puis la partie (sauvegardes, recommencer) tout en bas, loin du pouce.
+Une colonne mobile de 390 px de référence, avec une marge latérale de 18 px (`gutter`) sur tous les écrans. La feuille est une seule page qui défile, dans l'ordre de la feuille papier : en-tête d'une ligne, bloc vital, Armes, Effets, Besace, Derniers combats, Notes, puis la section Aventure (sauvegardes, recommencer) tout en bas, loin du pouce.
 
 Le bloc vital est une grille de deux colonnes (1.45fr / 1fr, écart 16px) : les PV et leurs boutons + / − à gauche, la pile CHANCE / DEXTÉRITÉ / sauvegardes à droite. Il se ferme par un trait de 2 px.
 

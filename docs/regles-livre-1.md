@@ -15,7 +15,7 @@ Les décisions marquées *(choix par défaut)* sont des interprétations retenue
 | TALENT | Un seul, choisi parmi : Instinct, Herbologie, Discrétion, Persuasion, Observation, Doigts agiles, Empratique. |
 | POINTS DE VIE max | 2d6 × 4. On commence avec tous ses points de vie. Les points de vie ne dépassent jamais ce maximum, sauf mention contraire du livre. |
 | CHANCE | 1d6. |
-| DEXTÉRITÉ | 7 (valeur fixe en début d'aventure). Peut évoluer en cours de partie. |
+| DEXTÉRITÉ | 7 (valeur fixe en début d'aventure). Peut évoluer en cours d'aventure. |
 
 Le TALENT n'a pas d'effet chiffré dans les règles : c'est le livre qui y renvoie au fil du texte.
 
@@ -51,7 +51,7 @@ Exemples rencontrés : une potion qui donne un bonus de DEXTÉRITÉ pendant 24 h
 
 ## Modes de jeu
 
-Choisi en début de partie.
+Choisi en début d'aventure.
 
 - **Narratif** : pour un combat, le lecteur indique directement s'il l'a gagné ou perdu. Exception : au-delà de 5 adversaires simultanés, le combat se joue normalement. L'app a donc besoin du nombre d'adversaires.
 - **Simplifié** : toutes les règles s'appliquent, avec **3 sauvegardes pour tout le livre** (une sauvegarde utilisée est consommée). Une sauvegarde enregistre le chapitre en cours et l'état complet du personnage. On ne peut reprendre qu'à la sauvegarde la plus récente.

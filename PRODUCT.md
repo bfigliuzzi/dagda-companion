@@ -50,13 +50,13 @@ Fonctions confirmées :
 
 Contraintes :
 - données uniquement locales sur l'appareil, pas de compte ni de serveur, fonctionnement hors ligne ;
-- une seule partie sauvegardée ;
+- une seule aventure enregistrée ;
 - économie d'énergie, l'écran restant allumé longtemps : fond noir pur (`#000`) pour éteindre les pixels des écrans OLED, couleurs claires réservées aux petites zones, aucune animation continue ;
 - seul le livre 1, « La Harpe des Quatre Saisons », est couvert pour l'instant.
 
 Décisions ouvertes :
 - les règles du livre 1 sont résumées dans `docs/regles-livre-1.md`, qui fait foi pour les règles ; les interprétations y sont marquées « choix par défaut » et seront revues quand le livre en dira plus (regain de CHANCE, cumul des armes, etc.) ;
-- export/import de sauvegarde : non demandé pour l'instant ;
+- export/import de l'aventure : non demandé pour l'instant ;
 - prise en charge des tomes suivants : pas prévue à ce stade.
 
 ## Brand Commitments
@@ -70,9 +70,9 @@ Règles du livre 1 résumées dans `docs/regles-livre-1.md`, à partir d'une num
 
 ## Product Principles
 
-1. Tout tient sur une feuille : chaque information utile en partie est visible ou à un geste près, comme sur le papier.
+1. Tout tient sur une feuille : chaque information utile en cours d'aventure est visible ou à un geste près, comme sur le papier.
 2. Le livre reste la vedette : l'app sert la lecture, elle ne la concurrence pas et ne réécrit pas l'histoire.
 3. Les règles du livre font foi : l'app automatise les calculs mais ne les invente pas, et le lecteur peut toujours corriger une valeur à la main.
 4. Jamais contraignante : l'app propose et prévient, elle ne bloque pas et ne prend aucune décision lourde (mort, remise à zéro) à la place du lecteur. Le livre peut toujours déroger à une règle.
-5. Rien ne se perd : chaque changement est sauvegardé sur l'appareil immédiatement, sans action de l'utilisateur.
+5. Rien ne se perd : chaque changement est enregistré sur l'appareil immédiatement, sans action de l'utilisateur.
 6. Coups d'œil, pas sessions d'écran : lisible et manipulable vite, d'une main, téléphone posé sur la table.

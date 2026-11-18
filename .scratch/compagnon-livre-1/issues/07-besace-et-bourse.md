@@ -8,7 +8,7 @@ Références : `docs/regles-livre-1.md` (Inventaire et monnaie, choix par défau
 
 **Status:** ready-for-agent
 
-- [ ] On peut ajouter, renommer et retirer un objet ; chaque changement est sauvegardé tout de suite.
+- [ ] On peut ajouter, renommer et retirer un objet ; chaque changement est enregistré tout de suite.
 - [ ] Les 24 traits reflètent le nombre d'objets ; les objets en trop s'affichent en traits rouges.
 - [ ] Au-delà de 24 objets, un indice rouge prévient sans empêcher l'ajout.
 - [ ] La bourse compte pour un emplacement ; les boulons n'en prennent pas.

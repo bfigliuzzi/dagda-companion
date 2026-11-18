@@ -13,4 +13,4 @@ Références : `PRODUCT.md` (combats repérés par leur numéro de chapitre, his
 - [ ] Les lignes suivent la grille 64 px / 1fr / auto, hauteur 56 px.
 - [ ] Un appui déplie et replie le détail d'un combat.
 - [ ] L'écran plein a un bouton retour à gauche du titre.
-- [ ] L'historique est sauvegardé et retrouvé après rechargement.
+- [ ] L'historique est enregistré et retrouvé après rechargement.

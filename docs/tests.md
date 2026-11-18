@@ -23,7 +23,7 @@ TypeScript en mode `strict` vérifié par `svelte-check`, ESLint avec la configu
 
 ### 2. Unitaires : les règles du livre
 
-Vitest, sur le code pur, celui qui ignore l'écran et le navigateur : moteur de combat, valeurs effectives (DEX et bonus de dommage avec armes et effets), CHANCE, modes de jeu, fin de partie, lecture et migration de la sauvegarde versionnée.
+Vitest, sur le code pur, celui qui ignore l'écran et le navigateur : moteur de combat, valeurs effectives (DEX et bonus de dommage avec armes et effets), CHANCE, modes de jeu, fin d'aventure, lecture et migration de l'enregistrement versionné.
 
 - Ces fonctions reçoivent les dés en paramètre ; chaque test tourne avec des *dés fixés*.
 - Chaque exemple chiffré de `docs/regles-livre-1.md` devient un test (DEX 7, épée courte +1, 2d6 = 5, 1d6 = 3 → 5 dégâts).
@@ -33,7 +33,7 @@ Vitest, sur le code pur, celui qui ignore l'écran et le navigateur : moteur de 
 
 Vitest + jsdom + `@testing-library/svelte` + `@testing-library/user-event`. La plupart des cases des tickets se vérifient ici.
 
-Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le vrai état et la vraie sauvegarde dans le `localStorage` de jsdom. Il agit *comme le lecteur* : il appuie, saisit, puis lit l'écran.
+Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le vrai état et le vrai enregistrement dans le `localStorage` de jsdom. Il agit *comme le lecteur* : il appuie, saisit, puis lit l'écran.
 
 - Trouve les éléments comme un lecteur : `getByRole`, `getByLabelText`, `getByText`, avec le texte français affiché. Garde `data-testid` pour un élément qu'aucun rôle ni texte ne désigne.
 - Vérifie l'écran, pas les *détails d'implémentation* : un renommage interne qui ne change rien à l'écran laisse tous les tests verts.
@@ -45,7 +45,7 @@ Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le v
 Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite build` puis `vite preview`). Deux scénarios en tout :
 
 - l'app construite s'installe comme PWA (manifeste et service worker présents) et fonctionne hors ligne après un premier chargement ;
-- un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver la partie.
+- un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure.
 
 Pour fixer les dés dans le navigateur, l'app accepte une graine de dés (valeur de départ qui rend les tirages reproductibles) lue seulement en mode test. Le ticket qui pose le moteur de dés en fixe la forme.
 
