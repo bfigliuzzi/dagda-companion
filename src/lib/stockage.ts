@@ -2,7 +2,7 @@
  * Enregistrement de la partie sur l'appareil (localStorage).
  *
  * On parle ici d'« enregistrement » et non de « sauvegarde » : dans le livre,
- * les sauvegardes sont les trois vies du mode simplifié.
+ * une sauvegarde est un point de reprise du mode simplifié (voir GLOSSARY.md).
  *
  * Le contenu est versionné : { version, partie }. Pour changer la forme de
  * `Partie`, on monte VERSION et on ajoute dans MIGRATIONS la fonction qui
