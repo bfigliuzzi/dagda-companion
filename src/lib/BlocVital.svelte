@@ -12,6 +12,11 @@
    * En mode simplifié, la pile de droite se termine par les sauvegardes : trois
    * traits de craie, un de moins (en `trait`, discret) par sauvegarde utilisée.
    * Un appui sur les traits ouvre le panneau qui corrige le nombre utilisé.
+   *
+   * En mode mortel, à 0 PV, un indice PROPOSE de recommencer au chapitre 1
+   * avec un nouveau personnage : « Recommencer au chapitre 1 » demande
+   * confirmation (ConfirmerLeRecommencement.svelte), « Ignorer » le cache.
+   * Il n'empêche rien et ne décide rien ; les autres modes n'en ont pas.
    */
   import {
     ajouterUnPointDeVie,
@@ -21,11 +26,13 @@
     estUneDexterite,
     estUnMaximumDePointsDeVie,
     estUnPointDeVieActuel,
+    proposeDeRecommencer,
     retirerUnPointDeVie,
     SAUVEGARDES_DU_LIVRE,
     type Mode,
     type Personnage,
   } from "./aventure";
+  import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
   import { sauvegardesRestantes } from "./sauvegardes";
   import SauvegardesUtilisees from "./SauvegardesUtilisees.svelte";
   import {
@@ -52,6 +59,11 @@
      * trace de craie montre ce que le combat a changé.
      */
     avant?: { pointsDeVie?: number; chance?: number };
+    /** Le lecteur a ignoré la proposition de recommencer : on ne la remontre pas. */
+    propositionIgnoree?: boolean;
+    onignorer?: () => void;
+    /** Le lecteur a confirmé : on repart au chapitre 1 avec un nouveau personnage. */
+    onrecommencer?: () => void;
   }
 
   let {
@@ -61,6 +73,9 @@
     sauvegardesUtilisees,
     onsauvegardes,
     avant = {},
+    propositionIgnoree = false,
+    onignorer = () => {},
+    onrecommencer = () => {},
   }: Props = $props();
   const id = $props.id();
 
@@ -103,6 +118,8 @@
     sauvegardesRestantes({ mode, sauvegardesUtilisees }),
   );
   let correction = $state(false);
+  let confirmation = $state(false);
+  const propose = $derived(proposeDeRecommencer(mode, pv));
   const remplissage = $derived(Math.min(100, Math.max(0, (pv / max) * 100)));
 </script>
 
@@ -230,7 +247,43 @@
       </span>
     </div>
   {/if}
+  {#if propose && !propositionIgnoree}
+    <div class="indice">
+      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
+      </svg>
+      <div class="suite">
+        <span role="status">
+          <b>Vos PV sont à 0.</b> En mode mortel, mourir, c'est recommencer au chapitre&nbsp;1
+          avec un nouveau personnage. Si le livre en dispose autrement, continuez&nbsp;:
+          rien n'est décidé sans vous.
+        </span>
+        <button
+          class="ghost danger"
+          type="button"
+          onclick={() => (confirmation = true)}
+        >
+          <span>Recommencer au chapitre 1</span>
+          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
+          </svg>
+        </button>
+        <button class="link" type="button" onclick={onignorer}>Ignorer</button>
+      </div>
+    </div>
+  {/if}
 </div>
+
+{#if confirmation}
+  <ConfirmerLeRecommencement
+    cas="mort"
+    onconfirmer={() => {
+      confirmation = false;
+      onrecommencer();
+    }}
+    onfermer={() => (confirmation = false)}
+  />
+{/if}
 
 {#if correction}
   <SauvegardesUtilisees
@@ -421,5 +474,52 @@
 
   .indice b {
     color: var(--craie);
+  }
+
+  .suite {
+    display: grid;
+    flex: 1;
+    gap: 10px;
+  }
+
+  /* Bouton secondaire de danger : texte rouge, contour rouge sombre, libellé à gauche, icône à droite. */
+  .ghost {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 var(--esp-lg);
+    border: 2px solid var(--trait);
+    border-radius: var(--r);
+    font-weight: 700;
+    color: var(--craie);
+  }
+
+  .ghost.danger {
+    color: var(--rouge);
+    border-color: var(--rouge-trait);
+  }
+
+  .ghost svg {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    color: inherit;
+  }
+
+  /* Lien discret : craie grise soulignée (maquette, `.link`). */
+  .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--cible);
+    color: var(--craie-2);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--craie-3);
   }
 </style>

@@ -8,8 +8,8 @@ Références : `docs/regles-livre-1.md` (Modes de jeu : mortel), `PRODUCT.md` (p
 
 **Status:** ready-for-agent
 
-- [ ] « Recommencer l'aventure » est un bouton secondaire en rouge, loin du pouce, avec une confirmation explicite.
-- [ ] Après confirmation, toute l'aventure est effacée et l'écran « Nouvel apprenti » s'ouvre.
-- [ ] En mode mortel, 0 PV affiche un indice qui propose de recommencer au chapitre 1 ; il peut être ignoré.
-- [ ] Accepter la proposition mène à la création d'un nouveau personnage, chapitre 1, sans armes ni équipement.
-- [ ] Dans les autres modes, 0 PV n'affiche pas cette proposition.
+- [x] « Recommencer l'aventure » est un bouton secondaire en rouge, loin du pouce, avec une confirmation explicite.
+- [x] Après confirmation, toute l'aventure est effacée et l'écran « Nouvel apprenti » s'ouvre.
+- [x] En mode mortel, 0 PV affiche un indice qui propose de recommencer au chapitre 1 ; il peut être ignoré.
+- [x] Accepter la proposition mène à la création d'un nouveau personnage, chapitre 1, sans armes ni équipement.
+- [x] Dans les autres modes, 0 PV n'affiche pas cette proposition.

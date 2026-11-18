@@ -10,6 +10,8 @@
   --craie-3: #85837a;
   --jaune: #f2c94c;
   --rouge: #e86a5a;
+  /* Contour du bouton secondaire de danger (maquette : « Recommencer au chapitre 1 »). */
+  --rouge-trait: #4a2420;
   --vert: #7cc4a8;
 
   /* Rayons */

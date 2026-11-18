@@ -248,6 +248,31 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
   };
 }
 
+/**
+ * Mode mortel : à 0 PV, l'app PROPOSE de recommencer au chapitre 1 avec un
+ * nouveau personnage. Elle ne le décide jamais : le lecteur accepte ou
+ * ignore, et le livre peut déroger. Les autres modes ne le proposent pas.
+ */
+export function proposeDeRecommencer(mode: Mode, pointsDeVie: number): boolean {
+  return mode === "mortel" && pointsDeVie <= 0;
+}
+
+/**
+ * Le lecteur a accepté de recommencer après une mort en mode mortel : la
+ * nouvelle aventure (celle que « Nouvel apprenti » vient de créer, au chapitre
+ * 1, sans armes, besace, effets ni combats) remplace l'ancienne.
+ *
+ * Choix par défaut (docs/regles-livre-1.md) : le livre ne fait perdre que les
+ * armes et l'équipement ; les notes sont ce que le lecteur a appris du livre,
+ * elles lui servent encore au nouveau départ, on les garde.
+ */
+export function apresLaMort(
+  nouvelle: Aventure,
+  morte: Pick<Aventure, "notes">,
+): Aventure {
+  return { ...nouvelle, notes: morte.notes };
+}
+
 /** Ce que le lecteur recopie de sa feuille papier sur l'écran « Déjà en route ». */
 export interface Recopie {
   talent: Talent | null;

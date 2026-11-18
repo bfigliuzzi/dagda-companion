@@ -10,10 +10,15 @@
    * avec la confirmation de la reprise, quand une sauvegarde est posée ; un
    * indice rappelle qu'on reprend toujours la plus récente. Les autres modes
    * n'ont pas de sauvegarde et n'en parlent pas.
+   *
+   * En mode mortel, « Recommencer au chapitre 1 » vient après « Le livre me
+   * laisse continuer », en rouge : le lecteur accepte (après confirmation) ou
+   * ignore, l'app ne décide pas de la mort.
    */
   import type { Mode, Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
+  import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
   import Dock from "./Dock.svelte";
 
   interface Props {
@@ -29,6 +34,8 @@
     sauvegardesRestantes: number;
     /** Le lecteur a confirmé la reprise de la sauvegarde. */
     onreprendre: () => void;
+    /** Mode mortel : le lecteur a confirmé qu'il recommence au chapitre 1. */
+    onrecommencer: () => void;
   }
 
   let {
@@ -39,9 +46,12 @@
     sauvegarde,
     sauvegardesRestantes,
     onreprendre,
+    onrecommencer,
   }: Props = $props();
 
   let confirmation = $state(false);
+  let recommencement = $state(false);
+  const mortel = $derived(mode === "mortel");
   const simplifie = $derived(mode === "simplifie");
 
   const gagne = $derived(combat.issue === "gagne");
@@ -123,8 +133,7 @@
   {:else}
     <!--
       Les issues possibles à 0 PV, aucune imposée (maquette, « Points de vie
-      à 0 »). « Recommencer au chapitre 1 » (ticket 14) viendra s'ajouter à
-      cette liste, après « Le livre me laisse continuer ».
+      à 0 »).
     -->
     <div class="issues">
       {#if simplifie && sauvegarde}
@@ -145,6 +154,18 @@
           <path d="M5 6l7 6-7 6M13 6l7 6-7 6" />
         </svg>
       </button>
+      {#if mortel}
+        <button
+          class="ghost danger"
+          type="button"
+          onclick={() => (recommencement = true)}
+        >
+          <span>Recommencer au chapitre 1</span>
+          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
+          </svg>
+        </button>
+      {/if}
     </div>
     {#if simplifie}
       <div class="hint">
@@ -179,6 +200,17 @@
       onreprendre();
     }}
     onfermer={() => (confirmation = false)}
+  />
+{/if}
+
+{#if recommencement}
+  <ConfirmerLeRecommencement
+    cas="mort"
+    onconfirmer={() => {
+      recommencement = false;
+      onrecommencer();
+    }}
+    onfermer={() => (recommencement = false)}
   />
 {/if}
 
@@ -285,6 +317,12 @@
     border-radius: var(--r);
     font-weight: 700;
     color: var(--craie);
+  }
+
+  /* Variante de danger : texte rouge, contour rouge sombre (maquette). */
+  .ghost.danger {
+    color: var(--rouge);
+    border-color: var(--rouge-trait);
   }
 
   /* Indice non bloquant sous les issues : voir DESIGN.md, « Hints ». */

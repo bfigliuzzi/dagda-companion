@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Aventure } from "./aventure";
 import { combatNarratif, commencerUnCombat, jouerUnTour } from "./combat";
 import { desFixes } from "./des";
-import { CLE_STOCKAGE, ecrireAventure, lireAventure } from "./stockage";
+import {
+  CLE_STOCKAGE,
+  ecrireAventure,
+  effacerAventure,
+  lireAventure,
+} from "./stockage";
 
 const herboriste: Aventure = {
   chapitre: 112,
@@ -450,5 +455,20 @@ describe("stockage de l'aventure", () => {
     localStorage.setItem(CLE_STOCKAGE, plusRecent);
     ecrireAventure(localStorage, herboriste);
     expect(localStorage.getItem(CLE_STOCKAGE)).toBe(plusRecent);
+  });
+});
+
+describe("effacer l'aventure de l'appareil", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("ne laisse plus rien d'enregistré", () => {
+    ecrireAventure(localStorage, herboriste);
+    effacerAventure(localStorage);
+    expect(localStorage.getItem(CLE_STOCKAGE)).toBeNull();
+    expect(lireAventure(localStorage)).toBeNull();
+  });
+
+  it("ne dit rien quand il n'y a rien à effacer", () => {
+    expect(() => effacerAventure(localStorage)).not.toThrow();
   });
 });

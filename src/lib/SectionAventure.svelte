@@ -2,18 +2,16 @@
   /**
    * La section « Aventure », tout en bas de la feuille, loin du pouce
    * (DESIGN.md, « Layout » ; maquette, « Feuille entière »). Elle porte les
-   * actions de l'aventure entière : en mode simplifié, « Sauvegarder ici »
+   * actions de l'aventure entière. En mode simplifié : « Sauvegarder ici »
    * (avec ce qui reste de sauvegardes ; désactivé quand les 3 sont utilisées,
    * et son libellé le dit) et « Reprendre la sauvegarde · § 87 », qui demande
-   * confirmation. Sans sauvegarde posée, il n'y a rien à reprendre : la ligne
-   * n'existe pas. Dans les autres modes, il n'y a ni sauvegarde ni reprise, et
-   * pour l'instant rien à montrer : la section n'apparaît pas.
-   *
-   * Le ticket 14 y ajoute « Recommencer une aventure », valable dans tous les
-   * modes : la section s'affichera alors toujours.
+   * confirmation ; sans sauvegarde posée, il n'y a rien à reprendre et la
+   * ligne n'existe pas. Dans tous les modes, en dernière ligne : « Recommencer
+   * une aventure », en rouge, qui demande confirmation puis efface l'aventure.
    */
   import type { Mode, Sauvegarde } from "./aventure";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
+  import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
   import { sauvegardesRestantes } from "./sauvegardes";
 
   interface Props {
@@ -22,6 +20,8 @@
     sauvegarde: Sauvegarde | null;
     onsauvegarder: () => void;
     onreprendre: () => void;
+    /** Le lecteur a confirmé : l'aventure est effacée. */
+    onrecommencer: () => void;
   }
 
   let {
@@ -30,10 +30,12 @@
     sauvegarde,
     onsauvegarder,
     onreprendre,
+    onrecommencer,
   }: Props = $props();
   const id = $props.id();
 
   let confirmation = $state(false);
+  let recommencement = $state(false);
 
   const restantes = $derived(
     sauvegardesRestantes({ mode, sauvegardesUtilisees }),
@@ -48,10 +50,10 @@
   }
 </script>
 
-{#if mode === "simplifie"}
-  <section class="game" aria-labelledby="{id}-titre">
-    <div class="sh"><h2 id="{id}-titre">Aventure</h2></div>
-    <ul>
+<section class="game" aria-labelledby="{id}-titre">
+  <div class="sh"><h2 id="{id}-titre">Aventure</h2></div>
+  <ul>
+    {#if mode === "simplifie"}
       <li>
         {#if restantes > 0}
           <button class="row" type="button" onclick={sauvegarder}>
@@ -89,10 +91,15 @@
           </button>
         </li>
       {/if}
-    </ul>
-    <p class="sr" aria-live="polite">{annonce}</p>
-  </section>
-{/if}
+    {/if}
+    <li>
+      <button class="row" type="button" onclick={() => (recommencement = true)}>
+        <span class="n danger">Recommencer une aventure</span>
+      </button>
+    </li>
+  </ul>
+  <p class="sr" aria-live="polite">{annonce}</p>
+</section>
 
 {#if confirmation && sauvegarde}
   <ConfirmerLaReprise
@@ -102,6 +109,17 @@
       onreprendre();
     }}
     onfermer={() => (confirmation = false)}
+  />
+{/if}
+
+{#if recommencement}
+  <ConfirmerLeRecommencement
+    cas="aventure"
+    onconfirmer={() => {
+      recommencement = false;
+      onrecommencer();
+    }}
+    onfermer={() => (recommencement = false)}
   />
 {/if}
 
@@ -146,6 +164,11 @@
   .d {
     font-size: 14px;
     color: var(--craie-2);
+  }
+  /* Danger : texte rouge 700, sans icône (maquette, `.danger`). */
+  .danger {
+    color: var(--rouge);
+    font-weight: 700;
   }
   .row svg {
     color: var(--craie-2);

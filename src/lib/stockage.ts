@@ -74,6 +74,15 @@ export function ecrireAventure(stockage: Storage, aventure: Aventure): void {
   }
 }
 
+/** Le lecteur recommence : plus rien de l'aventure ne reste sur l'appareil. */
+export function effacerAventure(stockage: Storage): void {
+  try {
+    stockage.removeItem(CLE_STOCKAGE);
+  } catch {
+    // Stockage interdit : il n'y avait rien d'enregistré.
+  }
+}
+
 function versionEnregistree(stockage: Storage): number {
   try {
     const brut = stockage.getItem(CLE_STOCKAGE);

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   ajouterUnBoulon,
   ajouterUnPointDeVie,
+  apresLaMort,
+  proposeDeRecommencer,
   ARMES_MAX,
   besaceVide,
   bonusDeDegatsDesArmes,
@@ -321,5 +323,57 @@ describe("boulons et bourse", () => {
     expect(formaterLesBoulons(0)).toBe("0 boulon");
     expect(formaterLesBoulons(1)).toBe("1 boulon");
     expect(formaterLesBoulons(12)).toBe("12 boulons");
+  });
+});
+
+describe("fin d'aventure : recommencer au chapitre 1 en mode mortel", () => {
+  it("propose de recommencer à 0 PV en mode mortel seulement", () => {
+    expect(proposeDeRecommencer("mortel", 0)).toBe(true);
+    expect(proposeDeRecommencer("mortel", 1)).toBe(false);
+    expect(proposeDeRecommencer("simplifie", 0)).toBe(false);
+    expect(proposeDeRecommencer("narratif", 0)).toBe(false);
+  });
+
+  it("choix par défaut : un nouveau personnage repart de zéro, sans armes ni équipement, mais garde les notes du lecteur", () => {
+    const morte = {
+      ...commencerAventure({
+        talent: "Herbologie",
+        mode: "mortel",
+        pointsDeVieMax: 32,
+        chance: 4,
+      }),
+      notes: "Piège au 74.",
+      armes: [{ nom: "Épée courte", bonus: 1 }],
+      besace: {
+        objets: ["Corde"],
+        bourse: true,
+        boulons: 12,
+        boulonsForces: false,
+      },
+      effets: [
+        {
+          nom: "Potion",
+          duree: "24 h",
+          cible: "dexterite" as const,
+          valeur: 1,
+        },
+      ],
+      chapitre: 112,
+    };
+    const nouvelle = commencerAventure({
+      talent: "Instinct",
+      mode: "mortel",
+      pointsDeVieMax: 40,
+      chance: 6,
+    });
+
+    const reprise = apresLaMort(nouvelle, morte);
+
+    expect(reprise).toEqual({ ...nouvelle, notes: "Piège au 74." });
+    expect(reprise.chapitre).toBe(1);
+    expect(reprise.armes).toEqual([]);
+    expect(reprise.besace).toEqual(besaceVide());
+    expect(reprise.effets).toEqual([]);
+    expect(reprise.combats).toEqual([]);
   });
 });

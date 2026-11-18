@@ -19,13 +19,21 @@
   interface Props {
     de: De;
     oncommencer: (aventure: Aventure) => void;
+    /**
+     * Le lecteur recommence après une mort en mode mortel : le mode mortel est
+     * déjà coché et « Déjà en route » n'est pas proposé, puisqu'on repart du
+     * chapitre 1 (voir `apresLaMort`, aventure.ts).
+     */
+    apresLaMort?: boolean;
   }
 
-  let { de, oncommencer }: Props = $props();
+  let { de, oncommencer, apresLaMort = false }: Props = $props();
   const id = $props.id();
 
   let talent = $state<Talent | null>(null);
-  let mode = $state<Mode | null>(null);
+  // Le parent monte cet écran une fois pour toute la création : la valeur de départ suffit.
+  // svelte-ignore state_referenced_locally
+  let mode = $state<Mode | null>(apresLaMort ? "mortel" : null);
   let pointsDeVieMax = $state<number | null>(null);
   /** Total des 2d6 du dernier lancer ; oublié si le lecteur corrige à la main. */
   let obtenu = $state<number | null>(null);
@@ -68,28 +76,30 @@
 <main class="ecran">
   <h1>Nouvel apprenti</h1>
 
-  <div class="segments" role="radiogroup" aria-label="Type d'aventure">
-    <label class="segment">
-      <input
-        class="sr"
-        type="radio"
-        name="{id}-depart"
-        checked={!enRoute}
-        onchange={() => (enRoute = false)}
-      />
-      Nouvelle aventure
-    </label>
-    <label class="segment">
-      <input
-        class="sr"
-        type="radio"
-        name="{id}-depart"
-        checked={enRoute}
-        onchange={() => (enRoute = true)}
-      />
-      Déjà en route
-    </label>
-  </div>
+  {#if !apresLaMort}
+    <div class="segments" role="radiogroup" aria-label="Type d'aventure">
+      <label class="segment">
+        <input
+          class="sr"
+          type="radio"
+          name="{id}-depart"
+          checked={!enRoute}
+          onchange={() => (enRoute = false)}
+        />
+        Nouvelle aventure
+      </label>
+      <label class="segment">
+        <input
+          class="sr"
+          type="radio"
+          name="{id}-depart"
+          checked={enRoute}
+          onchange={() => (enRoute = true)}
+        />
+        Déjà en route
+      </label>
+    </div>
+  {/if}
 
   {#if enRoute}
     <p class="intro">

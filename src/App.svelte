@@ -13,7 +13,12 @@
   import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
   import ResultatDuCombat from "./lib/ResultatDuCombat.svelte";
-  import { resume, type Aventure } from "./lib/aventure";
+  import {
+    apresLaMort,
+    proposeDeRecommencer,
+    resume,
+    type Aventure,
+  } from "./lib/aventure";
   import {
     commencerUnCombat,
     ficheDuLecteur,
@@ -36,7 +41,11 @@
     reprendreLaSauvegarde,
     sauvegardesRestantes,
   } from "./lib/sauvegardes";
-  import { ecrireAventure, lireAventure } from "./lib/stockage";
+  import {
+    ecrireAventure,
+    effacerAventure,
+    lireAventure,
+  } from "./lib/stockage";
 
   interface Props {
     /** Les tests injectent des dés fixés. */
@@ -141,6 +150,54 @@
     remonter();
   }
 
+  /**
+   * Fin d'aventure. « Recommencer une aventure » (tous les modes) efface tout
+   * de l'appareil et rouvre « Nouvel apprenti ». En mode mortel, à 0 PV,
+   * accepter la proposition ouvre « Nouvel apprenti » avec le mode mortel et
+   * garde les notes ; l'ancienne aventure reste enregistrée jusqu'à ce que le
+   * nouveau personnage soit créé (fermer l'app entre-temps la retrouve).
+   */
+  let mort = $state<{ notes: string } | null>(null);
+  /** Le lecteur a ignoré la proposition de recommencer ; elle revient quand ses PV retombent à 0. */
+  let propositionIgnoree = $state(false);
+
+  $effect(() => {
+    if (
+      aventure &&
+      !proposeDeRecommencer(
+        "mortel",
+        valeurEffective(
+          "pointsDeVie",
+          aventure.personnage.pointsDeVie,
+          aventure.effets,
+        ),
+      )
+    )
+      propositionIgnoree = false;
+  });
+
+  function toutOublierDeLEcran() {
+    saisieDuCombat = false;
+    historique = null;
+    resultat = null;
+    avantLeCombat = {};
+    propositionIgnoree = false;
+    remonter();
+  }
+
+  function recommencerLAventure() {
+    effacerAventure(localStorage);
+    mort = null;
+    aventure = null;
+    toutOublierDeLEcran();
+  }
+
+  function recommencerApresLaMort() {
+    mort = { notes: aventure!.notes };
+    aventure = null;
+    toutOublierDeLEcran();
+  }
+
   /** Retour sur la feuille : la trace de craie montre ce que le combat a changé. */
   function revenirALaFeuille({ depart }: Combat) {
     avantLeCombat = {
@@ -176,7 +233,12 @@
     sauvegarde={aventure.sauvegarde}
     sauvegardesRestantes={sauvegardesRestantes(aventure)}
     onreprendre={() => reprendre(true)}
-    onretour={() => revenirALaFeuille(combat)}
+    onrecommencer={recommencerApresLaMort}
+    onretour={() => {
+      // « Le livre me laisse continuer » : la proposition de recommencer est ignorée.
+      if (combat.issue === "perdu") propositionIgnoree = true;
+      revenirALaFeuille(combat);
+    }}
     ondetail={() => {
       // Le combat qui vient de finir est le dernier de l'historique. Le retour
       // se fait vers la feuille, qui joue alors la trace de craie.
@@ -222,6 +284,9 @@
       onsauvegardes={(utilisees) =>
         (aventure!.sauvegardesUtilisees = utilisees)}
       avant={avantLeCombat}
+      {propositionIgnoree}
+      onignorer={() => (propositionIgnoree = true)}
+      onrecommencer={recommencerApresLaMort}
     />
     <Armes
       bind:armes={aventure.armes}
@@ -249,6 +314,7 @@
       sauvegarde={aventure.sauvegarde}
       onsauvegarder={sauvegarder}
       onreprendre={() => reprendre()}
+      onrecommencer={recommencerLAventure}
     />
   </main>
   <!-- La CHANCE disponible est la CHANCE effective ; la dépense sort de la base (valeursEffectives.ts). -->
@@ -263,7 +329,14 @@
       ))}
   />
 {:else}
-  <NouvelApprenti {de} oncommencer={(nouvelle) => (aventure = nouvelle)} />
+  <NouvelApprenti
+    {de}
+    apresLaMort={mort !== null}
+    oncommencer={(nouvelle) => {
+      aventure = mort ? apresLaMort(nouvelle, mort) : nouvelle;
+      mort = null;
+    }}
+  />
 {/if}
 
 <style>
