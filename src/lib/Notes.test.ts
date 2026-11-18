@@ -12,6 +12,7 @@ function enregistrerAventure(notes = "") {
     sauvegardesUtilisees: 0,
     notes,
     armes: [],
+    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,

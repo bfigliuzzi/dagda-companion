@@ -1,8 +1,19 @@
 import { describe, expect, it } from "vitest";
 import {
+  ajouterUnBoulon,
   ajouterUnPointDeVie,
   ARMES_MAX,
+  besaceVide,
   bonusDeDegatsDesArmes,
+  EMPLACEMENTS_MAX,
+  emplacementsOccupes,
+  estUnNombreDeBoulons,
+  formaterLesBoulons,
+  objetsEnTrop,
+  peutCompterLesBoulons,
+  retirerUnBoulon,
+  portePlusDObjetsQueLaBesace,
+  type Besace,
   estUnBonusDeDegats,
   formaterUnBonus,
   portePlusDArmesQueLesRegles,
@@ -34,6 +45,7 @@ describe("recopier un personnage déjà en route", () => {
       sauvegardesUtilisees: 1,
       notes: "",
       armes: [],
+      besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -206,5 +218,90 @@ describe("armes", () => {
     expect(formaterUnBonus(1)).toBe("+1");
     expect(formaterUnBonus(0)).toBe("+0");
     expect(formaterUnBonus(-2)).toBe("−2");
+  });
+});
+
+const objets = (n: number) => Array.from({ length: n }, (_, i) => `Objet ${i}`);
+const besace = (partiel: Partial<Besace> = {}): Besace => ({
+  ...besaceVide(),
+  ...partiel,
+});
+
+describe("emplacements de la besace", () => {
+  it("la besace a 24 emplacements", () => {
+    expect(EMPLACEMENTS_MAX).toBe(24);
+  });
+
+  it("une besace neuve est vide, sans bourse ni boulons", () => {
+    expect(besaceVide()).toEqual({
+      objets: [],
+      bourse: false,
+      boulons: 0,
+      boulonsForces: false,
+    });
+    expect(emplacementsOccupes(besaceVide())).toBe(0);
+  });
+
+  it("chaque objet occupe un emplacement", () => {
+    expect(emplacementsOccupes(besace({ objets: objets(7) }))).toBe(7);
+  });
+
+  it("choix par défaut : la bourse occupe un emplacement, les boulons aucun", () => {
+    expect(emplacementsOccupes(besace({ bourse: true }))).toBe(1);
+    expect(
+      emplacementsOccupes(
+        besace({ objets: objets(6), bourse: true, boulons: 120 }),
+      ),
+    ).toBe(7);
+    expect(
+      emplacementsOccupes(besace({ boulons: 50, boulonsForces: true })),
+    ).toBe(0);
+  });
+
+  it("compte les objets en trop au-delà de 24, jamais en dessous de 0", () => {
+    expect(objetsEnTrop(besace({ objets: objets(24) }))).toBe(0);
+    expect(objetsEnTrop(besace({ objets: objets(3) }))).toBe(0);
+    expect(objetsEnTrop(besace({ objets: objets(25) }))).toBe(1);
+    expect(objetsEnTrop(besace({ objets: objets(24), bourse: true }))).toBe(1);
+    expect(objetsEnTrop(besace({ objets: objets(27), bourse: true }))).toBe(4);
+  });
+
+  it("avertit au-delà de 24 seulement", () => {
+    expect(portePlusDObjetsQueLaBesace(besace({ objets: objets(24) }))).toBe(
+      false,
+    );
+    expect(portePlusDObjetsQueLaBesace(besace({ objets: objets(25) }))).toBe(
+      true,
+    );
+  });
+});
+
+describe("boulons et bourse", () => {
+  it("le compteur est actif avec une bourse", () => {
+    expect(peutCompterLesBoulons(besace({ bourse: true }))).toBe(true);
+  });
+
+  it("choix par défaut : sans bourse le compteur est désactivé, sauf si le lecteur le force", () => {
+    expect(peutCompterLesBoulons(besace())).toBe(false);
+    expect(peutCompterLesBoulons(besace({ boulonsForces: true }))).toBe(true);
+  });
+
+  it("un nombre de boulons est un entier à partir de 0", () => {
+    expect(estUnNombreDeBoulons(0)).toBe(true);
+    expect(estUnNombreDeBoulons(12)).toBe(true);
+    expect(estUnNombreDeBoulons(-1)).toBe(false);
+    expect(estUnNombreDeBoulons(1.5)).toBe(false);
+  });
+
+  it("ajoute et retire un boulon, sans descendre sous 0", () => {
+    expect(ajouterUnBoulon(12)).toBe(13);
+    expect(retirerUnBoulon(12)).toBe(11);
+    expect(retirerUnBoulon(0)).toBe(0);
+  });
+
+  it("écrit « 1 boulon », « 12 boulons », « 0 boulon »", () => {
+    expect(formaterLesBoulons(0)).toBe("0 boulon");
+    expect(formaterLesBoulons(1)).toBe("1 boulon");
+    expect(formaterLesBoulons(12)).toBe("12 boulons");
   });
 });

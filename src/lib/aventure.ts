@@ -56,6 +56,67 @@ export interface Arme {
 /** Nombre d'armes que les règles permettent de porter en même temps. */
 export const ARMES_MAX = 2;
 
+/** Nombre d'emplacements de la besace. */
+export const EMPLACEMENTS_MAX = 24;
+
+/**
+ * La besace : des objets nommés, une bourse (qui est elle-même un objet) et
+ * le compteur de boulons rattaché à la bourse. Tout ce que le mode mortel
+ * fait perdre se remet à zéro avec `besaceVide()`.
+ */
+export interface Besace {
+  /** Les objets, hors bourse, dans l'ordre où le lecteur les a ajoutés. */
+  objets: string[];
+  /** Le lecteur porte une bourse : elle occupe un emplacement. */
+  bourse: boolean;
+  /** Boulons (la monnaie). Ils n'occupent aucun emplacement. */
+  boulons: number;
+  /** Le lecteur a forcé le compteur de boulons alors qu'il n'a pas de bourse. */
+  boulonsForces: boolean;
+}
+
+export function besaceVide(): Besace {
+  return { objets: [], bourse: false, boulons: 0, boulonsForces: false };
+}
+
+/** Emplacements pris : un par objet, plus un pour la bourse ; les boulons n'en prennent pas. */
+export function emplacementsOccupes(besace: Besace): number {
+  return besace.objets.length + (besace.bourse ? 1 : 0);
+}
+
+/** Objets au-delà des 24 emplacements, montrés en traits rouges. */
+export function objetsEnTrop(besace: Besace): number {
+  return Math.max(0, emplacementsOccupes(besace) - EMPLACEMENTS_MAX);
+}
+
+/** Plus d'objets que d'emplacements : la feuille le signale, sans bloquer. */
+export function portePlusDObjetsQueLaBesace(besace: Besace): boolean {
+  return objetsEnTrop(besace) > 0;
+}
+
+/** Le compteur de boulons est actif avec une bourse, ou si le lecteur l'a forcé. */
+export function peutCompterLesBoulons(besace: Besace): boolean {
+  return besace.bourse || besace.boulonsForces;
+}
+
+/** Un nombre de boulons : entier à partir de 0. */
+export function estUnNombreDeBoulons(valeur: unknown): valeur is number {
+  return estUnEntierAuMoins(0, valeur);
+}
+
+export function ajouterUnBoulon(boulons: number): number {
+  return boulons + 1;
+}
+
+export function retirerUnBoulon(boulons: number): number {
+  return Math.max(0, boulons - 1);
+}
+
+/** « 0 boulon », « 1 boulon », « 12 boulons ». */
+export function formaterLesBoulons(boulons: number): string {
+  return `${boulons} ${boulons > 1 ? "boulons" : "boulon"}`;
+}
+
 export interface Aventure {
   /** Dernier chapitre lu, noté par le lecteur avant une pause. */
   chapitre: number;
@@ -69,6 +130,8 @@ export interface Aventure {
   notes: string;
   /** Les armes du lecteur, dans l'ordre où il les a ajoutées. */
   armes: Arme[];
+  /** La besace, la bourse et les boulons. */
+  besace: Besace;
   personnage: Personnage;
 }
 
@@ -128,6 +191,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     sauvegardesUtilisees: 0,
     notes: "",
     armes: [],
+    besace: besaceVide(),
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -209,6 +273,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
     sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
     notes: "",
     armes: [],
+    besace: besaceVide(),
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -284,16 +349,36 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { chapitre, mode, personnage, sauvegardesUtilisees, notes, armes } =
-    valeur as Aventure;
+  const {
+    chapitre,
+    mode,
+    personnage,
+    sauvegardesUtilisees,
+    notes,
+    armes,
+    besace,
+  } = valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
     typeof notes === "string" &&
     Array.isArray(armes) &&
     armes.every(estUneArme) &&
+    estUneBesace(besace) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
+  );
+}
+
+function estUneBesace(valeur: unknown): valeur is Besace {
+  if (typeof valeur !== "object" || valeur === null) return false;
+  const { objets, bourse, boulons, boulonsForces } = valeur as Besace;
+  return (
+    Array.isArray(objets) &&
+    objets.every((objet) => typeof objet === "string") &&
+    typeof bourse === "boolean" &&
+    estUnNombreDeBoulons(boulons) &&
+    typeof boulonsForces === "boolean"
   );
 }
 

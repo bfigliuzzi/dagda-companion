@@ -8,9 +8,9 @@ Références : `docs/regles-livre-1.md` (Inventaire et monnaie, choix par défau
 
 **Status:** ready-for-agent
 
-- [ ] On peut ajouter, renommer et retirer un objet ; chaque changement est enregistré tout de suite.
-- [ ] Les 24 traits reflètent le nombre d'objets ; les objets en trop s'affichent en traits rouges.
-- [ ] Au-delà de 24 objets, un indice rouge prévient sans empêcher l'ajout.
-- [ ] La bourse compte pour un emplacement ; les boulons n'en prennent pas.
-- [ ] Sans bourse, le compteur de boulons est désactivé, avec une option pour le forcer.
-- [ ] Le calcul des emplacements et la règle de la bourse sont testés.
+- [x] On peut ajouter, renommer et retirer un objet ; chaque changement est enregistré tout de suite.
+- [x] Les 24 traits reflètent le nombre d'objets ; les objets en trop s'affichent en traits rouges.
+- [x] Au-delà de 24 objets, un indice rouge prévient sans empêcher l'ajout.
+- [x] La bourse compte pour un emplacement ; les boulons n'en prennent pas.
+- [x] Sans bourse, le compteur de boulons est désactivé, avec une option pour le forcer.
+- [x] Le calcul des emplacements et la règle de la bourse sont testés.

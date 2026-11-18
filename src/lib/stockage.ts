@@ -9,10 +9,10 @@
  * passe de l'ancienne version à la nouvelle.
  */
 
-import { estUneAventure, type Aventure } from "./aventure";
+import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 5;
+export const VERSION = 6;
 
 interface Enregistrement {
   version: number;
@@ -33,6 +33,8 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   3: (aventure) => ({ ...(aventure as object), notes: "" }),
   // Version 5 : les armes. Une aventure de la version 4 n'en a pas ajouté.
   4: (aventure) => ({ ...(aventure as object), armes: [] }),
+  // Version 6 : la besace, la bourse et les boulons. Une aventure de la version 5 n'en a rien noté.
+  5: (aventure) => ({ ...(aventure as object), besace: besaceVide() }),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

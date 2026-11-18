@@ -17,6 +17,7 @@ function enregistrerAventure(armes: Arme[] = []) {
     sauvegardesUtilisees: 0,
     notes: "",
     armes,
+    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,
@@ -240,9 +241,14 @@ describe("plus de 2 armes", () => {
 });
 
 describe("les armes et la besace", () => {
-  it("ne prennent aucune place : la section ne parle d'aucun emplacement", () => {
+  it("ne prennent aucune place : la besace reste à 0 / 24", () => {
     enregistrerAventure([epeeCourte, baton, dague]);
     render(App);
-    expect(screen.queryByText(/\/ 24/)).not.toBeInTheDocument();
+    expect(dansSection().queryByText(/\/ 24/)).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "Besace" })).getByText(
+        "0 / 24",
+      ),
+    ).toBeInTheDocument();
   });
 });
