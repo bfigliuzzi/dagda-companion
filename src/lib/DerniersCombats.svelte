@@ -5,12 +5,12 @@
    * récents (le plus récent en tête) et « Tout l'historique », qui ouvre
    * l'écran plein. Sans combat terminé, la section n'existe pas.
    */
-  import type { Combat } from "./combat";
+  import type { CombatDeLHistorique } from "./combat";
   import LigneDeCombat from "./LigneDeCombat.svelte";
 
   interface Props {
     /** Du plus ancien au plus récent, comme l'aventure les garde. */
-    combats: readonly Combat[];
+    combats: readonly CombatDeLHistorique[];
     onhistorique: () => void;
   }
 

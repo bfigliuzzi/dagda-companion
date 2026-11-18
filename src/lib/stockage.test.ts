@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Aventure } from "./aventure";
-import { commencerUnCombat, jouerUnTour } from "./combat";
+import { combatNarratif, commencerUnCombat, jouerUnTour } from "./combat";
 import { desFixes } from "./des";
 import { CLE_STOCKAGE, ecrireAventure, lireAventure } from "./stockage";
 
@@ -49,10 +49,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 8", () => {
+  it("enregistre l'aventure avec le numéro de version 9", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 8,
+      version: 9,
       aventure: herboriste,
     });
   });
@@ -159,6 +159,44 @@ describe("stockage de l'aventure", () => {
     };
     ecrireAventure(localStorage, enCombat);
     expect(lireAventure(localStorage)).toEqual(enCombat);
+  });
+
+  it("migre un enregistrement de la version 8 : ses combats joués restent tels quels", () => {
+    const combats = [{ ...unTourAu112, issue: "gagne" as const }];
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 8, aventure: { ...herboriste, combats } }),
+    );
+    expect(lireAventure(localStorage)).toEqual({ ...herboriste, combats });
+  });
+
+  it("retrouve les combats narratifs, parmi les combats joués", () => {
+    const narratif: Aventure = {
+      ...herboriste,
+      mode: "narratif",
+      combats: [combatNarratif(98, 1, "gagne"), combatNarratif(61, 3, "perdu")],
+    };
+    ecrireAventure(localStorage, narratif);
+    expect(lireAventure(localStorage)).toEqual(narratif);
+  });
+
+  it("ne trouve aucune aventure si un combat narratif est mal formé", () => {
+    for (const combat of [
+      { narratif: true, chapitre: 98, adversaires: 1 },
+      { narratif: true, chapitre: 98, adversaires: 1, issue: "interrompu" },
+      { narratif: true, chapitre: 0, adversaires: 1, issue: "gagne" },
+      { narratif: true, chapitre: 98, adversaires: 0, issue: "gagne" },
+      { narratif: false, chapitre: 98, adversaires: 1, issue: "gagne" },
+    ]) {
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({
+          version: 9,
+          aventure: { ...herboriste, combats: [combat] },
+        }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+    }
   });
 
   it("ne trouve aucune aventure si un combat est mal formé", () => {

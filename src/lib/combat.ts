@@ -30,6 +30,7 @@ import {
   estUneDexterite,
   estUnMaximumDePointsDeVie,
 } from "./aventure";
+import type { Mode } from "./aventure";
 import { ajusterLeTotal } from "./chance";
 import type { De } from "./des";
 import type { ValeursEffectives } from "./valeursEffectives";
@@ -136,6 +137,64 @@ export function ceQuiManqueAuCombat(
     return "Corrigez le nombre d'adversaires";
   if (!estUnBonusDeDegats(bonus)) return "Corrigez le bonus de dégâts";
   return null;
+}
+
+/**
+ * LE MODE NARRATIF (docs/regles-livre-1.md, « Modes de jeu »). Jusqu'à 5
+ * adversaires simultanés, le lecteur indique lui-même l'issue du combat ;
+ * au-delà, le combat se joue normalement. Un groupe compte pour un seul
+ * adversaire dans le combat joué, mais son nombre d'individus sert ici.
+ */
+export const ADVERSAIRES_MAX_EN_NARRATIF = 5;
+
+/**
+ * Le lecteur dit-il l'issue du combat (écran « Gagné » / « Perdu ») ? Seulement
+ * en mode narratif, et jusqu'à 5 adversaires. Sinon le combat se joue :
+ * les autres modes jouent toujours.
+ */
+export function lecteurChoisitLIssue(mode: Mode, adversaires: number): boolean {
+  return mode === "narratif" && adversaires <= ADVERSAIRES_MAX_EN_NARRATIF;
+}
+
+/**
+ * Ce qui manque encore pour demander l'issue d'un combat narratif : seulement
+ * le chapitre et le nombre d'adversaires, les statistiques de l'ennemi ne
+ * servent que si le combat se joue.
+ */
+export function ceQuiManqueALIssue(
+  brouillon: Pick<BrouillonDeCombat, "chapitre" | "adversaires">,
+): string | null {
+  if (!estUnChapitre(brouillon.chapitre))
+    return "Corrigez le chapitre du combat";
+  if (!estUnMaximumDePointsDeVie(brouillon.adversaires))
+    return "Corrigez le nombre d'adversaires";
+  return null;
+}
+
+/** Un combat narratif : le lecteur a indiqué l'issue, rien n'a été joué. */
+export interface CombatNarratif {
+  narratif: true;
+  chapitre: number;
+  adversaires: number;
+  /** Jamais « interrompu » : on ne quitte pas un combat qu'on ne joue pas. */
+  issue: "gagne" | "perdu";
+}
+
+/** Une ligne de l'historique : un combat joué ou un combat narratif. */
+export type CombatDeLHistorique = Combat | CombatNarratif;
+
+export function combatNarratif(
+  chapitre: number,
+  adversaires: number,
+  issue: CombatNarratif["issue"],
+): CombatNarratif {
+  return { narratif: true, chapitre, adversaires, issue };
+}
+
+export function estNarratif(
+  combat: CombatDeLHistorique,
+): combat is CombatNarratif {
+  return "narratif" in combat;
 }
 
 /** La fiche de l'ennemi recopiée, prête pour `commencerUnCombat`. */
@@ -359,7 +418,10 @@ export interface Bilan {
   chanceDepensee: number;
 }
 
-export function bilanDuCombat(combat: Combat): Bilan {
+export function bilanDuCombat(combat: CombatDeLHistorique): Bilan {
+  // Un combat narratif n'a ni jets ni PV : il n'invente aucune perte.
+  if (estNarratif(combat))
+    return { tours: 0, pointsDeViePerdus: 0, chanceDepensee: 0 };
   return {
     tours: toursJoues(combat),
     pointsDeViePerdus: Math.max(
@@ -418,4 +480,25 @@ export function estUnCombat(valeur: unknown): valeur is Combat {
     Array.isArray(combat.jets) &&
     combat.jets.every(estUnJet)
   );
+}
+
+/** Vérifie un combat narratif relu depuis l'appareil. */
+function estUnCombatNarratif(valeur: unknown): valeur is CombatNarratif {
+  if (!sontDesEntiers(valeur, ["chapitre", "adversaires"])) return false;
+  const combat = valeur as unknown as CombatNarratif;
+  return (
+    combat.narratif === true &&
+    combat.chapitre >= 1 &&
+    combat.adversaires >= 1 &&
+    (combat.issue === "gagne" || combat.issue === "perdu")
+  );
+}
+
+/** Vérifie une ligne de l'historique relue depuis l'appareil. */
+export function estUnCombatDeLHistorique(
+  valeur: unknown,
+): valeur is CombatDeLHistorique {
+  return estUnObjet(valeur) && "narratif" in valeur
+    ? estUnCombatNarratif(valeur)
+    : estUnCombat(valeur);
 }

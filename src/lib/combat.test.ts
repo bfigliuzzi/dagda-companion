@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   bilanDuCombat,
+  ceQuiManqueALIssue,
+  combatNarratif,
+  estNarratif,
+  estUnCombatDeLHistorique,
+  lecteurChoisitLIssue,
   commencerUnCombat,
   ficheDuLecteur,
   interrompreLeCombat,
@@ -554,5 +559,86 @@ describe("la CHANCE automatique en combat", () => {
     );
     expect(combat.jets[0]).toMatchObject({ chance: 1, total: 8, touche: true });
     expect(combat.chance).toBe(3);
+  });
+});
+
+describe("le mode narratif : qui décide de l'issue", () => {
+  it("laisse le lecteur choisir l'issue jusqu'à 5 adversaires", () => {
+    expect(lecteurChoisitLIssue("narratif", 1)).toBe(true);
+    expect(lecteurChoisitLIssue("narratif", 5)).toBe(true);
+  });
+
+  it("joue le combat normalement à partir de 6 adversaires", () => {
+    expect(lecteurChoisitLIssue("narratif", 6)).toBe(false);
+    expect(lecteurChoisitLIssue("narratif", 7)).toBe(false);
+  });
+
+  it("joue toujours le combat dans les autres modes, même avec un seul adversaire", () => {
+    expect(lecteurChoisitLIssue("simplifie", 1)).toBe(false);
+    expect(lecteurChoisitLIssue("simplifie", 5)).toBe(false);
+    expect(lecteurChoisitLIssue("mortel", 1)).toBe(false);
+    expect(lecteurChoisitLIssue("mortel", 7)).toBe(false);
+  });
+});
+
+describe("la fiche d'un combat narratif", () => {
+  it("ne demande que le chapitre et le nombre d'adversaires", () => {
+    // Ni DEX, ni PV, ni bonus : l'ennemi n'est pas joué.
+    expect(ceQuiManqueALIssue({ chapitre: 98, adversaires: 3 })).toBeNull();
+  });
+
+  it("dit quel chapitre ou quel nombre d'adversaires corriger", () => {
+    expect(ceQuiManqueALIssue({ chapitre: 0, adversaires: 3 })).toBe(
+      "Corrigez le chapitre du combat",
+    );
+    expect(ceQuiManqueALIssue({ chapitre: 98, adversaires: null })).toBe(
+      "Corrigez le nombre d'adversaires",
+    );
+    expect(ceQuiManqueALIssue({ chapitre: 98, adversaires: 0 })).toBe(
+      "Corrigez le nombre d'adversaires",
+    );
+  });
+});
+
+describe("un combat narratif", () => {
+  const gagne = combatNarratif(98, 1, "gagne");
+
+  it("garde le chapitre, les adversaires et l'issue indiquée, sans rien d'autre", () => {
+    expect(gagne).toEqual({
+      narratif: true,
+      chapitre: 98,
+      adversaires: 1,
+      issue: "gagne",
+    });
+    expect(estNarratif(gagne)).toBe(true);
+  });
+
+  it("se distingue d'un combat joué", () => {
+    expect(estNarratif(commencerUnCombat(gobelins, apprenti))).toBe(false);
+  });
+
+  it("n'a ni tour joué, ni PV perdus, ni CHANCE dépensée dans son bilan", () => {
+    expect(bilanDuCombat(combatNarratif(61, 2, "perdu"))).toEqual({
+      tours: 0,
+      pointsDeViePerdus: 0,
+      chanceDepensee: 0,
+    });
+  });
+
+  it("se relit depuis l'appareil comme un combat de l'historique", () => {
+    expect(estUnCombatDeLHistorique(gagne)).toBe(true);
+    expect(estUnCombatDeLHistorique(combatNarratif(61, 2, "perdu"))).toBe(true);
+    expect(
+      estUnCombatDeLHistorique(commencerUnCombat(gobelins, apprenti)),
+    ).toBe(true);
+  });
+
+  it("refuse un combat narratif sans issue ou interrompu", () => {
+    expect(estUnCombatDeLHistorique({ ...gagne, issue: null })).toBe(false);
+    expect(estUnCombatDeLHistorique({ ...gagne, issue: "interrompu" })).toBe(
+      false,
+    );
+    expect(estUnCombatDeLHistorique({ ...gagne, adversaires: 0 })).toBe(false);
+    expect(estUnCombatDeLHistorique({ ...gagne, chapitre: 0 })).toBe(false);
   });
 });

@@ -5,13 +5,13 @@
    * d'un combat (un seul à la fois). Le bouton retour, à gauche du titre,
    * ramène à la feuille.
    */
-  import type { Combat } from "./combat";
+  import type { CombatDeLHistorique } from "./combat";
   import { resumeDeLHistorique } from "./historique";
   import LigneDeCombat from "./LigneDeCombat.svelte";
 
   interface Props {
     /** Du plus ancien au plus récent, comme l'aventure les garde. */
-    combats: readonly Combat[];
+    combats: readonly CombatDeLHistorique[];
     /** Rang (dans `combats`) du combat déplié à l'ouverture. */
     ouvertAuDepart?: number | null;
     onretour: () => void;

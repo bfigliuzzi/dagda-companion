@@ -12,7 +12,7 @@
 import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 8;
+export const VERSION = 9;
 
 interface Enregistrement {
   version: number;
@@ -39,6 +39,11 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   6: (aventure) => ({ ...(aventure as object), effets: [] }),
   // Version 8 : les combats. Une aventure de la version 7 n'en a mené aucun.
   7: (aventure) => ({ ...(aventure as object), combat: null, combats: [] }),
+  // Version 9 : les combats narratifs rejoignent les combats joués dans `combats`.
+  // Les combats de la version 8 sont tous joués : ils restent tels quels. Monter
+  // la version empêche une app de la version 8 de lire (et d'écraser) un
+  // enregistrement qui contient un combat narratif.
+  8: (aventure) => aventure,
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

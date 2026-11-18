@@ -7,13 +7,20 @@
    * Sans `onbascule`, la ligne est un simple résumé (la feuille). Avec, c'est
    * un bouton : un appui déplie le détail (PV et CHANCE avant et après, fiches
    * de départ, puis les jets, le plus récent en premier ; les trois derniers
-   * d'abord, les autres sur demande).
+   * d'abord, les autres sur demande). Un combat narratif n'a rien de tout
+   * cela : son détail dit seulement que le lecteur a indiqué l'issue.
    */
-  import { bilanDuCombat, type Combat, type Degats, type Jet } from "./combat";
+  import {
+    bilanDuCombat,
+    estNarratif,
+    type CombatDeLHistorique,
+    type Degats,
+    type Jet,
+  } from "./combat";
   import { formuleDeDegats, sousTexteDUnCombat } from "./historique";
 
   interface Props {
-    combat: Combat;
+    combat: CombatDeLHistorique;
     /** Défini : la ligne est dépliable ; son détail s'affiche si `ouvert`. */
     onbascule?: () => void;
     ouvert?: boolean;
@@ -30,7 +37,6 @@
       combat.issue ?? "interrompu"
     ],
   );
-  const depart = $derived(combat.depart);
 
   let toutVoir = $state(false);
   // Replié, un combat oublie qu'on avait tout déplié.
@@ -39,7 +45,7 @@
   });
 
   /** Du plus récent au plus ancien. */
-  const jets = $derived([...combat.jets].reverse());
+  const jets = $derived(estNarratif(combat) ? [] : [...combat.jets].reverse());
   const montres = $derived(toutVoir ? jets : jets.slice(0, VISIBLES));
   const cachees = $derived(jets.length - montres.length);
 
@@ -83,50 +89,60 @@
       role="region"
       aria-label="Détail du § {combat.chapitre}"
     >
-      <div>
-        PV <b>{depart.lecteur.pointsDeVie} → {combat.pointsDeVie.lecteur}</b>
-        · CHANCE
-        {#if bilan.chanceDepensee > 0}
-          <b>{depart.lecteur.chance} → {combat.chance}</b>
-          ({bilan.chanceDepensee} automatique{bilan.chanceDepensee > 1
-            ? "s"
-            : ""})
-        {:else}
-          <b>{depart.lecteur.chance}</b>, aucune dépensée
+      {#if estNarratif(combat)}
+        <div>
+          Combat narratif · {combat.adversaires}
+          {combat.adversaires > 1 ? "adversaires" : "adversaire"}.
+        </div>
+        <div>Vous avez indiqué l'issue&nbsp;: aucun jet, aucun PV perdu.</div>
+      {:else}
+        <div>
+          PV <b>
+            {combat.depart.lecteur.pointsDeVie} → {combat.pointsDeVie.lecteur}
+          </b>
+          · CHANCE
+          {#if bilan.chanceDepensee > 0}
+            <b>{combat.depart.lecteur.chance} → {combat.chance}</b>
+            ({bilan.chanceDepensee} automatique{bilan.chanceDepensee > 1
+              ? "s"
+              : ""})
+          {:else}
+            <b>{combat.depart.lecteur.chance}</b>, aucune dépensée
+          {/if}
+        </div>
+        <div>
+          Vous : DEX <b>{combat.depart.lecteur.dexterite}</b>, dégâts
+          <b>{formuleDeDegats(combat.depart.lecteur.bonus)}</b>
+          · Ennemi : DEX <b>{combat.depart.ennemi.dexterite}</b>,
+          <b>{combat.depart.ennemi.pointsDeVie}</b> PV, dégâts
+          <b>{formuleDeDegats(combat.depart.ennemi.bonus)}</b>
+        </div>
+        <ul>
+          {#each montres as jet (jet.attaquant + jet.tour)}
+            <li>
+              {#if jet.attaquant === "lecteur"}
+                Tour {jet.tour} · vous&nbsp;: 2 dés = {obtenu(
+                  jet,
+                )}{#if !jet.degats}, raté.{:else}, touché, <b>
+                    {perdus(jet.degats)}
+                  </b>.{achevement(jet)}{/if}
+              {:else}
+                Tour {jet.tour} · ennemi&nbsp;: 2 dés = {obtenu(
+                  jet,
+                )}{#if !jet.degats}, raté.{:else}, touché, <b class="lost">
+                    −{jet.degats.total} PV
+                  </b>{/if}
+              {/if}
+            </li>
+          {/each}
+        </ul>
+        {#if cachees > 0}
+          <button class="add" type="button" onclick={() => (toutVoir = true)}>
+            {cachees > 1
+              ? `Les ${cachees} lignes précédentes`
+              : "La ligne précédente"}
+          </button>
         {/if}
-      </div>
-      <div>
-        Vous : DEX <b>{depart.lecteur.dexterite}</b>, dégâts
-        <b>{formuleDeDegats(depart.lecteur.bonus)}</b>
-        · Ennemi : DEX <b>{depart.ennemi.dexterite}</b>,
-        <b>{depart.ennemi.pointsDeVie}</b> PV, dégâts
-        <b>{formuleDeDegats(depart.ennemi.bonus)}</b>
-      </div>
-      <ul>
-        {#each montres as jet (jet.attaquant + jet.tour)}
-          <li>
-            {#if jet.attaquant === "lecteur"}
-              Tour {jet.tour} · vous&nbsp;: 2 dés = {obtenu(
-                jet,
-              )}{#if !jet.degats}, raté.{:else}, touché, <b>
-                  {perdus(jet.degats)}
-                </b>.{achevement(jet)}{/if}
-            {:else}
-              Tour {jet.tour} · ennemi&nbsp;: 2 dés = {obtenu(
-                jet,
-              )}{#if !jet.degats}, raté.{:else}, touché, <b class="lost">
-                  −{jet.degats.total} PV
-                </b>{/if}
-            {/if}
-          </li>
-        {/each}
-      </ul>
-      {#if cachees > 0}
-        <button class="add" type="button" onclick={() => (toutVoir = true)}>
-          {cachees > 1
-            ? `Les ${cachees} lignes précédentes`
-            : "La ligne précédente"}
-        </button>
       {/if}
     </div>
   {/if}

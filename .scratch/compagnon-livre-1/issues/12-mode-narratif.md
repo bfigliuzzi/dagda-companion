@@ -8,9 +8,9 @@ Références : `docs/regles-livre-1.md` (Modes de jeu : narratif ; Fiche d'un en
 
 **Status:** ready-for-agent
 
-- [ ] En mode narratif, le formulaire de combat demande le nombre d'adversaires ; les statistiques de l'ennemi ne sont demandées que si le combat se joue.
-- [ ] Jusqu'à 5 adversaires : écran « Gagné » / « Perdu », grands choix de 120 px.
-- [ ] Plus de 5 adversaires : le combat automatique se lance.
-- [ ] Un combat narratif apparaît dans l'historique avec son issue, sans PV perdus.
-- [ ] Le lecteur peut quand même choisir de jouer le combat normalement.
-- [ ] Dans les autres modes, rien ne change.
+- [x] En mode narratif, le formulaire de combat demande le nombre d'adversaires ; les statistiques de l'ennemi ne sont demandées que si le combat se joue.
+- [x] Jusqu'à 5 adversaires : écran « Gagné » / « Perdu », grands choix de 120 px.
+- [x] Plus de 5 adversaires : le combat automatique se lance.
+- [x] Un combat narratif apparaît dans l'historique avec son issue, sans PV perdus.
+- [x] Le lecteur peut quand même choisir de jouer le combat normalement.
+- [x] Dans les autres modes, rien ne change.

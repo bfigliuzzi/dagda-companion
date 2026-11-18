@@ -7,13 +7,18 @@
  * l'historique : il a coûté des PV, que la feuille montre déjà. Il n'est ni
  * gagné ni perdu.
  */
-import { bilanDuCombat, type Combat } from "./combat";
+import { bilanDuCombat, estNarratif, type CombatDeLHistorique } from "./combat";
 
 const accorder = (nombre: number, singulier: string, pluriel: string) =>
   `${nombre} ${nombre > 1 ? pluriel : singulier}`;
 
-/** « 7 tours · 7 adversaires », avec « · quitté en cours » si le combat l'a été. */
-export function sousTexteDUnCombat(combat: Combat): string {
+/**
+ * « 7 tours · 7 adversaires », avec « · quitté en cours » si le combat l'a
+ * été ; « Narratif » quand le lecteur a indiqué l'issue (il n'y a ni tours à
+ * compter ni PV perdus).
+ */
+export function sousTexteDUnCombat(combat: CombatDeLHistorique): string {
+  if (estNarratif(combat)) return "Narratif";
   const morceaux = [
     accorder(bilanDuCombat(combat).tours, "tour", "tours"),
     accorder(combat.adversaires, "adversaire", "adversaires"),
@@ -23,7 +28,9 @@ export function sousTexteDUnCombat(combat: Combat): string {
 }
 
 /** « 3 combats · 2 gagnés · 40 PV perdus en tout ». */
-export function resumeDeLHistorique(combats: readonly Combat[]): string {
+export function resumeDeLHistorique(
+  combats: readonly CombatDeLHistorique[],
+): string {
   const gagnes = combats.filter(({ issue }) => issue === "gagne").length;
   const pointsDeVie = combats.reduce(
     (somme, combat) => somme + bilanDuCombat(combat).pointsDeViePerdus,

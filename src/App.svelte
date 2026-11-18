@@ -20,6 +20,7 @@
     jouerJusquALaFin,
     jouerUnTour,
     type Combat,
+    type CombatNarratif,
     type NouveauCombat as Nouveau,
   } from "./lib/combat";
   import { deAuHasard, type De } from "./lib/des";
@@ -81,6 +82,16 @@
     suivre(
       commencerUnCombat(nouveau, ficheDuLecteur(valeursEffectives(aventure!))),
     );
+  }
+
+  /**
+   * Mode narratif : le lecteur a indiqué l'issue. Rien n'est joué, donc ni PV
+   * ni CHANCE ne bougent sur la feuille ; le combat rejoint l'historique.
+   */
+  function noterLIssue(combat: CombatNarratif) {
+    saisieDuCombat = false;
+    aventure!.combats.push(combat);
+    remonter();
   }
 
   /**
@@ -158,7 +169,9 @@
   <NouveauCombat
     chapitre={aventure.chapitre}
     lecteur={ficheDuLecteur(valeursEffectives(aventure))}
+    mode={aventure.mode}
     oncommencer={commencer}
+    onissue={noterLIssue}
     onannuler={() => (saisieDuCombat = false)}
   />
 {:else if aventure}

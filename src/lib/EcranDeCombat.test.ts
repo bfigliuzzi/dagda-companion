@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App.svelte";
 import type { Arme, Personnage } from "./aventure";
+import type { Combat } from "./combat";
 import { desFixes, type De } from "./des";
 import { ecrireAventure, lireAventure } from "./stockage";
 import type { Effet } from "./valeursEffectives";
@@ -333,7 +334,7 @@ describe("la fin du combat", () => {
     const aventure = lireAventure(localStorage)!;
     expect(aventure.combat).toBeNull();
     expect(aventure.combats).toHaveLength(1);
-    const [combat] = aventure.combats;
+    const [combat] = aventure.combats as Combat[];
     expect(combat).toMatchObject({ chapitre: 112, issue: "gagne" });
     expect(combat.depart.lecteur.pointsDeVie - combat.pointsDeVie.lecteur).toBe(
       5,

@@ -2,7 +2,12 @@
  * L'aventure telle que l'app la tient : le personnage, le mode de jeu et le
  * dernier chapitre lu. Règles : docs/regles-livre-1.md.
  */
-import { estUnCombat, type Combat } from "./combat";
+import {
+  estUnCombat,
+  estUnCombatDeLHistorique,
+  type Combat,
+  type CombatDeLHistorique,
+} from "./combat";
 import { estUnEffet, type Effet } from "./valeursEffectives";
 
 export const TALENTS = [
@@ -138,8 +143,11 @@ export interface Aventure {
   effets: Effet[];
   /** Le combat en cours (voir combat.ts), `null` hors combat : il se retrouve après rechargement. */
   combat: Combat | null;
-  /** Les combats terminés ou quittés, du plus ancien au plus récent. */
-  combats: Combat[];
+  /**
+   * Les combats terminés, quittés ou indiqués en mode narratif, du plus
+   * ancien au plus récent.
+   */
+  combats: CombatDeLHistorique[];
   /**
    * Les valeurs de BASE du personnage, sans les effets. La feuille, le combat
    * et la CHANCE emploient les valeurs effectives (valeursEffectives.ts).
@@ -390,7 +398,7 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     effets.every(estUnEffet) &&
     (combat === null || estUnCombat(combat)) &&
     Array.isArray(combats) &&
-    combats.every(estUnCombat) &&
+    combats.every(estUnCombatDeLHistorique) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  combatNarratif,
   commencerUnCombat,
   interrompreLeCombat,
   jouerJusquALaFin,
@@ -72,6 +73,10 @@ describe("sousTexteDUnCombat", () => {
     expect(sousTexteDUnCombat(long)).toBe("3 tours · 7 adversaires");
   });
 
+  it("dit « Narratif » d'un combat dont le lecteur a indiqué l'issue, sans tours inventés", () => {
+    expect(sousTexteDUnCombat(combatNarratif(98, 3, "gagne"))).toBe("Narratif");
+  });
+
   it("dit d'un combat quitté en cours qu'il a été quitté", () => {
     expect(sousTexteDUnCombat(interrompu)).toBe(
       "1 tour · 1 adversaire · quitté en cours",
@@ -85,6 +90,16 @@ describe("resumeDeLHistorique", () => {
     expect(resumeDeLHistorique([gagne, perdu, interrompu])).toBe(
       "3 combats · 1 gagné · 11 PV perdus en tout",
     );
+  });
+
+  it("compte un combat narratif sans lui inventer de PV perdus", () => {
+    expect(
+      resumeDeLHistorique([
+        combatNarratif(98, 1, "gagne"),
+        combatNarratif(61, 2, "perdu"),
+        perdu,
+      ]),
+    ).toBe("3 combats · 1 gagné · 6 PV perdus en tout");
   });
 
   it("reste au singulier pour un seul combat", () => {
