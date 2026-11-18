@@ -1,0 +1,9 @@
+import "@fontsource/atkinson-hyperlegible-next/400.css";
+import "@fontsource/atkinson-hyperlegible-next/500.css";
+import "@fontsource/atkinson-hyperlegible-next/700.css";
+import "@fontsource/atkinson-hyperlegible-next/800.css";
+import "./app.css";
+import { mount } from "svelte";
+import App from "./App.svelte";
+
+export default mount(App, { target: document.getElementById("app")! });

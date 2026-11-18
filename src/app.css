@@ -1,0 +1,106 @@
+/* Jetons de « L'Ardoise de l'Académie » : voir DESIGN.md. */
+:root {
+  /* Couleurs */
+  --noir: #000;
+  --ardoise-1: #0e0e0d;
+  --ardoise-2: #1b1b19;
+  --trait: #2c2b28;
+  --craie: #ecebe4;
+  --craie-2: #a9a79d;
+  --craie-3: #85837a;
+  --jaune: #f2c94c;
+  --rouge: #e86a5a;
+  --vert: #7cc4a8;
+
+  /* Rayons */
+  --rayon-tick: 2px;
+  --rayon-seg: 9px;
+  --r: 12px;
+  --rayon-die: 16px;
+  --rayon-sheet: 22px;
+  --rayon-pill: 999px;
+  --rayon-round: 50%;
+
+  /* Espacements */
+  --esp-hair: 4px;
+  --esp-xs: 6px;
+  --esp-sm: 8px;
+  --esp-md: 12px;
+  --esp-lg: 16px;
+  --gutter: 18px;
+  --esp-section: 20px;
+  --cible: 44px;
+  --ligne: 48px;
+
+  /* Typographie */
+  --font: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: var(--noir);
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--craie);
+  font: 16px/1.45 var(--font);
+  font-variant-numeric: tabular-nums;
+  caret-color: var(--jaune);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--jaune);
+  color: var(--noir);
+}
+
+:focus-visible {
+  outline: 2px solid var(--jaune);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+svg.i {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* Texte lu par les lecteurs d'écran seulement. */
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -10,12 +10,12 @@ Références : `PRODUCT.md` (Stack, Constraints), `DESIGN.md` (Colors, Typograph
 
 **Status:** ready-for-agent
 
-- [ ] L'app se construit en fichiers statiques et peut être installée comme PWA (manifeste, service worker).
-- [ ] Une fois chargée une première fois, l'app s'ouvre et fonctionne en mode avion.
-- [ ] Le fond de la feuille est `#000` ; les couleurs, rayons et espacements de `DESIGN.md` sont disponibles sous forme de variables CSS.
-- [ ] La police est servie par l'app elle-même, pas par Google Fonts ; les chiffres sont tabulaires partout.
-- [ ] L'en-tête affiche le dernier chapitre lu ; on peut le modifier (cible tactile ≥ 44 px).
-- [ ] Le changement de chapitre est sauvegardé tout de suite sur l'appareil et retrouvé après rechargement.
-- [ ] La sauvegarde locale est versionnée, pour pouvoir faire évoluer sa forme plus tard.
-- [ ] Le Wake Lock est demandé à l'ouverture et redemandé quand l'app revient au premier plan ; si le navigateur ne le permet pas, rien ne casse.
-- [ ] Des tests couvrent la sauvegarde et la relecture de l'état.
+- [x] L'app se construit en fichiers statiques et peut être installée comme PWA (manifeste, service worker).
+- [x] Une fois chargée une première fois, l'app s'ouvre et fonctionne en mode avion.
+- [x] Le fond de la feuille est `#000` ; les couleurs, rayons et espacements de `DESIGN.md` sont disponibles sous forme de variables CSS.
+- [x] La police est servie par l'app elle-même, pas par Google Fonts ; les chiffres sont tabulaires partout.
+- [x] L'en-tête affiche le dernier chapitre lu ; on peut le modifier (cible tactile ≥ 44 px).
+- [x] Le changement de chapitre est sauvegardé tout de suite sur l'appareil et retrouvé après rechargement.
+- [x] La sauvegarde locale est versionnée, pour pouvoir faire évoluer sa forme plus tard.
+- [x] Le Wake Lock est demandé à l'ouverture et redemandé quand l'app revient au premier plan ; si le navigateur ne le permet pas, rien ne casse.
+- [x] Des tests couvrent la sauvegarde et la relecture de l'état.

@@ -1,0 +1,12 @@
+dist/
+dev-dist/
+test-results/
+playwright-report/
+design/
+.impeccable/
+.scratch/
+docs/
+*.md
+package-lock.json
+public/
+.vitest/
