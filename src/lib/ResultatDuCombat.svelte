@@ -104,16 +104,16 @@
             </s>{/if}{combat.pointsDeVie.lecteur}
         </b>
       </li>
-      {#if bilan.chanceDepensee > 0}
-        <li class="row">
-          <span class="n">Chance</span>
-          <b>
-            <s class="ancienne">
+      <li class="row">
+        <span class="n">Chance</span>
+        <b>
+          {#if bilan.chanceDepensee > 0}<s class="ancienne">
               <span class="sr">avant :&nbsp;</span>{combat.depart.lecteur
                 .chance}
-            </s>{combat.chance}
-          </b>
-        </li>
+            </s>{/if}{combat.chance}
+        </b>
+      </li>
+      {#if bilan.chanceDepensee > 0}
         <li class="row">
           <span class="n gris">Dont {points} automatiquement</span>
         </li>

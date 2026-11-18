@@ -100,24 +100,21 @@
   <ul>
     <li class="row">
       <span class="n" class:eteint={!besace.bourse}>
-        {besace.bourse ? "Bourse" : "Boulons"}
+        {besace.bourse ? "Bourse" : "Boulons · pas de bourse"}
       </span>
-      <span class="purse">
-        <button
-          class="mini"
-          type="button"
-          aria-label="Retirer un boulon"
-          aria-disabled={compteurActif ? undefined : true}
-          onclick={() => {
-            if (compteurActif) besace.boulons = retirerUnBoulon(besace.boulons);
-          }}
-        >
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M5 12h14" />
-          </svg>
-        </button>
-        <span class="v" class:eteint={!compteurActif}>
-          {#if compteurActif}
+      {#if compteurActif}
+        <span class="purse">
+          <button
+            class="mini"
+            type="button"
+            aria-label="Retirer un boulon"
+            onclick={() => (besace.boulons = retirerUnBoulon(besace.boulons))}
+          >
+            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h14" />
+            </svg>
+          </button>
+          <span class="v">
             <ValeurEditable
               valeur={besace.boulons}
               nom="Boulons"
@@ -126,24 +123,21 @@
               affiche={formaterLesBoulons}
               onchange={(boulons) => (besace.boulons = boulons)}
             />
-          {:else}
-            {formaterLesBoulons(besace.boulons)}
-          {/if}
+          </span>
+          <button
+            class="mini"
+            type="button"
+            aria-label="Ajouter un boulon"
+            onclick={() => (besace.boulons = ajouterUnBoulon(besace.boulons))}
+          >
+            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
         </span>
-        <button
-          class="mini"
-          type="button"
-          aria-label="Ajouter un boulon"
-          aria-disabled={compteurActif ? undefined : true}
-          onclick={() => {
-            if (compteurActif) besace.boulons = ajouterUnBoulon(besace.boulons);
-          }}
-        >
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </button>
-      </span>
+      {:else}
+        <span class="v eteint">{besace.boulons}</span>
+      {/if}
       {#if besace.bourse}
         {@render croix("Retirer la bourse", () => (besace.bourse = false))}
       {/if}
@@ -180,28 +174,15 @@
         <path d="M12 11v6M12 7.5h.01" />
       </svg>
       <span>
-        {#if besace.boulonsForces}
-          Compteur forcé : il faut normalement une <b>bourse</b> pour transporter
-          des boulons.
-        {:else}
-          Il faut une <b>bourse</b> pour transporter des boulons.
-        {/if}
+        Il faut une bourse pour garder des boulons.
+        <button
+          class="lien"
+          type="button"
+          onclick={() => (besace.boulonsForces = !besace.boulonsForces)}
+        >
+          {besace.boulonsForces ? "Ne plus compter" : "Compter quand même"}
+        </button>
       </span>
-    </div>
-    <div class="actions">
-      <button class="add" type="button" onclick={() => (besace.bourse = true)}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Ajouter une bourse
-      </button>
-      <button
-        class="lien"
-        type="button"
-        onclick={() => (besace.boulonsForces = !besace.boulonsForces)}
-      >
-        {besace.boulonsForces ? "Désactiver le compteur" : "Forcer le compteur"}
-      </button>
     </div>
   {/if}
 
@@ -211,8 +192,8 @@
         <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
       </svg>
       <span>
-        La besace a <b>{EMPLACEMENTS_MAX} emplacements</b>. Gardez l'objet si le
-        livre l'autorise, sinon retirez-en un.
+        La besace est pleine. L'objet est ajouté quand même&nbsp;: retirez-en un
+        si le livre le demande.
       </span>
     </div>
   {/if}
@@ -239,12 +220,26 @@
       </div>
     </form>
   {:else}
-    <button class="add" type="button" onclick={ouvrirLAjout}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
-      Ajouter un objet
-    </button>
+    <div class="actions">
+      <button class="add" type="button" onclick={ouvrirLAjout}>
+        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Ajouter un objet
+      </button>
+      {#if !besace.bourse}
+        <button
+          class="add"
+          type="button"
+          onclick={() => (besace.bourse = true)}
+        >
+          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Ajouter une bourse
+        </button>
+      {/if}
+    </div>
   {/if}
 </section>
 
@@ -328,9 +323,6 @@
     border-radius: 50%;
     color: var(--craie-2);
   }
-  .mini[aria-disabled="true"] {
-    color: var(--craie-3);
-  }
   .mini svg {
     width: 18px;
     height: 18px;
@@ -390,9 +382,6 @@
   .hint svg.warn {
     color: var(--rouge);
   }
-  .hint b {
-    color: var(--craie);
-  }
 
   .actions {
     display: flex;
@@ -412,12 +401,19 @@
     width: 18px;
     height: 18px;
   }
+  /* Lien dans l'indice : en ligne avec le texte, comme la maquette ; la zone
+     d'appui déborde du texte pour atteindre 44 px. */
   .lien {
-    min-height: var(--cible);
-    color: var(--craie-2);
-    font-size: 14px;
+    position: relative;
+    color: var(--craie);
     font-weight: 700;
     text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .lien::after {
+    content: "";
+    position: absolute;
+    inset: -14px -8px;
   }
 
   form {

@@ -120,7 +120,7 @@
     </p>
   {/if}
 
-  <section>
+  <section class:sous-le-chapitre={enRoute}>
     <h2 id="{id}-talent">Talent</h2>
     <div class="puces" role="radiogroup" aria-labelledby="{id}-talent">
       {#each TALENTS as nom (nom)}
@@ -382,6 +382,11 @@
 
   section {
     padding: var(--esp-section) var(--gutter) var(--esp-hair);
+  }
+
+  /* « Déjà en route » : le champ du chapitre précède, la maquette serre à 16 px. */
+  section.sous-le-chapitre {
+    padding-top: var(--esp-lg);
   }
 
   h2 {

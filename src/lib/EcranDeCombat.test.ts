@@ -292,7 +292,11 @@ describe("la fin du combat", () => {
     const pv = screen.getByText("Points de vie").closest("li")!;
     expect(pv).toHaveTextContent(/Points de vie\s*avant : 28\s*23/);
     expect(within(pv).getByText(/avant/).closest("s")).toHaveClass("ancienne");
-    expect(screen.queryByText("Chance")).not.toBeInTheDocument();
+    // La CHANCE est toujours affichée ; rien n'a été dépensé : pas de valeur barrée.
+    const chance = screen.getByText("Chance").closest("li")!;
+    expect(chance).toHaveTextContent(/^Chance\s*4$/);
+    expect(within(chance).queryByText(/avant/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/automatiquement/)).not.toBeInTheDocument();
   });
 
   it("lecteur à 0 PV : « Perdu », et rappel que le livre indique la suite, sans rien décider", async () => {

@@ -76,20 +76,6 @@
 {/snippet}
 
 <main class="ecran">
-  <div class="screen-h">
-    <button
-      class="retour"
-      type="button"
-      aria-label="Quitter le combat"
-      onclick={onquitter}
-    >
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M15 6l-6 6 6 6" />
-      </svg>
-    </button>
-    <h1>Combat</h1>
-  </div>
-
   <div class="versus">
     <div class="side-c" role="group" aria-labelledby="{id}-vous">
       <div class="who" id="{id}-vous">Vous</div>
@@ -188,6 +174,10 @@
     {/each}
   </ol>
 
+  <button class="quitter" type="button" onclick={onquitter}>
+    Quitter le combat
+  </button>
+
   <Dock variante="combat">
     <button class="ghost" type="button" onclick={onfinir}>
       <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
@@ -204,31 +194,8 @@
     max-width: 480px;
     margin: 0 auto;
     /* Place pour le dock fixe : 1 + 12 + 58 + 22 px, plus la zone de sécurité. */
+    padding-top: env(safe-area-inset-top);
     padding-bottom: calc(93px + env(safe-area-inset-bottom));
-  }
-
-  .screen-h {
-    display: flex;
-    align-items: center;
-    gap: var(--esp-sm);
-    padding: var(--gutter) var(--gutter) var(--esp-xs);
-    padding-top: max(var(--gutter), env(safe-area-inset-top));
-  }
-
-  .retour {
-    display: grid;
-    place-items: center;
-    width: var(--cible);
-    height: var(--cible);
-    margin-left: -12px;
-    color: var(--craie-2);
-  }
-
-  h1 {
-    flex: 1;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
   }
 
   /* Face-à-face */
@@ -410,6 +377,25 @@
 
   .t-row.passe .who {
     color: var(--craie-3);
+  }
+
+  /*
+   * La maquette n'a aucun contrôle pour quitter : le ticket 09 l'exige. Un
+   * lien discret (style `.link` de la maquette) clôt le journal, sous la
+   * partie vue à l'ouverture, qui reste celle de la maquette.
+   */
+  .quitter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--cible);
+    margin-top: var(--esp-lg);
+    color: var(--craie-2);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--craie-3);
   }
 
   /* Dock de combat */

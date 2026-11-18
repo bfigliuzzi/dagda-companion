@@ -205,7 +205,7 @@ describe("au-delà de 24 objets", () => {
     expect(besaceEnregistree().objets).toHaveLength(25);
     expect(traitsRouges()).toHaveLength(1);
     expect(dansSection().getByRole("note")).toHaveTextContent(
-      "La besace a 24 emplacements. Gardez l'objet si le livre l'autorise, sinon retirez-en un.",
+      "La besace est pleine. L'objet est ajouté quand même : retirez-en un si le livre le demande.",
     );
     // On peut encore en ajouter.
     await ajouter(lecteur, "Encore un");
@@ -297,37 +297,42 @@ describe("la bourse et les boulons", () => {
 describe("sans bourse", () => {
   beforeEach(() => enregistrerAventure({ boulons: 0 }));
 
-  it("le compteur de boulons est désactivé, avec l'explication", () => {
+  it("la ligne dit « Boulons · pas de bourse » avec la seule valeur, sans boutons ± ni compteur", () => {
     render(App);
-    expect(bouton("Retirer un boulon")).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-    expect(bouton("Ajouter un boulon")).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(dansSection().getByText("Boulons · pas de bourse")).toBeVisible();
+    expect(
+      dansSection().queryByRole("button", { name: "Ajouter un boulon" }),
+    ).not.toBeInTheDocument();
+    expect(
+      dansSection().queryByRole("button", { name: "Retirer un boulon" }),
+    ).not.toBeInTheDocument();
     expect(
       dansSection().queryByRole("button", { name: /Boulons, modifier/ }),
     ).not.toBeInTheDocument();
+    expect(lignes()[0]).toHaveTextContent(/^Boulons · pas de bourse\s*0$/);
+  });
+
+  it("l'indice dit qu'il faut une bourse et propose « Compter quand même »", () => {
+    render(App);
     expect(section()).toHaveTextContent(
-      "Il faut une bourse pour transporter des boulons.",
+      "Il faut une bourse pour garder des boulons. Compter quand même",
     );
+    expect(bouton("Compter quand même")).toBeInTheDocument();
   });
 
-  it("un appui sur le « + » éteint ne compte rien", async () => {
+  it("garde la valeur des boulons quand on retire la bourse", async () => {
+    enregistrerAventure({ bourse: true, boulons: 12 });
     render(App);
     const lecteur = userEvent.setup();
-    await lecteur.click(bouton("Ajouter un boulon"));
-    expect(besaceEnregistree().boulons).toBe(0);
+    await lecteur.click(bouton("Retirer la bourse"));
+    expect(lignes()[0]).toHaveTextContent(/^Boulons · pas de bourse\s*12$/);
   });
 
-  it("le lecteur peut forcer le compteur, sans que la bourse prenne un emplacement", async () => {
+  it("le lecteur peut compter quand même, sans que la bourse prenne un emplacement", async () => {
     render(App);
     const lecteur = userEvent.setup();
-    await lecteur.click(bouton("Forcer le compteur"));
+    await lecteur.click(bouton("Compter quand même"));
     expect(besaceEnregistree().boulonsForces).toBe(true);
-    expect(bouton("Ajouter un boulon")).not.toHaveAttribute("aria-disabled");
     await lecteur.click(bouton("Ajouter un boulon"));
     await lecteur.click(bouton("Ajouter un boulon"));
     expect(bouton("Boulons, modifier : 2")).toHaveTextContent("2 boulons");
@@ -335,15 +340,15 @@ describe("sans bourse", () => {
     expect(section()).toHaveTextContent("0 / 24");
   });
 
-  it("le compteur forcé peut se désactiver de nouveau", async () => {
+  it("le lecteur peut ne plus compter après avoir forcé", async () => {
     enregistrerAventure({ boulonsForces: true, boulons: 3 });
     render(App);
     const lecteur = userEvent.setup();
-    await lecteur.click(bouton("Désactiver le compteur"));
+    await lecteur.click(bouton("Ne plus compter"));
     expect(besaceEnregistree().boulonsForces).toBe(false);
-    expect(bouton("Ajouter un boulon")).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(
+      dansSection().queryByRole("button", { name: "Ajouter un boulon" }),
+    ).not.toBeInTheDocument();
+    expect(bouton("Compter quand même")).toBeInTheDocument();
   });
 });
