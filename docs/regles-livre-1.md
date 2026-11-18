@@ -77,6 +77,8 @@ Le lecteur frappe en premier, sauf mention contraire du livre (l'app permet d'in
 2. **Dégâts** (si touché) : la cible perd 1 + 1d6 + bonus de dommage.
 3. **Riposte** : l'ennemi attaque avec les mêmes règles.
 
+*(choix par défaut)* Les dégâts ne sont jamais négatifs : avec un malus de dommage, un coup qui touche retire au moins 0 POINT DE VIE, il ne soigne pas la cible.
+
 Fin : POINTS DE VIE de l'ennemi à 0 → victoire. POINTS DE VIE du lecteur à 0 → le livre indique la suite ; l'app le signale sans rien décider.
 
 Exemple : DEXTÉRITÉ 7, épée courte +1. 2d6 = 5 → touché. 1d6 = 3. Dégâts : 1 + 3 + 1 = 5.

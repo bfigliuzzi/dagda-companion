@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Aventure } from "./aventure";
+import { commencerUnCombat, jouerUnTour } from "./combat";
+import { desFixes } from "./des";
 import { CLE_STOCKAGE, ecrireAventure, lireAventure } from "./stockage";
 
 const herboriste: Aventure = {
@@ -10,6 +12,8 @@ const herboriste: Aventure = {
   armes: [],
   besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
   effets: [],
+  combat: null,
+  combats: [],
   personnage: {
     talent: "Herbologie",
     pointsDeVieMax: 32,
@@ -18,6 +22,20 @@ const herboriste: Aventure = {
     dexterite: 7,
   },
 };
+
+/** Un combat au § 112 après un tour : le lecteur touche (5 dégâts), l'ennemi aussi (5). */
+const unTourAu112 = jouerUnTour(
+  commencerUnCombat(
+    {
+      chapitre: 112,
+      adversaires: 7,
+      ennemi: { dexterite: 7, pointsDeVie: 50, bonus: 0 },
+      premier: "lecteur",
+    },
+    { dexterite: 7, bonus: 1, pointsDeVie: 28, pointsDeVieMax: 32, chance: 4 },
+  ),
+  desFixes(2, 3, 3, 1, 1, 4),
+);
 
 describe("stockage de l'aventure", () => {
   beforeEach(() => localStorage.clear());
@@ -31,10 +49,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 7", () => {
+  it("enregistre l'aventure avec le numéro de version 8", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 7,
+      version: 8,
       aventure: herboriste,
     });
   });
@@ -120,6 +138,55 @@ describe("stockage de l'aventure", () => {
       JSON.stringify({ version: 6, aventure: ancienne }),
     );
     expect(lireAventure(localStorage)).toEqual(herboriste);
+  });
+
+  it("migre un enregistrement de la version 7 : aucun combat en cours ni terminé", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.combat;
+    delete ancienne.combats;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 7, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual(herboriste);
+  });
+
+  it("retrouve le combat en cours et les combats terminés", () => {
+    const enCombat: Aventure = {
+      ...herboriste,
+      combat: unTourAu112,
+      combats: [{ ...unTourAu112, issue: "gagne" }],
+    };
+    ecrireAventure(localStorage, enCombat);
+    expect(lireAventure(localStorage)).toEqual(enCombat);
+  });
+
+  it("ne trouve aucune aventure si un combat est mal formé", () => {
+    const jet = unTourAu112.jets[0];
+    for (const combat of [
+      "combat",
+      { ...unTourAu112, chapitre: 0 },
+      { ...unTourAu112, issue: "fui" },
+      { ...unTourAu112, premier: "personne" },
+      { ...unTourAu112, pointsDeVie: { lecteur: 3 } },
+      { ...unTourAu112, depart: { lecteur: null, ennemi: null } },
+      { ...unTourAu112, jets: [{ ...jet, des: [2] }] },
+      { ...unTourAu112, jets: [{ ...jet, degats: { de: 3 } }] },
+    ]) {
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({ version: 8, aventure: { ...herboriste, combat } }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({
+          version: 8,
+          aventure: { ...herboriste, combats: [combat] },
+        }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+    }
   });
 
   it("retrouve les effets et les rappels enregistrés", () => {

@@ -34,9 +34,14 @@
     /** Les bases, sans les effets. */
     personnage: Personnage;
     effets: readonly Effet[];
+    /**
+     * PV et CHANCE affichés avant un combat, au retour sur la feuille : la
+     * trace de craie montre ce que le combat a changé.
+     */
+    avant?: { pointsDeVie?: number; chance?: number };
   }
 
-  let { personnage = $bindable(), effets }: Props = $props();
+  let { personnage = $bindable(), effets, avant = {} }: Props = $props();
   const id = $props.id();
 
   type Valeur = Exclude<Cible, "degats">;
@@ -89,7 +94,7 @@
       {/if}
     </div>
     <div class="num">
-      <TraceDeCraie valeur={pv} taille="24px" />
+      <TraceDeCraie valeur={pv} taille="24px" depuis={avant.pointsDeVie} />
       <b
         class:critique
         class:vert={!critique && affiche.pointsDeVie.explication !== null}
@@ -154,7 +159,12 @@
           {#if explication}<small class="vert">{explication}</small>{/if}
         </span>
         <span class="valeur">
-          <TraceDeCraie {valeur} taille="20px" barre="2px" />
+          <TraceDeCraie
+            {valeur}
+            taille="20px"
+            barre="2px"
+            depuis={cible === "chance" ? avant.chance : undefined}
+          />
           <b class:vert={explication !== null}>
             <ValeurEditable
               {valeur}

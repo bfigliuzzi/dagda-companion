@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   deAuHasard,
+  deDeLaGraine,
   desFixes,
   lancerDes,
   tirerChance,
@@ -55,5 +56,18 @@ describe("lancer des dés", () => {
 
   it("lance 1d6 : un seul dé est tiré", () => {
     expect(lancerDes(desFixes(3, 6), 1)).toEqual([3]);
+  });
+});
+
+describe("graine de dés (mode test seulement)", () => {
+  it("rejoue les faces indiquées, dans l'ordre, puis recommence", () => {
+    const de = deDeLaGraine("5,3,6")!;
+    expect([de(), de(), de(), de()]).toEqual([5, 3, 6, 5]);
+  });
+
+  it("n'existe pas sans graine, ou avec une graine qui n'est pas une suite de faces de 1 à 6", () => {
+    for (const graine of [null, "", "7", "2,a", "0,1", "1,,2"]) {
+      expect(deDeLaGraine(graine)).toBeNull();
+    }
   });
 });

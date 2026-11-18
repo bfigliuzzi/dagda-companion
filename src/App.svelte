@@ -3,13 +3,29 @@
   import Besace from "./lib/Besace.svelte";
   import BlocVital from "./lib/BlocVital.svelte";
   import DockDeDes from "./lib/DockDeDes.svelte";
+  import EcranDeCombat from "./lib/EcranDeCombat.svelte";
   import Effets from "./lib/Effets.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
+  import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
+  import ResultatDuCombat from "./lib/ResultatDuCombat.svelte";
   import { resume, type Aventure } from "./lib/aventure";
+  import {
+    commencerUnCombat,
+    ficheDuLecteur,
+    interrompreLeCombat,
+    jouerJusquALaFin,
+    jouerUnTour,
+    type Combat,
+    type NouveauCombat as Nouveau,
+  } from "./lib/combat";
   import { deAuHasard, type De } from "./lib/des";
-  import { baseApres, valeurEffective } from "./lib/valeursEffectives";
+  import {
+    baseApres,
+    valeurEffective,
+    valeursEffectives,
+  } from "./lib/valeursEffectives";
   import { garderEcranAllume } from "./lib/ecranAllume";
   import { ecrireAventure, lireAventure } from "./lib/stockage";
 
@@ -28,9 +44,97 @@
   });
 
   $effect(garderEcranAllume);
+
+  /*
+   * LE COMBAT. Le combat en cours vit dans l'aventure (il se retrouve après
+   * rechargement) ; « Nouveau combat » et l'écran de résultat sont de simples
+   * écrans, oubliés au rechargement.
+   */
+  let saisieDuCombat = $state(false);
+  /** Le combat qui vient de finir, montré par l'écran de résultat. */
+  let resultat = $state<Combat | null>(null);
+  /** PV et CHANCE d'avant le combat : la trace de craie au retour sur la feuille. */
+  let avantLeCombat = $state<{ pointsDeVie?: number; chance?: number }>({});
+
+  /** Le prochain écran s'ouvre en haut de la page. */
+  function remonter() {
+    document.documentElement.scrollTop = 0;
+  }
+
+  function ouvrirLeCombat() {
+    avantLeCombat = {};
+    saisieDuCombat = true;
+    remonter();
+  }
+
+  function commencer(nouveau: Nouveau) {
+    saisieDuCombat = false;
+    suivre(
+      commencerUnCombat(nouveau, ficheDuLecteur(valeursEffectives(aventure!))),
+    );
+  }
+
+  /**
+   * Les PV et la CHANCE de la feuille suivent ceux du combat après chaque
+   * tour. Ce sont des valeurs affichées : elles s'enregistrent dans la base
+   * (valeursEffectives.ts). Fini, le combat rejoint l'historique.
+   */
+  function suivre(combat: Combat) {
+    const { personnage, effets } = aventure!;
+    personnage.pointsDeVie = baseApres(
+      "pointsDeVie",
+      combat.pointsDeVie.lecteur,
+      effets,
+    );
+    personnage.chance = baseApres("chance", combat.chance, effets);
+    if (combat.issue === null) {
+      aventure!.combat = combat;
+      return;
+    }
+    aventure!.combat = null;
+    aventure!.combats.push(combat);
+    resultat = combat;
+    remonter();
+  }
+
+  /** Retour sur la feuille : la trace de craie montre ce que le combat a changé. */
+  function revenirALaFeuille({ depart }: Combat) {
+    avantLeCombat = {
+      pointsDeVie: depart.lecteur.pointsDeVie,
+      chance: depart.lecteur.chance,
+    };
+    resultat = null;
+    remonter();
+  }
+
+  /** Le lecteur quitte en cours : ce qui a été joué reste acquis et noté. */
+  function quitter(combat: Combat) {
+    aventure!.combat = null;
+    if (combat.jets.length > 0)
+      aventure!.combats.push(interrompreLeCombat(combat));
+    revenirALaFeuille(combat);
+  }
 </script>
 
-{#if aventure}
+{#if aventure?.combat}
+  {@const combat = aventure.combat}
+  <EcranDeCombat
+    {combat}
+    ontour={() => suivre(jouerUnTour(combat, de))}
+    onfinir={() => suivre(jouerJusquALaFin(combat, de))}
+    onquitter={() => quitter(combat)}
+  />
+{:else if aventure && resultat}
+  {@const combat = resultat}
+  <ResultatDuCombat {combat} onretour={() => revenirALaFeuille(combat)} />
+{:else if aventure && saisieDuCombat}
+  <NouveauCombat
+    chapitre={aventure.chapitre}
+    lecteur={ficheDuLecteur(valeursEffectives(aventure))}
+    oncommencer={commencer}
+    onannuler={() => (saisieDuCombat = false)}
+  />
+{:else if aventure}
   {@const chance = valeurEffective(
     "chance",
     aventure.personnage.chance,
@@ -42,8 +146,16 @@
       chapitre={aventure.chapitre}
       onchapitre={(chapitre) => (aventure!.chapitre = chapitre)}
     />
-    <BlocVital bind:personnage={aventure.personnage} effets={aventure.effets} />
-    <Armes bind:armes={aventure.armes} effets={aventure.effets} />
+    <BlocVital
+      bind:personnage={aventure.personnage}
+      effets={aventure.effets}
+      avant={avantLeCombat}
+    />
+    <Armes
+      bind:armes={aventure.armes}
+      effets={aventure.effets}
+      oncombattre={ouvrirLeCombat}
+    />
     <Effets
       bind:effets={aventure.effets}
       bind:personnage={aventure.personnage}

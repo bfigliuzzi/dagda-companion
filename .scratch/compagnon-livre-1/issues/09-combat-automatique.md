@@ -10,12 +10,12 @@ Références : `docs/regles-livre-1.md` (Combat), `DESIGN.md` (Combat, Hints : b
 
 **Status:** ready-for-agent
 
-- [ ] Le formulaire « Nouveau combat » demande le chapitre, la DEX, les PV et le bonus de l'ennemi, et qui frappe en premier.
-- [ ] Chaque tour suit l'ordre : toucher, dégâts si touché, riposte.
-- [ ] Le combat utilise la DEX effective et le bonus de dommage effectif (armes + effets) du lecteur.
-- [ ] Le journal affiche chaque jet ; tour en cours en clair, tours passés en craie grise, dégâts subis en rouge.
-- [ ] Les PV du lecteur sur la feuille baissent avec les dégâts reçus, avec la trace de craie.
-- [ ] En état critique, le bandeau rouge encadré s'affiche.
-- [ ] Ennemi à 0 PV → « Gagné » ; lecteur à 0 PV → « Perdu » et rappel que le livre indique la suite.
-- [ ] Le lecteur peut quitter un combat en cours ; l'état reste cohérent.
-- [ ] Le moteur est testé avec des dés fixés, dont l'exemple du livre (DEX 7, épée courte +1, 2d6 = 5, 1d6 = 3 → 5 dégâts).
+- [x] Le formulaire « Nouveau combat » demande le chapitre, la DEX, les PV et le bonus de l'ennemi, et qui frappe en premier.
+- [x] Chaque tour suit l'ordre : toucher, dégâts si touché, riposte.
+- [x] Le combat utilise la DEX effective et le bonus de dommage effectif (armes + effets) du lecteur.
+- [x] Le journal affiche chaque jet ; tour en cours en clair, tours passés en craie grise, dégâts subis en rouge.
+- [x] Les PV du lecteur sur la feuille baissent avec les dégâts reçus, avec la trace de craie.
+- [x] En état critique, le bandeau rouge encadré s'affiche.
+- [x] Ennemi à 0 PV → « Gagné » ; lecteur à 0 PV → « Perdu » et rappel que le livre indique la suite.
+- [x] Le lecteur peut quitter un combat en cours ; l'état reste cohérent.
+- [x] Le moteur est testé avec des dés fixés, dont l'exemple du livre (DEX 7, épée courte +1, 2d6 = 5, 1d6 = 3 → 5 dégâts).

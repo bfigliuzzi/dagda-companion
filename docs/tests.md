@@ -48,7 +48,7 @@ Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite b
 - un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure ;
 - la trace de craie : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime (jsdom ne calcule pas les animations CSS).
 
-Pour fixer les dés dans le navigateur, l'app accepte une graine de dés (valeur de départ qui rend les tirages reproductibles) lue seulement en mode test. Le ticket qui pose le moteur de dés en fixe la forme.
+Pour fixer les dés dans le navigateur, l'app accepte une graine de dés (valeur de départ qui rend les tirages reproductibles) lue seulement en mode test : une suite de faces dans l'adresse, `/?graine=4,4,3,1,1,4`, rejouée dans l'ordre puis en boucle (`deDeLaGraine` dans `src/lib/des.ts`). Seule l'app construite avec `vite build --mode test`, celle que lance Playwright, la lit ; l'app publiée tire toujours au hasard.
 
 Un nouveau scénario s'ajoute seulement pour un ticket qui touche au vrai navigateur.
 

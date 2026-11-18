@@ -18,10 +18,13 @@
    * Props :
    * - `valeur` (obligatoire) : la valeur courante, nombre ou texte. Le
    *   composant la surveille : à chaque changement il affiche l'ancienne.
-   *   Rien ne s'affiche à l'ouverture ni quand la valeur reste la même.
+   *   Rien ne s'affiche à l'ouverture (sauf avec `depuis`) ni quand la valeur reste la même.
    * - `taille` : corps du texte barré (« 24px », « 36px »). Hérité par défaut.
    * - `barre` : épaisseur du trait de barre, « 3px » par défaut (« 2px »
    *   dans une ligne de liste).
+   * - `depuis` : la valeur d'avant, quand elle a changé pendant que le
+   *   composant n'était pas affiché (les PV perdus en combat, montrés au
+   *   retour sur la feuille). La trace se joue dès l'ouverture si elle diffère.
    *
    * Règles :
    * - Si la valeur change encore pendant que la trace est visible, la trace
@@ -39,13 +42,14 @@
     valeur: number | string;
     taille?: string;
     barre?: string;
+    depuis?: number | string;
   }
 
-  let { valeur, taille, barre = "3px" }: Props = $props();
+  let { valeur, taille, barre = "3px", depuis }: Props = $props();
 
   /** `n` change à chaque trace pour que le fondu reparte de zéro. */
   let trace = $state<{ ancienne: string; n: number } | null>(null);
-  let precedente = untrack(() => String(valeur));
+  let precedente = untrack(() => String(depuis ?? valeur));
   let compteur = 0;
   let minuteur: ReturnType<typeof setTimeout> | undefined;
 

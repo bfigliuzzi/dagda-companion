@@ -10,7 +10,9 @@ export default defineConfig({
   },
   projects: [{ name: "pixel-7", use: { ...devices["Pixel 7"] } }],
   webServer: {
-    command: "npm run build && npm run preview -- --port 4173 --strictPort",
+    command:
+      // Mode test : l'app lit la graine de dés de l'adresse (voir src/lib/des.ts).
+      "npm run build -- --mode test && npm run preview -- --port 4173 --strictPort",
     url: "http://localhost:4173",
     reuseExistingServer: false,
     timeout: 120_000,

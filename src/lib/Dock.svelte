@@ -4,10 +4,13 @@
    * opaque (70 %) vers le transparent pour que la feuille passe dessous. C'est
    * le seul élément fixe de la feuille (DESIGN.md, « Éléments fixes »).
    *
-   * Emploi : poser le ou les boutons entre les balises. Le dock de la feuille
-   * porte « Lancer les dés ». Le dock des écrans de combat (ticket 09), sur
-   * fond noir plein avec un filet `trait` en haut, pourra reprendre ce
-   * composant avec une variante.
+   * Emploi : poser le ou les boutons entre les balises, empilés (écart 4 px).
+   * Le dock de la feuille porte « Lancer les dés » ; ceux de « Nouveau
+   * combat » et du résultat portent leur bouton de validation.
+   *
+   * Variante `combat` : le dock de l'écran de combat, deux boutons côte à côte
+   * (1fr / 1.35fr, écart 10 px) sur fond noir plein avec un filet `trait` en
+   * haut (DESIGN.md, « Éléments fixes »).
    *
    * La page qui l'emploie garde de la place en bas pour ne rien cacher
    * (voir `.feuille` dans App.svelte).
@@ -16,12 +19,13 @@
 
   interface Props {
     children: Snippet;
+    variante?: "degrade" | "combat";
   }
 
-  let { children }: Props = $props();
+  let { children, variante = "degrade" }: Props = $props();
 </script>
 
-<div class="dock">
+<div class="dock" class:combat={variante === "combat"}>
   <div class="contenu">{@render children()}</div>
 </div>
 
@@ -37,9 +41,21 @@
     background: linear-gradient(to top, var(--noir) 70%, rgb(0 0 0 / 0));
   }
 
+  .dock.combat {
+    background: var(--noir);
+    border-top: 1px solid var(--trait);
+  }
+
   /* Aligné sur la colonne de la feuille. */
   .contenu {
+    display: grid;
+    gap: var(--esp-hair);
     max-width: calc(480px - 2 * var(--gutter));
     margin: 0 auto;
+  }
+
+  .combat .contenu {
+    grid-template-columns: 1fr 1.35fr;
+    gap: 10px;
   }
 </style>

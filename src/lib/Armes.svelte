@@ -30,9 +30,11 @@
   interface Props {
     armes: Arme[];
     effets: readonly Effet[];
+    /** « Combattre » : le livre lance un combat. */
+    oncombattre: () => void;
   }
 
-  let { armes = $bindable(), effets }: Props = $props();
+  let { armes = $bindable(), effets, oncombattre }: Props = $props();
   const id = $props.id();
 
   const depasse = $derived(portePlusDArmesQueLesRegles(armes));
@@ -191,6 +193,14 @@
         </svg>
         Ajouter une arme
       </button>
+      <button class="inline-act" type="button" onclick={oncombattre}>
+        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+          <path
+            d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"
+          />
+        </svg>
+        Combattre
+      </button>
     </div>
   {/if}
 </section>
@@ -319,6 +329,22 @@
     font-weight: 700;
   }
   .add svg {
+    width: 18px;
+    height: 18px;
+  }
+  /* Action en ligne : pilule à contour craie. */
+  .inline-act {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-sm);
+    min-height: var(--cible);
+    padding: 0 14px;
+    border: 2px solid var(--craie);
+    border-radius: var(--rayon-pill);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .inline-act svg {
     width: 18px;
     height: 18px;
   }

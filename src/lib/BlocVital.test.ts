@@ -16,6 +16,8 @@ function enregistrerPersonnage(changement: Partial<Personnage> = {}) {
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
     effets: [],
+    combat: null,
+    combats: [],
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,

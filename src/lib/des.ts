@@ -16,6 +16,20 @@ export function desFixes(...valeurs: number[]): De {
   return () => valeurs[rang++ % valeurs.length];
 }
 
+/**
+ * LA GRAINE DE DÉS des tests de bout en bout : une suite de faces séparées
+ * par des virgules (« 5,3,6 »), rejouée en boucle comme `desFixes`. Elle se
+ * passe dans l'adresse (`/?graine=5,3,6`) et n'est lue que dans l'app
+ * construite en mode test (`vite build --mode test`, voir main.ts) : l'app
+ * publiée tire toujours ses dés au hasard.
+ *
+ * `null` sans graine ou si elle n'est pas une suite de faces de 1 à 6.
+ */
+export function deDeLaGraine(graine: string | null): De | null {
+  if (graine === null || !/^[1-6](,[1-6])*$/.test(graine)) return null;
+  return desFixes(...graine.split(",").map(Number));
+}
+
 /** POINTS DE VIE max à la création : 2d6 × 4. `obtenu` est le total des 2d6. */
 export function tirerPointsDeVieMax(de: De): {
   obtenu: number;

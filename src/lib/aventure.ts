@@ -2,6 +2,7 @@
  * L'aventure telle que l'app la tient : le personnage, le mode de jeu et le
  * dernier chapitre lu. Règles : docs/regles-livre-1.md.
  */
+import { estUnCombat, type Combat } from "./combat";
 import { estUnEffet, type Effet } from "./valeursEffectives";
 
 export const TALENTS = [
@@ -135,6 +136,10 @@ export interface Aventure {
   besace: Besace;
   /** Effets temporaires et rappels, dans l'ordre où le lecteur les a ajoutés (voir valeursEffectives.ts). */
   effets: Effet[];
+  /** Le combat en cours (voir combat.ts), `null` hors combat : il se retrouve après rechargement. */
+  combat: Combat | null;
+  /** Les combats terminés ou quittés, du plus ancien au plus récent. */
+  combats: Combat[];
   /**
    * Les valeurs de BASE du personnage, sans les effets. La feuille, le combat
    * et la CHANCE emploient les valeurs effectives (valeursEffectives.ts).
@@ -200,6 +205,8 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     armes: [],
     besace: besaceVide(),
     effets: [],
+    combat: null,
+    combats: [],
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -283,6 +290,8 @@ export function recopierAventure(recopie: Recopie): Aventure {
     armes: [],
     besace: besaceVide(),
     effets: [],
+    combat: null,
+    combats: [],
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -367,6 +376,8 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     armes,
     besace,
     effets,
+    combat,
+    combats,
   } = valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
@@ -377,6 +388,9 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     estUneBesace(besace) &&
     Array.isArray(effets) &&
     effets.every(estUnEffet) &&
+    (combat === null || estUnCombat(combat)) &&
+    Array.isArray(combats) &&
+    combats.every(estUnCombat) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );

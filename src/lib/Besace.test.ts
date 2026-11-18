@@ -15,6 +15,8 @@ function enregistrerAventure(partiel: Partial<Besace> = {}) {
     armes: [],
     besace: { ...besaceVide(), ...partiel },
     effets: [],
+    combat: null,
+    combats: [],
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,
