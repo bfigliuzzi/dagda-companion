@@ -2,43 +2,11 @@ import { render, screen, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
-import type { Arme, Personnage } from "./aventure";
+
 import { desFixes } from "./des";
 import type { Effet } from "./valeursEffectives";
-import { CLE_STOCKAGE, ecrireAventure } from "./stockage";
-
-/** Une aventure en cours : PV 28 / 32, CHANCE 4, DEX 7, sans arme ni effet. */
-function enregistrerAventure({
-  effets = [],
-  armes = [],
-  personnage = {},
-}: {
-  effets?: Effet[];
-  armes?: Arme[];
-  personnage?: Partial<Personnage>;
-} = {}) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes,
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets,
-    combat: null,
-    combats: [],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-      ...personnage,
-    },
-  });
-}
+import { CLE_STOCKAGE } from "./stockage";
+import { enregistrerAventure } from "./test/uneAventure";
 
 const potion: Effet = {
   nom: "Potion d'agilité",

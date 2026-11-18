@@ -3,29 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { desFixes } from "./des";
-import { CLE_STOCKAGE, ecrireAventure } from "./stockage";
+import { CLE_STOCKAGE } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 
 function enregistrerAventure(chance = 4) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets: [],
-    combat: null,
-    combats: [],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance,
-      dexterite: 7,
-    },
-  });
+  enregistrer({ personnage: { chance } });
 }
 
 const chanceEnregistree = () =>

@@ -46,9 +46,14 @@ export function resumeDeLHistorique(
   ].join(" · ");
 }
 
+/** Le bonus au bout d'une formule de dégâts : « + 1 », « − 2 », rien sans bonus. */
+export function termeDuBonus(bonus: number): string {
+  if (bonus > 0) return ` + ${bonus}`;
+  if (bonus < 0) return ` − ${-bonus}`;
+  return "";
+}
+
 /** Les dégâts d'un coup : « 1 + 1 dé », « 1 + 1 dé + 1 », « 1 + 1 dé − 2 ». */
 export function formuleDeDegats(bonus: number): string {
-  if (bonus > 0) return `1 + 1 dé + ${bonus}`;
-  if (bonus < 0) return `1 + 1 dé − ${-bonus}`;
-  return "1 + 1 dé";
+  return `1 + 1 dé${termeDuBonus(bonus)}`;
 }

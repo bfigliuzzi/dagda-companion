@@ -1,0 +1,102 @@
+<script lang="ts">
+  /**
+   * Le panneau de confirmation : un indice qui dit ce qui va se passer
+   * (icône jaune d'information ou rouge d'avertissement), le bouton jaune plein
+   * qui valide et « Annuler » en secondaire. Rien ne se passe avant l'appui sur
+   * le bouton jaune ; fermer (croix, voile, Échap) ou « Annuler » laisse tout
+   * comme c'était. Le texte arrive en contenu ; ConfirmerLaReprise et
+   * ConfirmerLeRecommencement lui donnent les mots de chaque cas.
+   */
+  import type { Snippet } from "svelte";
+  import Panneau from "./Panneau.svelte";
+
+  interface Props {
+    titre: string;
+    /** `info` : icône jaune. `alerte` : icône rouge, pour ce qui efface. */
+    icone: "info" | "alerte";
+    /** Le libellé du bouton jaune. */
+    confirmer: string;
+    onconfirmer: () => void;
+    onfermer: () => void;
+    children: Snippet;
+  }
+
+  let { titre, icone, confirmer, onconfirmer, onfermer, children }: Props =
+    $props();
+</script>
+
+<Panneau {titre} {onfermer}>
+  <div class="hint" class:alerte={icone === "alerte"}>
+    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+      {#if icone === "alerte"}
+        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
+      {:else}
+        <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
+      {/if}
+    </svg>
+    <span>{@render children()}</span>
+  </div>
+  <div class="btns">
+    <button class="cta" type="button" onclick={onconfirmer}>
+      {confirmer}
+    </button>
+    <button class="ghost" type="button" onclick={onfermer}>Annuler</button>
+  </div>
+</Panneau>
+
+<style>
+  /* Indice non bloquant : voir DESIGN.md, « Hints ». */
+  .hint {
+    display: flex;
+    gap: 10px;
+    margin-top: var(--esp-md);
+    padding: 10px 0 0;
+    border-top: 2px solid var(--trait);
+    font-size: 14px;
+    color: var(--craie-2);
+  }
+  .hint svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--jaune);
+  }
+  .hint.alerte svg {
+    color: var(--rouge);
+  }
+  .hint :global(b) {
+    color: var(--craie);
+  }
+
+  .btns {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 58px;
+    background: var(--jaune);
+    border: 2px solid var(--jaune);
+    border-radius: var(--r);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--noir);
+  }
+  /* Bouton secondaire : contour `trait`, texte craie 700, 52 px. */
+  .ghost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    border: 2px solid var(--trait);
+    border-radius: var(--r);
+    font-weight: 700;
+    color: var(--craie);
+  }
+</style>

@@ -379,11 +379,6 @@ export function portePlusDArmesQueLesRegles(armes: readonly Arme[]): boolean {
   return armes.length > ARMES_MAX;
 }
 
-/** Un bonus écrit avec son signe : « +1 », « +0 », « −2 ». */
-export function formaterUnBonus(bonus: number): string {
-  return bonus < 0 ? `−${-bonus}` : `+${bonus}`;
-}
-
 /** Sous ce nombre de POINTS DE VIE, le lecteur est en état critique (moins de 7). */
 export const SEUIL_CRITIQUE = 7;
 

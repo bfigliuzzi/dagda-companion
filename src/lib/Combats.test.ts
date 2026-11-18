@@ -11,7 +11,8 @@ import {
   type Combat,
 } from "./combat";
 import { desFixes, type De } from "./des";
-import { ecrireAventure, lireAventure } from "./stockage";
+import { lireAventure } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 
 /** Une fiche de lecteur : DEX 7, 32 PV max, CHANCE 4, bonus de dommage +1. */
 const lecteur = (pointsDeVie: number) => ({
@@ -69,26 +70,7 @@ const interrompu = combat(
 
 /** Du plus ancien au plus récent : § 112, 98, 61, 40. */
 function enregistrerAventure(combats: Combat[]) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [{ nom: "Épée courte", bonus: 1 }],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets: [],
-    combat: null,
-    combats,
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
-  });
+  enregistrer({ armes: [{ nom: "Épée courte", bonus: 1 }], combats });
 }
 
 function ouvrirLApp(de: De = desFixes(6, 6)) {

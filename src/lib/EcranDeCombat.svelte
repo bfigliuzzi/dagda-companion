@@ -10,14 +10,9 @@
    * remonte les appuis. Les règles sont dans combat.ts.
    */
   import { estCritique } from "./aventure";
-  import {
-    ennemiAchevable,
-    toursJoues,
-    type Combat,
-    type Degats,
-    type Jet,
-  } from "./combat";
+  import { ennemiAchevable, toursJoues, type Combat, type Jet } from "./combat";
   import Dock from "./Dock.svelte";
+  import { termeDuBonus } from "./historique";
   import TraceDeCraie from "./TraceDeCraie.svelte";
 
   interface Props {
@@ -49,11 +44,6 @@
     if (jet.attaquant === "lecteur")
       return enPremier ? "VOUS ATTAQUEZ" : "VOUS RIPOSTEZ";
     return enPremier ? "L'ENNEMI ATTAQUE" : "L'ENNEMI RIPOSTE";
-  }
-
-  /** Le bonus de la formule des dégâts : « + 1 », « − 1 », rien sans bonus. */
-  function bonus({ bonus }: Degats): string {
-    return bonus > 0 ? ` + ${bonus}` : bonus < 0 ? ` − ${-bonus}` : "";
   }
 
   /** Le texte du badge : « 1 CHANCE dépensée automatiquement ». */
@@ -153,7 +143,7 @@
               )}{/if} <b>{jet.total}</b>, touché. Dégâts 1 + {#if jet.degats.chance > 0}{@render ancienne(
                 jet.degats.de,
               )}{/if}
-            {jet.degats.de + jet.degats.chance}{bonus(jet.degats)} =
+            {jet.degats.de + jet.degats.chance}{termeDuBonus(jet.degats.bonus)} =
             <b>{jet.degats.total}</b>.
             {#if jet.pointsDeVie === 0}Ennemi achevé.{:else if ennemiAchevable(jet.pointsDeVie, combat.depart.lecteur.bonus)}Ennemi
               achevable.{/if}
@@ -170,7 +160,7 @@
         {:else}
           <div class="what">
             2 dés = <b>{jet.total}</b>, touché. Dégâts 1 + {jet.degats
-              .de}{bonus(jet.degats)} =
+              .de}{termeDuBonus(jet.degats.bonus)} =
             <span data-etat="subis">−{jet.degats.total} PV</span>
           </div>
         {/if}

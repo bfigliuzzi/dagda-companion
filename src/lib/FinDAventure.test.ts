@@ -2,10 +2,14 @@ import { cleanup, render, screen, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import App from "../App.svelte";
-import type { Aventure, Mode } from "./aventure";
+import type { Mode } from "./aventure";
 import { combatNarratif } from "./combat";
 import { desFixes, type De } from "./des";
-import { CLE_STOCKAGE, ecrireAventure, lireAventure } from "./stockage";
+import { CLE_STOCKAGE, lireAventure } from "./stockage";
+import {
+  enregistrerAventure as enregistrer,
+  type Surcharges,
+} from "./test/uneAventure";
 
 type Lecteur = ReturnType<typeof userEvent.setup>;
 
@@ -17,14 +21,10 @@ type Lecteur = ReturnType<typeof userEvent.setup>;
 function enregistrerAventure(
   mode: Mode = "mortel",
   pointsDeVie = 28,
-  changement: Partial<Aventure> = {},
+  changement: Surcharges = {},
 ) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
+  enregistrer({
     mode,
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
     notes: "Piège au 74.",
     armes: [{ nom: "Épée courte", bonus: 1 }],
     besace: {
@@ -36,15 +36,8 @@ function enregistrerAventure(
     effets: [
       { nom: "Potion d'agilité", duree: "24 h", cible: "dexterite", valeur: 1 },
     ],
-    combat: null,
     combats: [combatNarratif(98, 1, "gagne")],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie,
-      chance: 4,
-      dexterite: 7,
-    },
+    personnage: { pointsDeVie },
     ...changement,
   });
 }

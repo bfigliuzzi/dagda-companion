@@ -15,8 +15,8 @@
     type Cible,
     type Effet,
   } from "./valeursEffectives";
-  import { formaterUnBonus } from "./aventure";
   import Panneau from "./Panneau.svelte";
+  import { formaterUnBonus } from "./signes";
 
   interface Props {
     personnage: Personnage;

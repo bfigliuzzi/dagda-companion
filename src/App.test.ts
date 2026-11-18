@@ -2,28 +2,19 @@ import { render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App.svelte";
-import { ecrireAventure } from "./lib/stockage";
+
+import { enregistrerAventure as enregistrer } from "./lib/test/uneAventure";
 
 /** Une aventure déjà commencée : l'app ouvre directement la feuille. */
 function enregistrerAventure() {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
+  enregistrer({
     chapitre: 1,
     mode: "narratif",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets: [],
-    combat: null,
-    combats: [],
     personnage: {
       talent: "Instinct",
       pointsDeVieMax: 24,
       pointsDeVie: 24,
       chance: 3,
-      dexterite: 7,
     },
   });
 }

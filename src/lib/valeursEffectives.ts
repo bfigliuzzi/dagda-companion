@@ -19,11 +19,11 @@
  */
 import {
   bonusDeDegatsDesArmes,
-  formaterUnBonus,
   type Arme,
   type Aventure,
   type Personnage,
 } from "./aventure";
+import { formaterUnBonus, formaterUnNombre } from "./signes";
 
 /** Ce qu'un effet peut changer. */
 export type Cible =
@@ -209,11 +209,6 @@ export function retirerUnEffet(
   return { personnage: apres, effets: restants };
 }
 
-/** Un nombre écrit avec le vrai signe moins : « 7 », « −2 ». */
-function ecrire(nombre: number): string {
-  return nombre < 0 ? `−${-nombre}` : String(nombre);
-}
-
 /** Le premier mot du nom, en minuscules : « Potion d'agilité » devient « potion ». */
 function nomCourt(effet: Effet): string {
   return effet.nom.trim().split(/\s+/)[0].toLocaleLowerCase("fr");
@@ -231,7 +226,7 @@ export function explication(
 ): string | null {
   const concernes = effetsSur(cible, effets);
   if (concernes.length === 0) return null;
-  const ecrireLaBase = cible === "degats" ? formaterUnBonus : ecrire;
+  const ecrireLaBase = cible === "degats" ? formaterUnBonus : formaterUnNombre;
   return [
     `base ${ecrireLaBase(base)}`,
     ...concernes.map(

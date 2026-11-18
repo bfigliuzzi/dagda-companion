@@ -5,7 +5,8 @@ import App from "../App.svelte";
 import type { Arme, Personnage } from "./aventure";
 import type { Combat } from "./combat";
 import { desFixes, type De } from "./des";
-import { ecrireAventure, lireAventure } from "./stockage";
+import { lireAventure } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 import type { Effet } from "./valeursEffectives";
 
 const epeeCourte: Arme = { nom: "Épée courte", bonus: 1 };
@@ -26,27 +27,7 @@ function enregistrerAventure({
   effets?: Effet[];
   personnage?: Partial<Personnage>;
 } = {}) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes,
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets,
-    combat: null,
-    combats: [],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-      ...personnage,
-    },
-  });
+  enregistrer({ armes, effets, personnage });
 }
 
 const bouton = (nom: string | RegExp) =>

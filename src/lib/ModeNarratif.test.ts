@@ -5,33 +5,15 @@ import App from "../App.svelte";
 import type { Mode } from "./aventure";
 import { combatNarratif, type CombatDeLHistorique } from "./combat";
 import { desFixes, type De } from "./des";
-import { ecrireAventure, lireAventure } from "./stockage";
+import { lireAventure } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 
 /** Une aventure au § 112 : PV 28 / 32, CHANCE 4, DEX 7, l'épée courte (+1). */
 function enregistrerAventure(
   mode: Mode = "narratif",
   combats: CombatDeLHistorique[] = [],
 ) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode,
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [{ nom: "Épée courte", bonus: 1 }],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets: [],
-    combat: null,
-    combats,
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
-  });
+  enregistrer({ mode, armes: [{ nom: "Épée courte", bonus: 1 }], combats });
 }
 
 function ouvrirLApp(de: De = desFixes(6, 6)) {

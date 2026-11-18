@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ajusterLeTotal,
-  changerLAjustement,
-  formaterUnAjustement,
-} from "./chance";
+import { ajusterLeTotal, changerLAjustement } from "./chance";
 
 describe("ajuster un total avec la CHANCE", () => {
   it("exemple du livre : il faut 5, le dé donne 3, 2 points de CHANCE règlent le total sur 5", () => {
@@ -94,13 +90,5 @@ describe("pas à pas de l'ajustement", () => {
   it("ne bouge pas sans CHANCE", () => {
     expect(changerLAjustement(0, 1, 0)).toBe(0);
     expect(changerLAjustement(0, -1, 0)).toBe(0);
-  });
-});
-
-describe("écrire un ajustement", () => {
-  it("met le signe : « +1 », « −2 », et « 0 » sans ajustement", () => {
-    expect(formaterUnAjustement(1)).toBe("+1");
-    expect(formaterUnAjustement(-2)).toBe("−2");
-    expect(formaterUnAjustement(0)).toBe("0");
   });
 });

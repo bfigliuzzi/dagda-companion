@@ -13,12 +13,7 @@
   import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
   import ResultatDuCombat from "./lib/ResultatDuCombat.svelte";
-  import {
-    apresLaMort,
-    proposeDeRecommencer,
-    resume,
-    type Aventure,
-  } from "./lib/aventure";
+  import { apresLaMort, resume, type Aventure } from "./lib/aventure";
   import {
     commencerUnCombat,
     ficheDuLecteur,
@@ -162,18 +157,14 @@
   let propositionIgnoree = $state(false);
 
   $effect(() => {
-    if (
-      aventure &&
-      !proposeDeRecommencer(
-        "mortel",
-        valeurEffective(
-          "pointsDeVie",
-          aventure.personnage.pointsDeVie,
-          aventure.effets,
-        ),
-      )
-    )
-      propositionIgnoree = false;
+    if (!aventure) return;
+    const pointsDeVie = valeurEffective(
+      "pointsDeVie",
+      aventure.personnage.pointsDeVie,
+      aventure.effets,
+    );
+    // Tant que les PV sont au-dessus de 0, il n'y a plus de proposition à ignorer.
+    if (pointsDeVie > 0) propositionIgnoree = false;
   });
 
   function toutOublierDeLEcran() {

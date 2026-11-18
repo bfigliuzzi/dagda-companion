@@ -14,11 +14,11 @@
     ARMES_MAX,
     bonusDeDegatsDesArmes,
     estUnBonusDeDegats,
-    formaterUnBonus,
     portePlusDArmesQueLesRegles,
     type Arme,
   } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
+  import { formaterUnBonus } from "./signes";
   import {
     explication,
     valeurEffective,

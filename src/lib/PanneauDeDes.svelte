@@ -10,14 +10,11 @@
    *
    * Les dés sont injectés (`de`) pour jouer le panneau avec des dés fixés.
    */
-  import {
-    ajusterLeTotal,
-    changerLAjustement,
-    formaterUnAjustement,
-  } from "./chance";
+  import { ajusterLeTotal, changerLAjustement } from "./chance";
   import { lancerDes, totalDesDes, type De } from "./des";
   import DeDessine from "./DeDessine.svelte";
   import Panneau from "./Panneau.svelte";
+  import { formaterUnAjustement } from "./signes";
 
   interface Props {
     de: De;

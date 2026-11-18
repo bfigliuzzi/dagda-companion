@@ -3,29 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { besaceVide, type Besace } from "./aventure";
-import { CLE_STOCKAGE, ecrireAventure } from "./stockage";
+import { CLE_STOCKAGE } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 
 function enregistrerAventure(partiel: Partial<Besace> = {}) {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [],
-    besace: { ...besaceVide(), ...partiel },
-    effets: [],
-    combat: null,
-    combats: [],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
-  });
+  enregistrer({ besace: { ...besaceVide(), ...partiel } });
 }
 
 const objets = (n: number) => Array.from({ length: n }, (_, i) => `Objet ${i}`);

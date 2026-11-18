@@ -2,29 +2,11 @@ import { render, screen } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
-import { CLE_STOCKAGE, ecrireAventure } from "./stockage";
+import { CLE_STOCKAGE } from "./stockage";
+import { enregistrerAventure as enregistrer } from "./test/uneAventure";
 
 function enregistrerAventure(notes = "") {
-  localStorage.clear();
-  ecrireAventure(localStorage, {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes,
-    armes: [],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    effets: [],
-    combat: null,
-    combats: [],
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
-  });
+  enregistrer({ notes });
 }
 
 const zone = () => screen.getByRole("textbox", { name: "Notes" });

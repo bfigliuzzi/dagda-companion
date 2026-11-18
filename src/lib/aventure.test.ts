@@ -17,7 +17,6 @@ import {
   portePlusDObjetsQueLaBesace,
   type Besace,
   estUnBonusDeDegats,
-  formaterUnBonus,
   portePlusDArmesQueLesRegles,
   ceQuiManqueEnRoute,
   commencerAventure,
@@ -232,12 +231,6 @@ describe("armes", () => {
     expect(estUnBonusDeDegats(-1)).toBe(true);
     expect(estUnBonusDeDegats(1.5)).toBe(false);
     expect(estUnBonusDeDegats("1")).toBe(false);
-  });
-
-  it("écrit un bonus avec son signe", () => {
-    expect(formaterUnBonus(1)).toBe("+1");
-    expect(formaterUnBonus(0)).toBe("+0");
-    expect(formaterUnBonus(-2)).toBe("−2");
   });
 });
 

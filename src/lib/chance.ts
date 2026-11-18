@@ -48,9 +48,3 @@ export function changerLAjustement(
 ): number {
   return borner(ajustement + sens, chanceDisponible);
 }
-
-/** Un ajustement écrit avec son signe : « +1 », « −2 », « 0 ». */
-export function formaterUnAjustement(ajustement: number): string {
-  if (ajustement === 0) return "0";
-  return ajustement < 0 ? `−${-ajustement}` : `+${ajustement}`;
-}

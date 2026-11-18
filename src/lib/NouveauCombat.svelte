@@ -13,7 +13,7 @@
    * parce que le lecteur choisit « Jouer le combat aux dés ».
    */
   import { untrack } from "svelte";
-  import { formaterUnBonus, type Mode } from "./aventure";
+  import type { Mode } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
   import {
     ADVERSAIRES_MAX_EN_NARRATIF,
@@ -27,6 +27,7 @@
     type NouveauCombat,
   } from "./combat";
   import Dock from "./Dock.svelte";
+  import { formuleDeDegats } from "./historique";
   import IssueDuCombat from "./IssueDuCombat.svelte";
 
   interface Props {
@@ -73,11 +74,7 @@
   );
 
   /** « 1 + 1 dé + 1 », « 1 + 1 dé », « 1 + 1 dé − 2 ». */
-  const degats = $derived(
-    lecteur.bonus === 0
-      ? "1 + 1 dé"
-      : `1 + 1 dé ${formaterUnBonus(lecteur.bonus).replace(/^([+−])/, "$1 ")}`,
-  );
+  const degats = $derived(formuleDeDegats(lecteur.bonus));
 
   function commencer(event: SubmitEvent) {
     event.preventDefault();
