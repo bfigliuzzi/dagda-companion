@@ -33,6 +33,31 @@ test("l'app s'installe comme PWA et s'ouvre en mode avion", async ({
   await context.setOffline(true);
   await page.reload();
 
+  // Premier lancement : on crée l'apprenti, hors ligne.
+  await expect(
+    page.getByRole("heading", { name: "Nouvel apprenti" }),
+  ).toBeVisible();
+  await page.getByText("Herbologie").click();
+  await page.getByText("Simplifié", { exact: true }).click();
+  await page.getByRole("button", { name: "Lancer les points de vie" }).click();
+  await page.getByRole("button", { name: "Lancer la chance" }).click();
+  const pvTires = page.getByLabel("Points de vie maximum");
+  await expect(pvTires).not.toHaveValue("");
+  expect(
+    await pvTires.evaluate((champ) => getComputedStyle(champ).fontSize),
+  ).toBe("32px");
+  await page.getByRole("button", { name: "Commencer l'aventure" }).click();
+
+  // Bloc vital : grille 1.45fr / 1fr.
+  const colonnes = await page
+    .getByRole("group", { name: "Points de vie" })
+    .evaluate((pv) =>
+      getComputedStyle(pv.parentElement!)
+        .gridTemplateColumns.split(" ")
+        .map(parseFloat),
+    );
+  expect(colonnes[0] / colonnes[1]).toBeCloseTo(1.45, 1);
+
   const chapitre = page.getByRole("button", { name: /dernier chapitre lu/i });
   await expect(chapitre).toHaveText(/§ 1/);
 

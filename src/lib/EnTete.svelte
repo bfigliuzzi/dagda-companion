@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { estUnChapitre } from "./stockage";
+  import { estUnChapitre } from "./aventure";
 
   interface Props {
+    /** TALENT et mode de jeu, rappelés à gauche (« Herbologie · Mode simplifié »). */
+    resume: string;
     chapitre: number;
     onchapitre: (chapitre: number) => void;
   }
 
-  let { chapitre, onchapitre }: Props = $props();
+  let { resume, chapitre, onchapitre }: Props = $props();
   let enSaisie = $state(false);
 
   function saisir(event: Event & { currentTarget: HTMLInputElement }) {
@@ -21,6 +23,7 @@
 </script>
 
 <header class="top">
+  <span>{resume}</span>
   {#if enSaisie}
     <div class="chap-champ">
       <span aria-hidden="true">§</span>
@@ -50,7 +53,7 @@
 <style>
   .top {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     gap: var(--esp-md);
     padding: var(--gutter) var(--gutter) var(--esp-hair);

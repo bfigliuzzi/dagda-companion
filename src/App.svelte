@@ -1,24 +1,41 @@
 <script lang="ts">
+  import BlocVital from "./lib/BlocVital.svelte";
   import EnTete from "./lib/EnTete.svelte";
+  import NouvelApprenti from "./lib/NouvelApprenti.svelte";
+  import { resume, type Aventure } from "./lib/aventure";
+  import { deAuHasard, type De } from "./lib/des";
   import { garderEcranAllume } from "./lib/ecranAllume";
   import { ecrireAventure, lireAventure } from "./lib/stockage";
 
-  const aventure = $state(lireAventure(localStorage));
+  interface Props {
+    /** Les tests injectent des dés fixés. */
+    de?: De;
+  }
+
+  let { de = deAuHasard }: Props = $props();
+
+  let aventure = $state<Aventure | null>(lireAventure(localStorage));
 
   // Rien ne se perd : chaque changement de l'aventure est enregistré aussitôt.
   $effect(() => {
-    ecrireAventure(localStorage, $state.snapshot(aventure));
+    if (aventure) ecrireAventure(localStorage, $state.snapshot(aventure));
   });
 
   $effect(garderEcranAllume);
 </script>
 
-<main class="feuille">
-  <EnTete
-    chapitre={aventure.chapitre}
-    onchapitre={(chapitre) => (aventure.chapitre = chapitre)}
-  />
-</main>
+{#if aventure}
+  <main class="feuille">
+    <EnTete
+      resume={resume(aventure)}
+      chapitre={aventure.chapitre}
+      onchapitre={(chapitre) => (aventure!.chapitre = chapitre)}
+    />
+    <BlocVital personnage={aventure.personnage} />
+  </main>
+{:else}
+  <NouvelApprenti {de} oncommencer={(nouvelle) => (aventure = nouvelle)} />
+{/if}
 
 <style>
   .feuille {

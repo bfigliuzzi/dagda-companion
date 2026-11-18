@@ -10,11 +10,11 @@ Références : `docs/regles-livre-1.md` (Création du personnage, Modes de jeu),
 
 **Status:** ready-for-agent
 
-- [ ] Sans aventure enregistrée, l'app ouvre l'écran « Nouvel apprenti » au lieu de la feuille.
-- [ ] Les 7 TALENTS du livre sont proposés en puces, choix unique.
-- [ ] Les 3 modes sont proposés, chacun avec une courte description.
-- [ ] Le bouton « Lancer » de chaque ligne tire les dés et affiche la valeur en 32 px ; on peut relancer ou corriger la valeur à la main.
-- [ ] Le bouton de validation reste désactivé tant qu'il manque quelque chose, et son libellé dit ce qui manque (« Lancez d'abord la CHANCE »).
-- [ ] Après validation, la feuille affiche le bloc vital (grille 1.45fr / 1fr) avec PV = PV max, la CHANCE tirée et DEX 7.
-- [ ] Le personnage et le mode sont enregistrés et retrouvés après rechargement.
-- [ ] Les règles de tirage sont testées (bornes de 2d6 × 4 et de 1d6).
+- [x] Sans aventure enregistrée, l'app ouvre l'écran « Nouvel apprenti » au lieu de la feuille.
+- [x] Les 7 TALENTS du livre sont proposés en puces, choix unique.
+- [x] Les 3 modes sont proposés, chacun avec une courte description.
+- [x] Le bouton « Lancer » de chaque ligne tire les dés et affiche la valeur en 32 px ; on peut relancer ou corriger la valeur à la main.
+- [x] Le bouton de validation reste désactivé tant qu'il manque quelque chose, et son libellé dit ce qui manque (« Lancez d'abord la CHANCE »).
+- [x] Après validation, la feuille affiche le bloc vital (grille 1.45fr / 1fr) avec PV = PV max, la CHANCE tirée et DEX 7.
+- [x] Le personnage et le mode sont enregistrés et retrouvés après rechargement.
+- [x] Les règles de tirage sont testées (bornes de 2d6 × 4 et de 1d6).

@@ -9,39 +9,33 @@
  * passe de l'ancienne version à la nouvelle.
  */
 
-export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 1;
+import { estUneAventure, type Aventure } from "./aventure";
 
-export interface Aventure {
-  /** Dernier chapitre lu, noté par le lecteur avant une pause. */
-  chapitre: number;
-}
+export const CLE_STOCKAGE = "dagda-compagnon";
+export const VERSION = 2;
 
 interface Enregistrement {
   version: number;
   aventure: unknown;
 }
 
-/** MIGRATIONS[n] transforme une aventure de la version n en version n + 1. */
+/**
+ * MIGRATIONS[n] transforme une aventure de la version n en version n + 1.
+ *
+ * Pas de migration depuis la version 1 : elle ne tenait que le chapitre, sans
+ * personnage. Le lecteur repasse par « Nouvel apprenti ».
+ */
 const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {};
 
-/** Un chapitre du livre : entier à partir de 1. */
-export function estUnChapitre(valeur: unknown): valeur is number {
-  return Number.isInteger(valeur) && (valeur as number) >= 1;
-}
-
-export function aventureNeuve(): Aventure {
-  return { chapitre: 1 };
-}
-
-export function lireAventure(stockage: Storage): Aventure {
+/** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */
+export function lireAventure(stockage: Storage): Aventure | null {
   try {
     const brut = stockage.getItem(CLE_STOCKAGE);
-    if (brut === null) return aventureNeuve();
+    if (brut === null) return null;
     const enregistrement = JSON.parse(brut) as Enregistrement;
-    return migrer(enregistrement) ?? aventureNeuve();
+    return migrer(enregistrement) ?? null;
   } catch {
-    return aventureNeuve();
+    return null;
   }
 }
 
@@ -74,12 +68,4 @@ function migrer({ version, aventure }: Enregistrement): Aventure | undefined {
     courante = etape(courante);
   }
   return estUneAventure(courante) ? courante : undefined;
-}
-
-function estUneAventure(valeur: unknown): valeur is Aventure {
-  return (
-    typeof valeur === "object" &&
-    valeur !== null &&
-    estUnChapitre((valeur as Aventure).chapitre)
-  );
 }
