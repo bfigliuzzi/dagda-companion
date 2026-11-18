@@ -1,13 +1,13 @@
 <script lang="ts">
   import EnTete from "./lib/EnTete.svelte";
   import { garderEcranAllume } from "./lib/ecranAllume";
-  import { ecrirePartie, lirePartie } from "./lib/stockage";
+  import { ecrireAventure, lireAventure } from "./lib/stockage";
 
-  const partie = $state(lirePartie(localStorage));
+  const aventure = $state(lireAventure(localStorage));
 
-  // Rien ne se perd : chaque changement de la partie est enregistré aussitôt.
+  // Rien ne se perd : chaque changement de l'aventure est enregistré aussitôt.
   $effect(() => {
-    ecrirePartie(localStorage, $state.snapshot(partie));
+    ecrireAventure(localStorage, $state.snapshot(aventure));
   });
 
   $effect(garderEcranAllume);
@@ -15,8 +15,8 @@
 
 <main class="feuille">
   <EnTete
-    chapitre={partie.chapitre}
-    onchapitre={(chapitre) => (partie.chapitre = chapitre)}
+    chapitre={aventure.chapitre}
+    onchapitre={(chapitre) => (aventure.chapitre = chapitre)}
   />
 </main>
 

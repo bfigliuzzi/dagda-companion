@@ -1,54 +1,54 @@
 /**
- * Enregistrement de la partie sur l'appareil (localStorage).
+ * Enregistrement de l'aventure sur l'appareil (localStorage).
  *
  * On parle ici d'« enregistrement » et non de « sauvegarde » : dans le livre,
  * une sauvegarde est un point de reprise du mode simplifié (voir GLOSSARY.md).
  *
- * Le contenu est versionné : { version, partie }. Pour changer la forme de
- * `Partie`, on monte VERSION et on ajoute dans MIGRATIONS la fonction qui
+ * Le contenu est versionné : { version, aventure }. Pour changer la forme de
+ * `Aventure`, on monte VERSION et on ajoute dans MIGRATIONS la fonction qui
  * passe de l'ancienne version à la nouvelle.
  */
 
 export const CLE_STOCKAGE = "dagda-compagnon";
 export const VERSION = 1;
 
-export interface Partie {
+export interface Aventure {
   /** Dernier chapitre lu, noté par le lecteur avant une pause. */
   chapitre: number;
 }
 
 interface Enregistrement {
   version: number;
-  partie: unknown;
+  aventure: unknown;
 }
 
-/** MIGRATIONS[n] transforme une partie de la version n en version n + 1. */
-const MIGRATIONS: Record<number, (partie: unknown) => unknown> = {};
+/** MIGRATIONS[n] transforme une aventure de la version n en version n + 1. */
+const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {};
 
 /** Un chapitre du livre : entier à partir de 1. */
 export function estUnChapitre(valeur: unknown): valeur is number {
   return Number.isInteger(valeur) && (valeur as number) >= 1;
 }
 
-export function partieNeuve(): Partie {
+export function aventureNeuve(): Aventure {
   return { chapitre: 1 };
 }
 
-export function lirePartie(stockage: Storage): Partie {
+export function lireAventure(stockage: Storage): Aventure {
   try {
     const brut = stockage.getItem(CLE_STOCKAGE);
-    if (brut === null) return partieNeuve();
+    if (brut === null) return aventureNeuve();
     const enregistrement = JSON.parse(brut) as Enregistrement;
-    return migrer(enregistrement) ?? partieNeuve();
+    return migrer(enregistrement) ?? aventureNeuve();
   } catch {
-    return partieNeuve();
+    return aventureNeuve();
   }
 }
 
-export function ecrirePartie(stockage: Storage, partie: Partie): void {
-  const enregistrement: Enregistrement = { version: VERSION, partie };
+export function ecrireAventure(stockage: Storage, aventure: Aventure): void {
+  const enregistrement: Enregistrement = { version: VERSION, aventure };
   try {
-    // Une version plus récente de l'app a écrit ici : on ne détruit pas sa partie.
+    // Une version plus récente de l'app a écrit ici : on ne détruit pas son aventure.
     if (versionEnregistree(stockage) > VERSION) return;
     stockage.setItem(CLE_STOCKAGE, JSON.stringify(enregistrement));
   } catch {
@@ -65,21 +65,21 @@ function versionEnregistree(stockage: Storage): number {
   }
 }
 
-function migrer({ version, partie }: Enregistrement): Partie | undefined {
+function migrer({ version, aventure }: Enregistrement): Aventure | undefined {
   if (!Number.isInteger(version) || version > VERSION) return undefined;
-  let courante = partie;
+  let courante = aventure;
   for (let v = version; v < VERSION; v++) {
     const etape = MIGRATIONS[v];
     if (!etape) return undefined;
     courante = etape(courante);
   }
-  return estUnePartie(courante) ? courante : undefined;
+  return estUneAventure(courante) ? courante : undefined;
 }
 
-function estUnePartie(valeur: unknown): valeur is Partie {
+function estUneAventure(valeur: unknown): valeur is Aventure {
   return (
     typeof valeur === "object" &&
     valeur !== null &&
-    estUnChapitre((valeur as Partie).chapitre)
+    estUnChapitre((valeur as Aventure).chapitre)
   );
 }
