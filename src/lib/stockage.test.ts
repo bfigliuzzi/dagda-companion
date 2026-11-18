@@ -33,4 +33,11 @@ describe("stockage de la partie", () => {
     );
     expect(lirePartie(localStorage)).toEqual({ chapitre: 1 });
   });
+
+  it("n'écrase pas l'enregistrement d'une version plus récente de l'app", () => {
+    const plusRecent = JSON.stringify({ version: 99, partie: { page: 5 } });
+    localStorage.setItem(CLE_STOCKAGE, plusRecent);
+    ecrirePartie(localStorage, { chapitre: 1 });
+    expect(localStorage.getItem(CLE_STOCKAGE)).toBe(plusRecent);
+  });
 });

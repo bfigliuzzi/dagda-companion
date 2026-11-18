@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { estUnChapitre } from "./stockage";
+
   interface Props {
     chapitre: number;
     onchapitre: (chapitre: number) => void;
@@ -8,14 +10,9 @@
   let enSaisie = $state(false);
 
   function saisir(event: Event & { currentTarget: HTMLInputElement }) {
-    const valeur = Number(event.currentTarget.value);
-    if (
-      event.currentTarget.value !== "" &&
-      Number.isInteger(valeur) &&
-      valeur >= 1
-    ) {
-      onchapitre(valeur);
-    }
+    const texte = event.currentTarget.value;
+    const valeur = Number(texte);
+    if (texte !== "" && estUnChapitre(valeur)) onchapitre(valeur);
   }
 
   function touche(event: KeyboardEvent) {
@@ -24,7 +21,6 @@
 </script>
 
 <header class="top">
-  <span>La Harpe des Quatre Saisons</span>
   {#if enSaisie}
     <div class="chap-champ">
       <span aria-hidden="true">§</span>
@@ -54,10 +50,9 @@
 <style>
   .top {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     gap: var(--esp-md);
-    min-height: calc(var(--cible) + 22px);
     padding: var(--gutter) var(--gutter) var(--esp-hair);
     padding-top: max(var(--gutter), env(safe-area-inset-top));
     font-size: 14px;

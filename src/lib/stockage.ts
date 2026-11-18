@@ -25,6 +25,11 @@ interface Enregistrement {
 /** MIGRATIONS[n] transforme une partie de la version n en version n + 1. */
 const MIGRATIONS: Record<number, (partie: unknown) => unknown> = {};
 
+/** Un chapitre du livre : entier à partir de 1. */
+export function estUnChapitre(valeur: unknown): valeur is number {
+  return Number.isInteger(valeur) && (valeur as number) >= 1;
+}
+
 export function partieNeuve(): Partie {
   return { chapitre: 1 };
 }
@@ -43,9 +48,20 @@ export function lirePartie(stockage: Storage): Partie {
 export function ecrirePartie(stockage: Storage, partie: Partie): void {
   const enregistrement: Enregistrement = { version: VERSION, partie };
   try {
+    // Une version plus récente de l'app a écrit ici : on ne détruit pas sa partie.
+    if (versionEnregistree(stockage) > VERSION) return;
     stockage.setItem(CLE_STOCKAGE, JSON.stringify(enregistrement));
   } catch {
     // Stockage plein ou interdit (navigation privée) : l'app continue sans.
+  }
+}
+
+function versionEnregistree(stockage: Storage): number {
+  try {
+    const brut = stockage.getItem(CLE_STOCKAGE);
+    return brut === null ? 0 : Number(JSON.parse(brut).version) || 0;
+  } catch {
+    return 0;
   }
 }
 
@@ -64,7 +80,6 @@ function estUnePartie(valeur: unknown): valeur is Partie {
   return (
     typeof valeur === "object" &&
     valeur !== null &&
-    Number.isInteger((valeur as Partie).chapitre) &&
-    (valeur as Partie).chapitre >= 1
+    estUnChapitre((valeur as Partie).chapitre)
   );
 }

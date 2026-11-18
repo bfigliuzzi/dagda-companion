@@ -43,6 +43,18 @@ test("l'app s'installe comme PWA et s'ouvre en mode avion", async ({
   });
   expect(policeChargee).toBe(true);
 
+  // Ardoise : fond noir pur, chiffres tabulaires, cible tactile de 44 px.
+  const styles = await chapitre.evaluate((bouton) => ({
+    fond: getComputedStyle(document.body).backgroundColor,
+    chiffres: getComputedStyle(bouton).fontVariantNumeric,
+    hauteur: bouton.getBoundingClientRect().height,
+    largeur: bouton.getBoundingClientRect().width,
+  }));
+  expect(styles.fond).toBe("rgb(0, 0, 0)");
+  expect(styles.chiffres).toBe("tabular-nums");
+  expect(styles.hauteur).toBeGreaterThanOrEqual(44);
+  expect(styles.largeur).toBeGreaterThanOrEqual(44);
+
   // Le chapitre modifié hors ligne est retrouvé après rechargement.
   await chapitre.click();
   await page.getByLabel("Dernier chapitre lu").fill("112");
