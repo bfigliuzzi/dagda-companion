@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — Feuille de personnage · La Saga de Dagda (compagnon)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Jetons de l'ardoise ===== */
+:root{
+  --noir:#000;
+  --ardoise-1:#0e0e0d;      /* panneaux posés sur la feuille */
+  --ardoise-2:#1b1b19;      /* champs, pistes */
+  --trait:#2c2b28;          /* filets discrets */
+  --craie:#ecebe4;          /* texte principal  — 17.6:1 */
+  --craie-2:#a9a79d;        /* texte secondaire — 8.4:1 */
+  --craie-3:#85837a;        /* indices, désactivé — 5.5:1 sur noir, 4.5:1 sur champ */
+  --jaune:#f2c94c;          /* action principale */
+  --rouge:#e86a5a;          /* PV perdus, danger */
+  --vert:#7cc4a8;           /* effets actifs */
+  --r:12px;
+  --font:"Atkinson Hyperlegible Next", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+::selection{background:var(--jaune);color:var(--noir)}
+body{background:#161615;color:var(--craie);font:16px/1.45 var(--font);font-variant-numeric:tabular-nums;padding:48px 40px 80px;caret-color:var(--jaune)}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--jaune);outline-offset:3px;border-radius:6px}
+
+/* ===== Planche de présentation ===== */
+.doc{max-width:1800px;margin:0 auto}
+.doc>h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.doc>p{color:var(--craie-2);max-width:72ch;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:18px;margin:20px 0 40px;color:var(--craie-2);font-size:14px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:14px;height:14px;border-radius:3px;display:block}
+.board{display:flex;flex-wrap:wrap;gap:48px 40px;align-items:flex-start}
+figure{width:390px}
+figcaption{margin-top:14px;font-size:14px;color:var(--craie-2);max-width:390px}
+figcaption b{display:block;color:var(--craie);font-size:16px;margin-bottom:2px}
+
+/* ===== Téléphone ===== */
+.phone{position:relative;width:390px;height:844px;background:var(--noir);border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px #2a2a28, 0 24px 60px rgba(0,0,0,.5)}
+.phone.tall{height:auto;padding-bottom:96px}
+.scroll{height:100%;overflow:hidden}
+
+/* ===== Feuille ===== */
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 18px 4px;font-size:14px;color:var(--craie-2)}
+.chap{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;margin-right:-12px;color:var(--craie);font-weight:700;font-size:18px}
+.chap svg{width:18px;height:18px;color:var(--craie-3)}
+.sub{padding:0 18px;font-size:14px;color:var(--craie-3)}
+
+.vitals{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;padding:14px 18px 18px;border-bottom:2px solid var(--trait)}
+.label{font-size:13px;color:var(--craie-2);letter-spacing:.02em}
+.pv{position:relative}
+.pv .num{display:flex;flex-wrap:nowrap;white-space:nowrap;align-items:baseline;gap:6px;margin-top:2px}
+.pv .num b{font-size:88px;line-height:.92;font-weight:800;letter-spacing:-.03em}
+.pv .num span{font-size:24px;color:var(--craie-2);font-weight:500}
+.was{font-size:24px;font-weight:700;color:var(--rouge);text-decoration:line-through;text-decoration-thickness:3px;margin-right:4px;animation:none}
+.steps{display:flex;gap:10px;margin-top:12px}
+.step{width:56px;height:56px;border-radius:50%;border:2px solid var(--craie);display:grid;place-items:center}
+.step.minus{border-color:var(--rouge);color:var(--rouge)}
+.step svg{width:26px;height:26px}
+.side{display:flex;flex-direction:column}
+.stat{display:flex;justify-content:space-between;align-items:baseline;min-height:48px;padding:6px 0;border-bottom:1px solid var(--trait)}
+.stat:last-child{border:0}
+.stat b{font-size:32px;font-weight:800;line-height:1}
+.stat .eff{color:var(--vert)}
+.stat small{display:block;font-size:12px;color:var(--vert);margin-top:2px}
+.marks{display:flex;gap:6px;align-items:center}
+.marks i{width:6px;height:24px;border-radius:2px;background:var(--craie)}
+.marks i.used{background:var(--trait)}
+
+section{padding:20px 18px 4px}
+.sh{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
+h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bottom:2px solid var(--craie);letter-spacing:-.005em}
+.sh .meta{font-size:14px;color:var(--craie-2)}
+.row{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 0;border-bottom:1px solid var(--trait)}
+.row .n{flex:1}
+.row .v{font-weight:700;font-size:18px}
+.row .x{width:44px;height:44px;display:grid;place-items:center;color:var(--craie-3);margin-right:-10px}
+.row .x svg{width:18px;height:18px}
+.row.effect .n{color:var(--vert)}
+.row.effect .d{font-size:14px;color:var(--craie-2)}
+.row.note .n{color:var(--craie-2)}
+.row.note .n::before{content:"Rappel · ";color:var(--craie-3)}
+.add{display:flex;align-items:center;gap:8px;min-height:48px;color:var(--craie-2);font-weight:700}
+.add svg{width:18px;height:18px}
+.inline-act{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid var(--craie);border-radius:999px;font-weight:700;font-size:15px}
+.inline-act svg{width:18px;height:18px}
+
+.tally{display:flex;gap:3px;margin:4px 0 6px}
+.tally i{width:6px;height:16px;border-radius:2px;background:var(--trait)}
+.tally i.f{background:var(--craie)}
+.tally i.over{background:var(--rouge)}
+.purse{display:flex;align-items:center;gap:8px}
+.mini{width:44px;height:44px;border-radius:50%;border:2px solid var(--trait);display:grid;place-items:center;color:var(--craie-2)}
+.mini svg{width:18px;height:18px}
+
+.notes{margin-top:8px;border-top:2px solid var(--trait);border-bottom:2px solid var(--trait);padding:12px 0;min-height:120px;color:var(--craie);font-size:15px;line-height:1.55}
+.notes p+p{margin-top:8px}
+
+.game{padding:24px 18px 8px;color:var(--craie-2);font-size:14px}
+.game .row{color:var(--craie)}
+.danger{color:var(--rouge);font-weight:700}
+
+/* bouton de dés fixe */
+.dock{position:absolute;left:0;right:0;bottom:0;padding:12px 18px 22px;background:linear-gradient(to top,var(--noir) 70%,rgba(0,0,0,0))}
+.cta{width:100%;min-height:58px;border:2px solid var(--jaune);color:var(--jaune);border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:12px;font-size:20px;font-weight:800}
+.cta.fill{background:var(--jaune);color:var(--noir)}
+.cta svg{width:26px;height:26px}
+.ghost{width:100%;min-height:52px;border:2px solid var(--trait);border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;color:var(--craie)}
+.link{min-height:44px;display:flex;align-items:center;justify-content:center;color:var(--craie-2);font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--craie-3)}
+
+/* ===== Panneaux (feuille glissée depuis le bas) ===== */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.72)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--ardoise-1);border-top:2px solid var(--craie);border-radius:22px 22px 0 0;padding:10px 18px 22px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--craie-3);margin:0 auto 12px}
+.sheet .sh3{border:0;padding:0;font-size:22px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.close{width:44px;height:44px;display:grid;place-items:center;margin-right:-10px;color:var(--craie-2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ardoise-2);border-radius:var(--r);padding:4px;margin:14px 0}
+.seg span{min-height:44px;display:grid;place-items:center;border-radius:9px;font-weight:700;color:var(--craie-2)}
+.seg span.on{background:var(--craie);color:var(--noir)}
+.dice{display:flex;align-items:center;justify-content:center;gap:16px;margin:10px 0 4px}
+.die{width:84px;height:84px;border:3px solid var(--craie);border-radius:16px;position:relative}
+.die i{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--craie)}
+.total{text-align:center;margin:8px 0 2px}
+.total b{font-size:64px;font-weight:800;line-height:1}
+.total .from{font-size:36px;vertical-align:.35em;color:var(--rouge);text-decoration:line-through;text-decoration-thickness:3px;margin-right:10px;font-weight:700}
+.total small{display:block;color:var(--craie-2);font-size:14px}
+.adjust{display:flex;align-items:center;justify-content:space-between;background:var(--ardoise-2);border-radius:var(--r);padding:8px 8px 8px 14px;margin:14px 0}
+.adjust .t{font-size:15px}
+.adjust .t small{display:block;color:var(--craie-2);font-size:13px}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:2px solid var(--craie-3);display:grid;place-items:center}
+.stepper button svg{width:18px;height:18px}
+.stepper b{min-width:44px;text-align:center;font-size:22px}
+.btns{display:grid;gap:10px;margin-top:6px}
+
+/* ===== Formulaires ===== */
+.row + .hint{border-top:0;padding-top:6px}
+.screen-h{padding:18px 18px 6px;display:flex;align-items:center;gap:8px}
+.screen-h h1{font-size:28px;font-weight:800;letter-spacing:-.015em;flex:1}
+.intro{padding:0 18px;color:var(--craie-2);font-size:15px}
+.field{display:block;margin-top:14px}
+.field>span{display:block;font-size:13px;color:var(--craie-2);margin-bottom:6px}
+.input{min-height:52px;background:var(--ardoise-2);border-radius:var(--r);border:2px solid transparent;display:flex;align-items:center;padding:12px 14px;font-size:17px}
+.input.focus{border-color:var(--jaune)}
+.input .ph{color:var(--craie-3)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.numf{display:flex;align-items:center;justify-content:space-between;background:var(--ardoise-2);border-radius:var(--r);padding:4px}
+.numf b{font-size:24px}
+.numf button{width:44px;height:44px;display:grid;place-items:center;color:var(--craie-2)}
+.numf button svg{width:18px;height:18px}
+.toggle{display:flex;align-items:center;justify-content:space-between;min-height:52px;margin-top:10px}
+.sw{width:52px;height:32px;border-radius:16px;background:var(--ardoise-2);border:2px solid var(--craie-3);position:relative}
+.sw::after{content:"";position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:var(--craie-3)}
+.hint{display:flex;gap:10px;margin-top:14px;padding:10px 0 0;border-top:2px solid var(--trait);font-size:14px;color:var(--craie-2)}
+.hint svg{width:20px;height:20px;color:var(--jaune);margin-top:1px}
+.hint.warn svg{color:var(--rouge)}
+.hint b{color:var(--craie)}
+
+.choices{margin-top:8px}
+.choice{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--trait);min-height:48px}
+.radio{width:24px;height:24px;border-radius:50%;border:2px solid var(--craie-3);flex:none;margin-top:1px}
+.choice.on .radio{border-color:var(--jaune);box-shadow:inset 0 0 0 5px var(--noir);background:var(--jaune)}
+.choice .t b{display:block;font-size:17px}
+.choice .t span{font-size:14px;color:var(--craie-2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--trait);display:flex;align-items:center;font-weight:700;color:var(--craie-2)}
+.chip.on{border-color:var(--jaune);color:var(--jaune)}
+.rollrow{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 0;border-bottom:1px solid var(--trait)}
+.rollrow .n{flex:1}
+.rollrow .n small{display:block;font-size:13px;color:var(--craie-2)}
+.rollrow b{font-size:32px;font-weight:800}
+.rollbtn{min-height:44px;padding:0 14px;border-radius:999px;border:2px solid var(--jaune);color:var(--jaune);font-weight:700;display:flex;align-items:center;gap:6px}
+.rollbtn svg{width:18px;height:18px}
+
+/* ===== Combat ===== */
+.versus{display:grid;grid-template-columns:1fr 1fr;border-bottom:2px solid var(--trait)}
+.side-c{padding:14px 18px}
+.side-c+.side-c{border-left:2px solid var(--trait)}
+.side-c .who{font-size:14px;color:var(--craie-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-c b{font-size:52px;font-weight:800;line-height:1}
+.side-c b small{font-size:18px;color:var(--craie-2);font-weight:500}
+.side-c .crit{color:var(--rouge)}
+.bar{height:6px;border-radius:3px;background:var(--trait);margin-top:8px}
+.bar u{display:block;height:6px;border-radius:3px;background:var(--craie)}
+.bar u.r{background:var(--rouge)}
+.side-c .st{font-size:13px;color:var(--craie-2);margin-top:6px}
+.turnh{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 2px}
+.turnh h2{border:0;padding:0}
+.log{padding:0 18px}
+.t-row{padding:10px 0;border-bottom:1px solid var(--trait)}
+.t-row .who{font-size:13px;color:var(--craie-2);font-weight:700;letter-spacing:.02em}
+.t-row .what{font-size:16px;margin-top:2px}
+.t-row .what b{font-weight:800}
+.hit{color:var(--craie)}
+.miss{color:var(--craie-3)}
+.dmg-you{color:var(--rouge);font-weight:800}
+.auto{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:13px;font-weight:700;color:var(--jaune);border:1.5px solid var(--jaune);border-radius:999px;padding:3px 10px}
+.auto svg{width:14px;height:14px}
+.t-row.latest{padding-top:12px}
+.t-row.older .what{color:var(--craie-2)}.t-row.older .who{color:var(--craie-3)}
+.manual{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:14px;color:var(--craie-2)}
+.manual .inline-act{border-color:var(--craie-3);font-size:14px;min-height:44px}
+.crit-banner{display:flex;gap:10px;margin:12px 18px 0;padding:10px 12px;border:2px solid var(--rouge);border-radius:var(--r);font-size:14px}
+.crit-banner svg{width:20px;height:20px;color:var(--rouge)}
+.dock2{position:absolute;left:0;right:0;bottom:0;padding:12px 18px 22px;background:var(--noir);border-top:1px solid var(--trait);display:grid;grid-template-columns:1fr 1.35fr;gap:10px}
+
+.result{padding:40px 18px 0;text-align:left}
+.result .big{font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-top:14px}
+.result .big.lose{color:var(--rouge)}
+.result p{color:var(--craie-2);margin-top:10px;font-size:16px}
+.ico-xl{width:64px;height:64px;border-radius:50%;border:2px solid var(--craie);display:grid;place-items:center}
+.ico-xl svg{width:30px;height:30px}
+.ico-xl.r{border-color:var(--rouge);color:var(--rouge)}
+.delta{margin:22px 18px 0}
+.delta .row b{font-size:20px}
+.delta .row .from{color:var(--rouge);text-decoration:line-through;text-decoration-thickness:2px;margin-right:8px;font-weight:700}
+.big-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 18px 0}
+.big-choice button{min-height:120px;border-radius:var(--r);border:2px solid var(--craie);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:20px;font-weight:800}
+.big-choice button.l{border-color:var(--rouge);color:var(--rouge)}
+.big-choice svg{width:30px;height:30px}
+.fight{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--trait)}
+.fight .c{font-weight:800;font-size:18px}
+.fight .r b{display:block;font-size:16px}
+.fight .r span{font-size:13px;color:var(--craie-2)}
+.fight .lost{color:var(--rouge);font-weight:700}
+.fight.l .r b{color:var(--rouge)}
+.fight.open{border-bottom:0}
+.detail{padding:4px 0 12px 0;border-bottom:1px solid var(--trait);font-size:14px;color:var(--craie-2)}
+.detail div{padding:4px 0}
+.detail b{color:var(--craie)}
+.detail b.lost{color:var(--rouge)}
+.stats-in{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+</style>
+</head>
+<body>
+
+<!-- Pictogrammes : tracés maison, trait 2 px, extrémités rondes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></symbol>
+  <symbol id="i-sword" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5"/></symbol>
+  <symbol id="i-clover" viewBox="0 0 24 24"><path d="M12 12c-3-1-5-3-5-5a2.5 2.5 0 0 1 5-.5 2.5 2.5 0 0 1 5 .5c0 2-2 4-5 5zm0 0c1 3 3 5 5 5a2.5 2.5 0 0 0 .5-5M12 12c-1 3-3 5-5 5a2.5 2.5 0 0 1-.5-5M12 12v9"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4h12l-2.5 4L17 12H5"/></symbol>
+  <symbol id="i-skull" viewBox="0 0 24 24"><path d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3zM9 11h.01M15 11h.01M10 20v-2M14 20v-2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6"/></symbol>
+  <symbol id="i-forward" viewBox="0 0 24 24"><path d="M5 6l7 6-7 6M13 6l7 6-7 6"/></symbol>
+</svg>
+
+<div class="doc">
+  <h1>Feuille de personnage — maquette</h1>
+  <p>Direction «&nbsp;Ardoise de l'Académie&nbsp;». Fond noir pur pour les écrans OLED, texte craie, trois craies de couleur à rôle fixe. Chaque écran est montré à 390 × 844 px. Les noms d'objets, d'ennemis et les notes sont des exemples inventés pour la maquette, pas du contenu du livre.</p>
+  <div class="legend">
+    <span><i style="background:var(--jaune)"></i>Jaune&nbsp;: action principale</span>
+    <span><i style="background:var(--rouge)"></i>Rouge&nbsp;: PV perdus, danger</span>
+    <span><i style="background:var(--vert)"></i>Vert&nbsp;: effet actif</span>
+    <span><i style="background:var(--craie)"></i>Craie&nbsp;: tout le reste</span>
+  </div>
+
+  <div class="board">
+
+  <!-- 1. Premier écran de la feuille -->
+  <figure>
+    <div class="phone">
+      <div class="top"><span>Herbologie · Mode simplifié</span><button class="chap" aria-label="Modifier le dernier chapitre lu">§ 112<svg class="i"><use href="#i-pen"/></svg></button></div>
+      <div class="vitals">
+        <div class="pv">
+          <div class="label">Points de vie</div>
+          <div class="num"><s class="was" aria-label="avant : 31">31</s><b>28</b><span>/ 32</span></div>
+          <div class="steps">
+            <button class="step minus" aria-label="Retirer un point de vie"><svg class="i"><use href="#i-minus"/></svg></button>
+            <button class="step" aria-label="Ajouter un point de vie"><svg class="i"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+        <div class="side">
+          <div class="stat"><span class="label">Chance</span><b>4</b></div>
+          <div class="stat"><span class="label">Dextérité<small>base 7 · potion +1</small></span><b class="eff">8</b></div>
+          <div class="stat"><span class="label">Sauvegardes</span><span class="marks" aria-label="2 sauvegardes restantes sur 3"><i class="used"></i><i></i><i></i></span></div>
+        </div>
+      </div>
+      <section>
+        <div class="sh"><h2>Armes</h2><span class="meta">2 / 2 · +1 aux dégâts</span></div>
+        <div class="row"><span class="n">Épée courte</span><span class="v">+1</span><button class="x" aria-label="Retirer Épée courte"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Bâton de l'Académie</span><span class="v">+0</span><button class="x" aria-label="Retirer Bâton"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <button class="add"><svg class="i"><use href="#i-plus"/></svg>Ajouter une arme</button>
+          <button class="inline-act"><svg class="i"><use href="#i-sword"/></svg>Combattre</button>
+        </div>
+      </section>
+      <section>
+        <div class="sh"><h2>Effets</h2><span class="meta">2 actifs</span></div>
+        <div class="row effect"><span class="n">Potion d'agilité · DEX +1</span><span class="d">24 h</span><button class="x" aria-label="Retirer l'effet"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row note"><span class="n">retourner voir l'herboriste</span><button class="x" aria-label="Retirer le rappel"><svg class="i"><use href="#i-x"/></svg></button></div>
+      </section>
+      <div class="dock"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
+    </div>
+    <figcaption><b>1 · Feuille, premier écran</b>Tout l'état vital sans défiler. La valeur remplacée (31) reste barrée en rouge juste avant la nouvelle, puis s'efface en 1,2 s (fondu en sortie exponentielle)&nbsp;: c'est la trace de craie. Partout, l'ancienne valeur barrée précède la nouvelle. Seul le bouton de dés reste fixe.</figcaption>
+  </figure>
+
+  <!-- 2. Feuille entière -->
+  <figure>
+    <div class="phone tall">
+      <div class="top"><span>Herbologie · Mode simplifié</span><button class="chap">§ 112<svg class="i"><use href="#i-pen"/></svg></button></div>
+      <div class="vitals">
+        <div class="pv">
+          <div class="label">Points de vie</div>
+          <div class="num"><b>28</b><span>/ 32</span></div>
+          <div class="steps"><button class="step minus"><svg class="i"><use href="#i-minus"/></svg></button><button class="step"><svg class="i"><use href="#i-plus"/></svg></button></div>
+        </div>
+        <div class="side">
+          <div class="stat"><span class="label">Chance</span><b>4</b></div>
+          <div class="stat"><span class="label">Dextérité<small>base 7 · potion +1</small></span><b class="eff">8</b></div>
+          <div class="stat"><span class="label">Sauvegardes</span><span class="marks"><i class="used"></i><i></i><i></i></span></div>
+        </div>
+      </div>
+      <section>
+        <div class="sh"><h2>Armes</h2><span class="meta">2 / 2 · +1 aux dégâts</span></div>
+        <div class="row"><span class="n">Épée courte</span><span class="v">+1</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Bâton de l'Académie</span><span class="v">+0</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><button class="add"><svg class="i"><use href="#i-plus"/></svg>Ajouter une arme</button><button class="inline-act"><svg class="i"><use href="#i-sword"/></svg>Combattre</button></div>
+      </section>
+      <section>
+        <div class="sh"><h2>Effets</h2><span class="meta">2 actifs</span></div>
+        <div class="row effect"><span class="n">Potion d'agilité · DEX +1</span><span class="d">24 h</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row note"><span class="n">retourner voir l'herboriste</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <button class="add"><svg class="i"><use href="#i-plus"/></svg>Ajouter un effet</button>
+      </section>
+      <section>
+        <div class="sh"><h2>Besace</h2><span class="meta">7 / 24</span></div>
+        <div class="tally" aria-label="7 emplacements utilisés sur 24"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="row"><span class="n">Bourse</span><span class="purse"><button class="mini" aria-label="Retirer un boulon"><svg class="i"><use href="#i-minus"/></svg></button><span class="v">12 boulons</span><button class="mini" aria-label="Ajouter un boulon"><svg class="i"><use href="#i-plus"/></svg></button></span></div>
+        <div class="row"><span class="n">Corde de chanvre</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Pain rassis</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Fiole vide</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Herbe de lune</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Clé de bronze</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="row"><span class="n">Carte de l'Académie</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <button class="add"><svg class="i"><use href="#i-plus"/></svg>Ajouter un objet</button>
+      </section>
+      <section>
+        <div class="sh"><h2>Combats</h2><span class="meta">2 livrés</span></div>
+        <div class="fight"><span class="c">§ 98</span><span class="r"><b>Gagné</b><span>Narratif</span></span><span></span></div>
+        <div class="fight l"><span class="c">§ 61</span><span class="r"><b>Perdu</b><span>4 tours · repris au § 52</span></span><span class="lost">−18 PV</span></div>
+        <button class="add">Tout l'historique</button>
+      </section>
+      <section>
+        <div class="sh"><h2>Notes</h2></div>
+        <div class="notes"><p>Le vieux gardien parle d'une porte «&nbsp;qui ne s'ouvre qu'en hiver&nbsp;».</p><p>Ne pas reprendre le chemin du marais&nbsp;: piège au 74.</p></div>
+      </section>
+      <div class="game">
+        <div class="sh"><h2 style="font-size:18px">Partie</h2></div>
+        <div class="row"><span class="n">Sauvegarder ici</span><span style="color:var(--craie-2);font-size:14px">2 restantes</span><svg class="i" style="color:var(--craie-2)"><use href="#i-save"/></svg></div>
+        <div class="row"><span class="n">Reprendre la sauvegarde · § 87</span><svg class="i" style="color:var(--craie-2)"><use href="#i-redo"/></svg></div>
+        <div class="row"><span class="n danger">Recommencer une aventure</span></div>
+      </div>
+      <div class="dock"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
+    </div>
+    <figcaption><b>2 · Feuille entière</b>Une seule page, dans l'ordre de la feuille papier. La besace compte ses 24 emplacements en traits de craie. Les derniers combats sont résumés avant les notes. La partie (sauvegardes, recommencer) est rangée tout en bas, loin du pouce.</figcaption>
+  </figure>
+
+  <!-- 3. Dés -->
+  <figure>
+    <div class="phone">
+      <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 112</span></div>
+      <div class="vitals" style="border:0"><div class="pv"><div class="label">Points de vie</div><div class="num"><b>28</b><span>/ 32</span></div></div></div>
+      <div class="dim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <h2 class="sh3">Lancer les dés<button class="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button></h2>
+        <div class="seg"><span>1 dé</span><span class="on">2 dés</span></div>
+        <div class="dice" aria-label="Dés : 4 et 5">
+          <div class="die"><i style="top:14px;left:14px"></i><i style="top:14px;right:14px"></i><i style="bottom:14px;left:14px"></i><i style="bottom:14px;right:14px"></i></div>
+          <div class="die"><i style="top:14px;left:14px"></i><i style="top:14px;right:14px"></i><i style="top:35px;left:35px"></i><i style="bottom:14px;left:14px"></i><i style="bottom:14px;right:14px"></i></div>
+        </div>
+        <div class="total"><span class="from">9</span><b>7</b><small>total ajusté avec 2 points de CHANCE</small></div>
+        <div class="adjust">
+          <span class="t">Ajuster avec la CHANCE<small>Il vous reste 4 points · 2 seront dépensés</small></span>
+          <span class="stepper"><button aria-label="Baisser le total"><svg class="i"><use href="#i-minus"/></svg></button><b>−2</b><button aria-label="Monter le total"><svg class="i"><use href="#i-plus"/></svg></button></span>
+        </div>
+        <div class="btns">
+          <button class="cta fill"><svg class="i"><use href="#i-check"/></svg>Garder 7</button>
+          <button class="ghost"><svg class="i"><use href="#i-redo"/></svg>Relancer</button>
+          <button class="link">J'ai lancé mes propres dés</button>
+        </div>
+      </div>
+    </div>
+    <figcaption><b>3 · Panneau de dés</b>Le résultat en grand, le total initial barré quand on l'ajuste. La CHANCE se dépense ici, à la main, et n'est retirée qu'en validant. Le lien du bas ouvre la saisie de vrais dés.</figcaption>
+  </figure>
+
+  <!-- 4. Création -->
+  <figure>
+    <div class="phone tall">
+      <div class="screen-h"><h1>Nouvel apprenti</h1></div>
+      <div style="padding:0 18px"><div class="seg" style="margin-top:4px"><span class="on">Nouvelle aventure</span><span>Déjà en route</span></div></div>
+      <p class="intro">La veille de votre examen à l'Académie de Dagda. Trois choix, puis l'aventure commence au chapitre 1.</p>
+      <section>
+        <div class="sh"><h2>Talent</h2></div>
+        <div class="chips">
+          <span class="chip">Instinct</span><span class="chip on">Herbologie</span><span class="chip">Discrétion</span><span class="chip">Persuasion</span><span class="chip">Observation</span><span class="chip">Doigts agiles</span><span class="chip">Empratique</span>
+        </div>
+      </section>
+      <section>
+        <div class="sh"><h2>Mode de jeu</h2></div>
+        <div class="choices">
+          <div class="choice"><span class="radio"></span><span class="t"><b>Narratif</b><span>Vous décidez de l'issue des combats, sauf au-delà de 5 adversaires.</span></span></div>
+          <div class="choice on"><span class="radio"></span><span class="t"><b>Simplifié</b><span>Toutes les règles, avec 3 sauvegardes pour tout le livre.</span></span></div>
+          <div class="choice"><span class="radio"></span><span class="t"><b>Mortel</b><span>Toutes les règles. Mourir, c'est recommencer au chapitre 1.</span></span></div>
+        </div>
+      </section>
+      <section>
+        <div class="sh"><h2>Caractéristiques</h2></div>
+        <div class="rollrow"><span class="n">Points de vie<small>2 dés × 4 · obtenu 8</small></span><b>32</b><button class="rollbtn" aria-label="Relancer les points de vie"><svg class="i"><use href="#i-redo"/></svg></button></div>
+        <div class="rollrow"><span class="n">Chance<small>1 dé</small></span><b style="color:var(--craie-3)">–</b><button class="rollbtn"><svg class="i"><use href="#i-dice"/></svg>Lancer</button></div>
+        <div class="rollrow"><span class="n">Dextérité<small>Fixée à 7 pour tous les apprentis</small></span><b>7</b></div>
+        <button class="link" style="justify-content:flex-start">J'ai lancé mes propres dés</button>
+      </section>
+      <div class="dock"><button class="cta" style="border-color:var(--craie-3);color:var(--craie-3)" aria-disabled="true">Lancez d'abord la CHANCE</button></div>
+    </div>
+    <figcaption><b>4 · Premier lancement, nouvelle aventure</b>Un seul écran, pas d'assistant en étapes. L'onglet «&nbsp;Déjà en route&nbsp;» sert à ceux qui ont commencé le livre sur papier. Le bouton final reste éteint et dit ce qui manque, au lieu d'un message d'erreur.</figcaption>
+  </figure>
+
+  <!-- 4b. Déjà en route -->
+  <figure>
+    <div class="phone tall">
+      <div class="screen-h"><h1>Nouvel apprenti</h1></div>
+      <div style="padding:0 18px"><div class="seg" style="margin-top:4px"><span>Nouvelle aventure</span><span class="on">Déjà en route</span></div></div>
+      <p class="intro">Recopiez votre feuille papier. Tout reste modifiable ensuite.</p>
+      <div style="padding:0 18px">
+        <div class="field"><span>Dernier chapitre lu</span><div class="numf"><button aria-label="Chapitre précédent"><svg class="i"><use href="#i-minus"/></svg></button><b>§ 112</b><button aria-label="Chapitre suivant"><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+      </div>
+      <section style="padding-top:16px">
+        <div class="sh"><h2>Talent</h2></div>
+        <div class="chips"><span class="chip">Instinct</span><span class="chip on">Herbologie</span><span class="chip">Discrétion</span><span class="chip">Persuasion</span><span class="chip">Observation</span><span class="chip">Doigts agiles</span><span class="chip">Empratique</span></div>
+      </section>
+      <section>
+        <div class="sh"><h2>Mode de jeu</h2></div>
+        <div class="chips"><span class="chip">Narratif</span><span class="chip on">Simplifié</span><span class="chip">Mortel</span></div>
+      </section>
+      <section>
+        <div class="sh"><h2>Caractéristiques</h2></div>
+        <div class="stats-in">
+          <div class="field"><span>PV actuels</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>28</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>PV maximum</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>32</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>Chance</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>4</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>Dextérité</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>7</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+        </div>
+        <div class="field"><span>Sauvegardes déjà utilisées</span><div class="chips" style="margin-top:0"><span class="chip">0</span><span class="chip on">1</span><span class="chip">2</span><span class="chip">3</span></div></div>
+        <div class="hint"><svg class="i"><use href="#i-info"/></svg><span>Armes, effets, besace et notes se remplissent ensuite <b>directement sur la feuille</b>.</span></div>
+      </section>
+      <div class="dock"><button class="cta fill">Ouvrir ma feuille</button></div>
+    </div>
+    <figcaption><b>4b · Premier lancement, déjà en route</b>Pour qui a commencé le livre sur papier&nbsp;: on recopie le chapitre, le talent, le mode et les chiffres. Le reste se complète sur la feuille, avec les mêmes gestes qu'en cours de partie.</figcaption>
+  </figure>
+
+  <!-- 5. Saisie de l'ennemi -->
+  <figure>
+    <div class="phone">
+      <div class="screen-h"><button class="close" style="margin:0 0 0 -12px" aria-label="Annuler le combat"><svg class="i"><use href="#i-back"/></svg></button><h1>Nouveau combat</h1></div>
+      <p class="intro">Recopiez la fiche de l'ennemi donnée par le livre.</p>
+      <div style="padding:0 18px">
+        <div class="field"><span>Chapitre du combat</span><div class="numf"><button aria-label="Chapitre précédent"><svg class="i"><use href="#i-minus"/></svg></button><b>§ 112</b><button aria-label="Chapitre suivant"><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+        <div class="pair">
+          <div class="field"><span>Dextérité</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>7</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>Points de vie</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>50</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>Adversaires</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>7</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <div class="field"><span>Bonus de dégâts</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>0</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+        </div>
+        <div class="toggle"><span>L'ennemi frappe en premier</span><span class="sw" role="switch" aria-checked="false"></span></div>
+        <div class="hint"><svg class="i"><use href="#i-info"/></svg><span>Vous&nbsp;: <b>DEX 8</b>, dégâts <b>1 + 1 dé + 1</b>. Plusieurs adversaires comptent comme un seul.</span></div>
+      </div>
+      <div class="dock" style="display:grid;gap:4px">
+        <button class="cta fill"><svg class="i"><use href="#i-sword"/></svg>Commencer le combat</button>
+      </div>
+    </div>
+    <figcaption><b>5 · Saisie de l'ennemi</b>Pas de nom à taper&nbsp;: le combat est repéré par son chapitre, prérempli avec le dernier chapitre lu. Puis les quatre valeurs de la fiche, avec des boutons − / + faciles d'une main. Le rappel de vos propres chiffres évite d'aller vérifier.</figcaption>
+  </figure>
+
+  <!-- 6. Combat tour par tour -->
+  <figure>
+    <div class="phone">
+      <div class="versus">
+        <div class="side-c"><div class="who">Vous</div><b class="crit">6<small> / 32</small></b><div class="bar"><u class="r" style="width:19%"></u></div><div class="st">CHANCE 3 · DEX 8</div></div>
+        <div class="side-c"><div class="who">Ennemi · § 112</div><b>5<small> / 50</small></b><div class="bar"><u style="width:10%"></u></div><div class="st">DEX 7</div></div>
+      </div>
+      <div class="crit-banner"><svg class="i"><use href="#i-alert"/></svg><span>État critique. La CHANCE sera dépensée seule si un coup peut achever l'ennemi.</span></div>
+      <div class="turnh"><h2>Tour 7</h2><span class="label">vous frappez en premier</span></div>
+      <div class="log">
+        <div class="t-row latest">
+          <div class="who">VOUS ATTAQUEZ</div>
+          <div class="what hit">2 dés = <b>9</b> → <b>8</b>, touché. Dégâts 1 + 3 + 1 = <b>5</b>. Ennemi achevable.</div>
+          <span class="auto"><svg class="i"><use href="#i-clover"/></svg>1 CHANCE dépensée automatiquement</span>
+          <div class="manual"><span>Changer ce jet avec la CHANCE&nbsp;?</span><button class="inline-act"><svg class="i"><use href="#i-clover"/></svg>Ajuster</button></div>
+        </div>
+        <div class="t-row older">
+          <div class="who">TOUR 6 · L'ENNEMI RIPOSTE</div>
+          <div class="what">2 dés = <b>6</b>, touché. Dégâts 1 + 4 = <span class="dmg-you">−5 PV</span></div>
+        </div>
+        <div class="t-row older">
+          <div class="who">TOUR 6 · VOUS ATTAQUEZ</div>
+          <div class="what miss">2 dés = 10, raté.</div>
+        </div>
+      </div>
+      <div class="dock2">
+        <button class="ghost"><svg class="i"><use href="#i-forward"/></svg>Finir</button>
+        <button class="cta fill">Tour suivant</button>
+      </div>
+    </div>
+    <figcaption><b>6 · Combat tour par tour</b>Les deux camps face à face, le tour en cours en clair, les précédents estompés. Chaque dépense automatique de CHANCE est signalée en jaune. «&nbsp;Ajuster&nbsp;» n'existe que sur le dernier jet, tant que le tour suivant n'est pas lancé. «&nbsp;Finir&nbsp;» joue le reste d'un coup.</figcaption>
+  </figure>
+
+  <!-- 7. Victoire -->
+  <figure>
+    <div class="phone">
+      <div class="result">
+        <div class="ico-xl"><svg class="i"><use href="#i-flag"/></svg></div>
+        <div class="big">Ennemi du § 112 vaincu</div>
+        <p>En 7 tours. Reprenez la lecture au chapitre indiqué par le livre.</p>
+      </div>
+      <div class="delta">
+        <div class="row"><span class="n">Points de vie</span><b><span class="from">28</span>6</b></div>
+        <div class="row"><span class="n">Chance</span><b><span class="from">4</span>3</b></div>
+        <div class="row"><span class="n" style="color:var(--craie-2)">Dont 1 point dépensé automatiquement</span></div>
+      </div>
+      <div class="dock" style="display:grid;gap:4px">
+        <button class="cta fill">Retour à la feuille</button>
+        <button class="link">Voir le détail des 7 tours</button>
+      </div>
+    </div>
+    <figcaption><b>7 · Fin de combat</b>Ce qui a changé, ancienne valeur barrée. Le combat ne décide pas du chapitre suivant&nbsp;: c'est le livre.</figcaption>
+  </figure>
+
+  <!-- 8. Mode narratif -->
+  <figure>
+    <div class="phone">
+      <div class="screen-h"><button class="close" style="margin:0 0 0 -12px" aria-label="Annuler"><svg class="i"><use href="#i-back"/></svg></button><h1>Combat</h1></div>
+      <p class="intro">Mode narratif · § 98 · 1 adversaire</p>
+      <div class="result" style="padding-top:28px">
+        <div class="big" style="font-size:32px">Comment s'est terminé ce combat&nbsp;?</div>
+      </div>
+      <div class="big-choice">
+        <button><svg class="i"><use href="#i-flag"/></svg>Gagné</button>
+        <button class="l"><svg class="i"><use href="#i-skull"/></svg>Perdu</button>
+      </div>
+      <div style="padding:18px"><button class="link" style="width:100%">Jouer le combat aux dés</button></div>
+      <div class="hint" style="margin:0 18px"><svg class="i"><use href="#i-info"/></svg><span>Au-delà de 5 adversaires, le combat se joue aux dés, même en mode narratif.</span></div>
+    </div>
+    <figcaption><b>8 · Combat en mode narratif</b>Deux grandes réponses. Si l'ennemi compte plus de 5 adversaires, cet écran est sauté et le combat se joue normalement.</figcaption>
+  </figure>
+
+  <!-- 9. PV à zéro -->
+  <figure>
+    <div class="phone">
+      <div class="result">
+        <div class="ico-xl r"><svg class="i"><use href="#i-skull"/></svg></div>
+        <div class="big lose">Vos points de vie sont à 0</div>
+        <p>Suivez ce qu'indique le livre. L'app ne décide rien à votre place.</p>
+      </div>
+      <div style="padding:26px 18px 0;display:grid;gap:10px">
+        <button class="ghost" style="justify-content:space-between;padding:0 16px"><span>Reprendre la sauvegarde · § 87</span><svg class="i"><use href="#i-redo"/></svg></button>
+        <button class="ghost" style="justify-content:space-between;padding:0 16px"><span>Le livre me laisse continuer</span><svg class="i"><use href="#i-forward"/></svg></button>
+        <button class="ghost" style="justify-content:space-between;padding:0 16px;color:var(--rouge);border-color:#4a2420"><span>Recommencer au chapitre 1</span><svg class="i"><use href="#i-redo"/></svg></button>
+      </div>
+      <div class="hint" style="margin:18px 18px 0"><svg class="i"><use href="#i-info"/></svg><span>Mode simplifié&nbsp;: on reprend toujours la <b>sauvegarde la plus récente</b>. Il vous en reste 2.</span></div>
+    </div>
+    <figcaption><b>9 · Points de vie à 0</b>Trois issues, aucune imposée. En mode mortel, la reprise de sauvegarde disparaît et «&nbsp;Recommencer&nbsp;» rappelle la perte des armes et de l'équipement.</figcaption>
+  </figure>
+
+  <!-- 10. Ajouter un effet -->
+  <figure>
+    <div class="phone">
+      <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 112</span></div>
+      <div class="dim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <h2 class="sh3">Nouvel effet<button class="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button></h2>
+        <label class="field"><span>Nom</span><div class="input">Bague de vigueur</div></label>
+        <div class="seg"><span class="on">Change une valeur</span><span>Simple rappel</span></div>
+        <div class="field"><span>Valeur modifiée</span>
+          <div class="chips" style="margin-top:0"><span class="chip">PV</span><span class="chip on">PV max</span><span class="chip">Chance</span><span class="chip">Dextérité</span><span class="chip">Dégâts</span></div>
+        </div>
+        <div class="pair" style="margin-top:4px">
+          <div class="field"><span>De combien</span><div class="numf"><button><svg class="i"><use href="#i-minus"/></svg></button><b>+2</b><button><svg class="i"><use href="#i-plus"/></svg></button></div></div>
+          <label class="field"><span>Durée (facultatif)</span><div class="input"><span class="ph">ex. 24 h</span></div></label>
+        </div>
+        <div class="hint" style="margin-top:12px"><svg class="i"><use href="#i-info"/></svg><span>PV max passera de <b>32 à 34</b>. Vous retirerez l'effet quand le livre le dira.</span></div>
+        <div class="btns" style="margin-top:14px"><button class="cta fill">Ajouter l'effet</button></div>
+      </div>
+    </div>
+    <figcaption><b>10 · Ajouter un effet</b>Soit l'effet change une valeur, que l'app recalcule, soit c'est un simple rappel en texte. L'aperçu dit tout de suite ce qui va changer.</figcaption>
+  </figure>
+
+  <!-- 11. Avertissements non bloquants -->
+  <figure>
+    <div class="phone">
+      <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 140</span></div>
+      <section style="padding-top:8px">
+        <div class="sh"><h2>Armes</h2><span class="meta" style="color:var(--rouge)">3 / 2</span></div>
+        <div class="row"><span class="n">Épée courte</span><span class="v">+1</span></div>
+        <div class="row"><span class="n">Bâton de l'Académie</span><span class="v">+0</span></div>
+        <div class="row"><span class="n">Dague d'os</span><span class="v">+1</span></div>
+        <div class="hint warn"><svg class="i"><use href="#i-alert"/></svg><span>Les règles permettent <b>2 armes</b>. Gardez-la si le livre l'autorise, sinon retirez-en une.</span></div>
+      </section>
+      <section>
+        <div class="sh"><h2>Besace</h2><span class="meta" style="color:var(--rouge)">25 / 24</span></div>
+        <div class="tally"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="over"></i></div>
+        <div class="row"><span class="n">Lanterne sourde</span><button class="x"><svg class="i"><use href="#i-x"/></svg></button></div>
+        <div class="hint warn"><svg class="i"><use href="#i-alert"/></svg><span>La besace est pleine. L'objet est ajouté quand même&nbsp;: retirez-en un si le livre le demande.</span></div>
+      </section>
+      <section>
+        <div class="row"><span class="n" style="color:var(--craie-3)">Boulons · pas de bourse</span><span class="v" style="color:var(--craie-3)">0</span></div>
+        <div class="hint"><svg class="i"><use href="#i-info"/></svg><span>Il faut une bourse pour garder des boulons. <b style="text-decoration:underline;text-underline-offset:3px">Compter quand même</b></span></div>
+      </section>
+      <div class="dock"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
+    </div>
+    <figcaption><b>11 · Dépassements</b>Le compteur passe au rouge et un message dit quoi faire, mais rien n'est bloqué&nbsp;: le livre peut toujours faire exception.</figcaption>
+  </figure>
+
+  <!-- 12. Historique des combats -->
+  <figure>
+    <div class="phone">
+      <div class="screen-h"><button class="close" style="margin:0 0 0 -12px" aria-label="Retour à la feuille"><svg class="i"><use href="#i-back"/></svg></button><h1>Combats</h1></div>
+      <p class="intro">3 combats · 2 gagnés · 40 PV perdus en tout</p>
+      <section style="padding-top:10px">
+        <div class="fight open"><span class="c">§ 112</span><span class="r"><b>Gagné</b><span>7 tours · 7 adversaires</span></span><span class="lost">−22 PV</span></div>
+        <div class="detail">
+          <div>PV <b>28 → 6</b> · CHANCE <b>4 → 3</b> (1 automatique)</div>
+          <div>Tour 7 · vous&nbsp;: 2 dés = 9 → 8, touché, <b>5 dégâts</b>. Ennemi achevé.</div>
+          <div>Tour 6 · ennemi&nbsp;: 2 dés = 6, touché, <b class="lost">−5 PV</b></div>
+          <div>Tour 6 · vous&nbsp;: 2 dés = 10, raté.</div>
+          <button class="add" style="min-height:44px">Les 11 lignes précédentes</button>
+        </div>
+        <div class="fight"><span class="c">§ 98</span><span class="r"><b>Gagné</b><span>Narratif · 1 adversaire</span></span><span></span></div>
+        <div class="fight l"><span class="c">§ 61</span><span class="r"><b>Perdu</b><span>4 tours · repris au § 52</span></span><span class="lost">−18 PV</span></div>
+      </section>
+    </div>
+    <figcaption><b>12 · Historique des combats</b>Du plus récent au plus ancien, chaque combat repéré par son chapitre. Un appui déplie le détail&nbsp;: PV et CHANCE avant/après, puis chaque jet. Ouvert depuis la feuille ou depuis la fin d'un combat.</figcaption>
+  </figure>
+
+  </div>
+</div>
+</body>
+</html>
