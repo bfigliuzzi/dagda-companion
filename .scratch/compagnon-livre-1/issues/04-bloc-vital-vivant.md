@@ -10,10 +10,10 @@ Références : `DESIGN.md` (Steppers, Signature : la trace de craie, Hints), `do
 
 **Status:** ready-for-agent
 
-- [ ] « − » et « + » changent les PV de 1 ; chaque changement est enregistré tout de suite.
-- [ ] Un appui sur une valeur (PV, PV max, CHANCE, DEX) permet de la corriger à la main.
-- [ ] L'ancienne valeur s'affiche barrée en rouge avant la nouvelle, puis s'efface en 1,2 s ; l'animation se joue une fois et respecte `prefers-reduced-motion`.
-- [ ] Sous 7 PV, le chiffre et la barre passent en rouge.
-- [ ] Le « + » s'arrête au maximum ; une saisie au-dessus du maximum est acceptée avec un indice non bloquant.
-- [ ] À 0 PV, rien n'est décidé à la place du lecteur (pas de mort automatique).
-- [ ] Les règles de mise à jour des PV sont testées.
+- [x] « − » et « + » changent les PV de 1 ; chaque changement est enregistré tout de suite.
+- [x] Un appui sur une valeur (PV, PV max, CHANCE, DEX) permet de la corriger à la main.
+- [x] L'ancienne valeur s'affiche barrée en rouge avant la nouvelle, puis s'efface en 1,2 s ; l'animation se joue une fois et respecte `prefers-reduced-motion`.
+- [x] Sous 7 PV, le chiffre et la barre passent en rouge.
+- [x] Le « + » s'arrête au maximum ; une saisie au-dessus du maximum est acceptée avec un indice non bloquant.
+- [x] À 0 PV, rien n'est décidé à la place du lecteur (pas de mort automatique).
+- [x] Les règles de mise à jour des PV sont testées.

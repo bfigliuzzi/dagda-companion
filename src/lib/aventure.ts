@@ -202,6 +202,38 @@ export function recopierAventure(recopie: Recopie): Aventure {
   };
 }
 
+/** Sous ce nombre de POINTS DE VIE, le lecteur est en état critique (moins de 7). */
+export const SEUIL_CRITIQUE = 7;
+
+/** État critique : moins de 7 POINTS DE VIE. */
+export function estCritique(pointsDeVie: number): boolean {
+  return pointsDeVie < SEUIL_CRITIQUE;
+}
+
+/** Le « − » de la feuille : 1 PV de moins, sans descendre sous 0. À 0, le lecteur décide seul de la suite. */
+export function retirerUnPointDeVie(pointsDeVie: number): number {
+  return Math.max(0, pointsDeVie - 1);
+}
+
+/**
+ * Le « + » de la feuille : 1 PV de plus, jusqu'au maximum. Des PV déjà
+ * au-dessus du maximum (saisis à la main, le livre peut déroger) ne bougent pas.
+ */
+export function ajouterUnPointDeVie(
+  pointsDeVie: number,
+  pointsDeVieMax: number,
+): number {
+  return pointsDeVie >= pointsDeVieMax ? pointsDeVie : pointsDeVie + 1;
+}
+
+/** Des PV au-dessus du maximum : accepté, mais la feuille le signale. */
+export function depasseLeMaximum({
+  pointsDeVie,
+  pointsDeVieMax,
+}: Pick<Personnage, "pointsDeVie" | "pointsDeVieMax">): boolean {
+  return pointsDeVie > pointsDeVieMax;
+}
+
 /** Rappel en tête de feuille : « Herbologie · Mode simplifié ». */
 export function resume({ mode, personnage }: Aventure): string {
   return `${personnage.talent} · Mode ${MODES[mode].nom.toLowerCase()}`;

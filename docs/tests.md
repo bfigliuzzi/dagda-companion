@@ -42,10 +42,11 @@ Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le v
 
 ### 4. Bout en bout : une fine couche
 
-Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite build` puis `vite preview`). Deux scénarios en tout :
+Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite build` puis `vite preview`). Trois scénarios en tout :
 
 - l'app construite s'installe comme PWA (manifeste et service worker présents) et fonctionne hors ligne après un premier chargement ;
-- un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure.
+- un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure ;
+- la trace de craie : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime (jsdom ne calcule pas les animations CSS).
 
 Pour fixer les dés dans le navigateur, l'app accepte une graine de dés (valeur de départ qui rend les tirages reproductibles) lue seulement en mode test. Le ticket qui pose le moteur de dés en fixe la forme.
 

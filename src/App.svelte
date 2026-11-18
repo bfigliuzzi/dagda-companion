@@ -31,7 +31,7 @@
       chapitre={aventure.chapitre}
       onchapitre={(chapitre) => (aventure!.chapitre = chapitre)}
     />
-    <BlocVital personnage={aventure.personnage} />
+    <BlocVital bind:personnage={aventure.personnage} />
   </main>
 {:else}
   <NouvelApprenti {de} oncommencer={(nouvelle) => (aventure = nouvelle)} />
