@@ -47,6 +47,15 @@ export interface Personnage {
 /** Nombre de sauvegardes dont dispose le lecteur en mode simplifié, pour tout le livre. */
 export const SAUVEGARDES_DU_LIVRE = 3;
 
+/** Une arme : un nom et un bonus de dommage (épée courte +1). Elle ne prend pas de place dans la besace. */
+export interface Arme {
+  nom: string;
+  bonus: number;
+}
+
+/** Nombre d'armes que les règles permettent de porter en même temps. */
+export const ARMES_MAX = 2;
+
 export interface Aventure {
   /** Dernier chapitre lu, noté par le lecteur avant une pause. */
   chapitre: number;
@@ -58,6 +67,8 @@ export interface Aventure {
   sauvegardesUtilisees: number;
   /** Notes libres du lecteur (texte brut, sauts de ligne compris). */
   notes: string;
+  /** Les armes du lecteur, dans l'ordre où il les a ajoutées. */
+  armes: Arme[];
   personnage: Personnage;
 }
 
@@ -116,6 +127,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     mode: mode!,
     sauvegardesUtilisees: 0,
     notes: "",
+    armes: [],
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -196,6 +208,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
     mode: mode!,
     sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
     notes: "",
+    armes: [],
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -204,6 +217,31 @@ export function recopierAventure(recopie: Recopie): Aventure {
       dexterite: recopie.dexterite!,
     },
   };
+}
+
+/** Un bonus de dommage : entier, positif, nul ou négatif (un malus existe peut-être dans le livre). */
+export function estUnBonusDeDegats(valeur: unknown): valeur is number {
+  return Number.isInteger(valeur);
+}
+
+/**
+ * Le bonus de dommage total des armes portées : la somme des bonus (choix par
+ * défaut de docs/regles-livre-1.md, le livre ne précise pas encore le cumul).
+ * Le combat l'ajoute aux dégâts ; les effets pourront s'y ajouter à leur tour.
+ * Au-delà de 2 armes, toutes comptent : la feuille avertit sans rien retirer.
+ */
+export function bonusDeDegatsDesArmes(armes: readonly Arme[]): number {
+  return armes.reduce((total, arme) => total + arme.bonus, 0);
+}
+
+/** Plus d'armes que les règles n'en permettent : la feuille le signale, sans bloquer. */
+export function portePlusDArmesQueLesRegles(armes: readonly Arme[]): boolean {
+  return armes.length > ARMES_MAX;
+}
+
+/** Un bonus écrit avec son signe : « +1 », « +0 », « −2 ». */
+export function formaterUnBonus(bonus: number): string {
+  return bonus < 0 ? `−${-bonus}` : `+${bonus}`;
 }
 
 /** Sous ce nombre de POINTS DE VIE, le lecteur est en état critique (moins de 7). */
@@ -246,15 +284,23 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { chapitre, mode, personnage, sauvegardesUtilisees, notes } =
+  const { chapitre, mode, personnage, sauvegardesUtilisees, notes, armes } =
     valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
     typeof notes === "string" &&
+    Array.isArray(armes) &&
+    armes.every(estUneArme) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );
+}
+
+function estUneArme(valeur: unknown): valeur is Arme {
+  if (typeof valeur !== "object" || valeur === null) return false;
+  const { nom, bonus } = valeur as Arme;
+  return typeof nom === "string" && estUnBonusDeDegats(bonus);
 }
 
 function estUnPersonnage(valeur: unknown): valeur is Personnage {

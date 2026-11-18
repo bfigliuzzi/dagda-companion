@@ -12,6 +12,7 @@ function enregistrerAventure() {
     mode: "narratif",
     sauvegardesUtilisees: 0,
     notes: "",
+    armes: [],
     personnage: {
       talent: "Instinct",
       pointsDeVieMax: 24,

@@ -21,11 +21,21 @@
     /** La règle de la valeur : `true` quand la saisie est acceptée. */
     valide: (valeur: number) => boolean;
     onchange: (valeur: number) => void;
+    /** Comment la valeur s'écrit à l'écran (« +1 » pour un bonus) ; le nombre brut par défaut. */
+    affiche?: (valeur: number) => string;
     /** Corps du texte dans le champ, quand il doit être plus petit que la valeur affichée. */
     tailleSaisie?: string;
   }
 
-  let { valeur, nom, champ, valide, onchange, tailleSaisie }: Props = $props();
+  let {
+    valeur,
+    nom,
+    champ,
+    valide,
+    onchange,
+    affiche = String,
+    tailleSaisie,
+  }: Props = $props();
   let enSaisie = $state(false);
   let texte = $state("");
 
@@ -67,7 +77,7 @@
     aria-label="{nom}, modifier : {valeur}"
     onclick={ouvrir}
   >
-    {valeur}
+    {affiche(valeur)}
   </button>
 {/if}
 

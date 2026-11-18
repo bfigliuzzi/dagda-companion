@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   ajouterUnPointDeVie,
+  ARMES_MAX,
+  bonusDeDegatsDesArmes,
+  estUnBonusDeDegats,
+  formaterUnBonus,
+  portePlusDArmesQueLesRegles,
   ceQuiManqueEnRoute,
   commencerAventure,
   depasseLeMaximum,
@@ -28,6 +33,7 @@ describe("recopier un personnage déjà en route", () => {
       mode: "simplifie",
       sauvegardesUtilisees: 1,
       notes: "",
+      armes: [],
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -137,5 +143,68 @@ describe("mettre à jour les POINTS DE VIE", () => {
     expect(depasseLeMaximum({ pointsDeVie: 32, pointsDeVieMax: 32 })).toBe(
       false,
     );
+  });
+});
+
+describe("armes", () => {
+  const epeeCourte = { nom: "Épée courte", bonus: 1 };
+  const baton = { nom: "Bâton de l'Académie", bonus: 0 };
+  const dague = { nom: "Dague d'os", bonus: 1 };
+
+  it("commence une aventure, nouvelle ou recopiée, sans arme", () => {
+    expect(recopierAventure(feuillePapier).armes).toEqual([]);
+    expect(
+      commencerAventure({
+        talent: "Instinct",
+        mode: "narratif",
+        pointsDeVieMax: 24,
+        chance: 3,
+      }).armes,
+    ).toEqual([]);
+  });
+
+  it("n'ajoute aucun bonus sans arme", () => {
+    expect(bonusDeDegatsDesArmes([])).toBe(0);
+  });
+
+  it("retrouve le +1 de l'épée courte seule", () => {
+    expect(bonusDeDegatsDesArmes([epeeCourte])).toBe(1);
+  });
+
+  it("choix par défaut : les bonus des armes portées s'additionnent", () => {
+    expect(
+      bonusDeDegatsDesArmes([epeeCourte, { nom: "Dague d'os", bonus: 2 }]),
+    ).toBe(3);
+    expect(bonusDeDegatsDesArmes([epeeCourte, baton])).toBe(1);
+  });
+
+  it("additionne aussi un bonus négatif", () => {
+    expect(
+      bonusDeDegatsDesArmes([epeeCourte, { nom: "Masse", bonus: -3 }]),
+    ).toBe(-2);
+  });
+
+  it("compte au-delà de 2 armes sans rien retirer", () => {
+    expect(bonusDeDegatsDesArmes([epeeCourte, baton, dague])).toBe(2);
+  });
+
+  it("ne dépasse pas les règles jusqu'à 2 armes, les dépasse à partir de 3", () => {
+    expect(ARMES_MAX).toBe(2);
+    expect(portePlusDArmesQueLesRegles([epeeCourte, baton])).toBe(false);
+    expect(portePlusDArmesQueLesRegles([epeeCourte, baton, dague])).toBe(true);
+  });
+
+  it("accepte tout bonus entier, positif, nul ou négatif, mais ni virgule ni texte", () => {
+    expect(estUnBonusDeDegats(0)).toBe(true);
+    expect(estUnBonusDeDegats(2)).toBe(true);
+    expect(estUnBonusDeDegats(-1)).toBe(true);
+    expect(estUnBonusDeDegats(1.5)).toBe(false);
+    expect(estUnBonusDeDegats("1")).toBe(false);
+  });
+
+  it("écrit un bonus avec son signe", () => {
+    expect(formaterUnBonus(1)).toBe("+1");
+    expect(formaterUnBonus(0)).toBe("+0");
+    expect(formaterUnBonus(-2)).toBe("−2");
   });
 });

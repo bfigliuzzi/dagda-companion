@@ -8,7 +8,7 @@ Références : `docs/regles-livre-1.md` (Armes, cumul des bonus en choix par dé
 
 **Status:** ready-for-agent
 
-- [ ] On peut ajouter, modifier et retirer une arme ; chaque changement est enregistré tout de suite.
-- [ ] Chaque ligne montre le nom à gauche et le bonus à droite (18 px, graisse 700).
-- [ ] Le titre de section indique le nombre d'armes sur 2 ; au-delà, compteur rouge et indice non bloquant.
-- [ ] Le bonus de dommage total des armes est calculé et testé.
+- [x] On peut ajouter, modifier et retirer une arme ; chaque changement est enregistré tout de suite.
+- [x] Chaque ligne montre le nom à gauche et le bonus à droite (18 px, graisse 700).
+- [x] Le titre de section indique le nombre d'armes sur 2 ; au-delà, compteur rouge et indice non bloquant.
+- [x] Le bonus de dommage total des armes est calculé et testé.

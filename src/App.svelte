@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Armes from "./lib/Armes.svelte";
   import BlocVital from "./lib/BlocVital.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
@@ -33,9 +34,10 @@
       onchapitre={(chapitre) => (aventure!.chapitre = chapitre)}
     />
     <BlocVital bind:personnage={aventure.personnage} />
+    <Armes bind:armes={aventure.armes} />
     <!--
-      Ordre de la feuille (maquette) : Armes, Effets, Besace et Derniers combats
-      viennent ici, entre le bloc vital et les Notes ; la section Aventure suit
+      Ordre de la feuille (maquette) : Effets, Besace et Derniers combats
+      viennent ici, entre les Armes et les Notes ; la section Aventure suit
       les Notes, tout en bas.
     -->
     <Notes bind:notes={aventure.notes} />

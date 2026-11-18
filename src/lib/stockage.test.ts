@@ -7,6 +7,7 @@ const herboriste: Aventure = {
   mode: "simplifie",
   sauvegardesUtilisees: 1,
   notes: "",
+  armes: [],
   personnage: {
     talent: "Herbologie",
     pointsDeVieMax: 32,
@@ -28,10 +29,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 4", () => {
+  it("enregistre l'aventure avec le numéro de version 5", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 4,
+      version: 5,
       aventure: herboriste,
     });
   });
@@ -75,6 +76,7 @@ describe("stockage de l'aventure", () => {
       ...herboriste,
       sauvegardesUtilisees: 0,
       notes: "",
+      armes: [],
     });
   });
 
@@ -88,10 +90,41 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual({ ...herboriste, notes: "" });
   });
 
+  it("migre un enregistrement de la version 4 : aucune arme", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.armes;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 4, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual({ ...herboriste, armes: [] });
+  });
+
+  it("retrouve les armes enregistrées", () => {
+    const armee = { ...herboriste, armes: [{ nom: "Épée courte", bonus: 1 }] };
+    ecrireAventure(localStorage, armee);
+    expect(lireAventure(localStorage)).toEqual(armee);
+  });
+
+  it("ne trouve aucune aventure si une arme n'a pas de nom ou un bonus entier", () => {
+    for (const armes of [
+      "épée",
+      [{ nom: 3, bonus: 1 }],
+      [{ nom: "Épée", bonus: 1.5 }],
+      [null],
+    ]) {
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({ version: 5, aventure: { ...herboriste, armes } }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+    }
+  });
+
   it("ne trouve aucune aventure si les notes ne sont pas du texte", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
-      JSON.stringify({ version: 4, aventure: { ...herboriste, notes: 12 } }),
+      JSON.stringify({ version: 5, aventure: { ...herboriste, notes: 12 } }),
     );
     expect(lireAventure(localStorage)).toBeNull();
   });
