@@ -1,23 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { enregistrementDeTest } from "./aventure";
 
-const aventure = {
-  version: 4,
-  aventure: {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    notes: "",
-    armes: [],
-    besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
-  },
-};
+const aventure = enregistrementDeTest();
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((enregistrement) => {

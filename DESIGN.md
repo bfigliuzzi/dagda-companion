@@ -11,6 +11,7 @@ colors:
   craie-3: "#85837a"
   jaune: "#f2c94c"
   rouge: "#e86a5a"
+  rouge-trait: "#4a2420"
   vert: "#7cc4a8"
 typography:
   display:
@@ -227,6 +228,7 @@ Une ardoise noire, des craies neutres légèrement chaudes, et trois couleurs sa
 
 ### Secondary
 - **Craie rouge** (`rouge`) : ce qu'on perd et ce qui menace. Ancienne valeur barrée, bouton « − » des PV, PV en état critique et leur barre, compteur en dépassement (« 3 / 2 », trait de besace en trop), bandeau d'état critique, icône d'avertissement, issue « Perdu », dégâts subis.
+- **Rouge sombre** (`rouge-trait`, `#4a2420`) : le contour du bouton secondaire de danger, à la place du contour `trait`, quand le texte est déjà en rouge (« Recommencer au chapitre 1 »). C'est un rouge de filet, jamais un texte ni un aplat ; il n'annonce rien de plus que `rouge`.
 
 ### Tertiary
 - **Craie verte** (`vert`) : un effet actif. Nom d'un effet dans la liste Effets, valeur effective modifiée par un effet (DEX 8) et sa ligne d'explication (« base 7 · potion +1 »).
@@ -306,7 +308,7 @@ Contour de craie, jamais d'aplat sauf pour valider dans un panneau.
 - **Bouton de dés (principal):** contour jaune de 2px, texte jaune 20px graisse 800, icône de dé 26px, hauteur 58px, pleine largeur. Fixé en bas de la feuille.
 - **Valider dans un panneau:** même forme, aplat jaune, texte noir.
 - **Désactivé:** contour et texte en craie pâle ; le libellé dit ce qui manque (« Lancez d'abord la CHANCE ») au lieu d'un message d'erreur.
-- **Secondaire (ghost):** contour `trait` de 2px, texte craie 700, hauteur 52px. Variante de danger : texte rouge.
+- **Secondaire (ghost):** contour `trait` de 2px, texte craie 700, hauteur 52px. Variante de danger : texte rouge, contour `rouge-trait`.
 - **Action en ligne (« Combattre », « Ajuster »):** pilule à contour craie de 2px, hauteur 44px, icône 18px.
 - **Ajouter:** texte craie grise graisse 700 précédé d'un +, sans contour.
 - **Lien:** texte craie grise souligné, soulignement en craie pâle décalé de 4px.
@@ -340,7 +342,7 @@ Les compteurs se dessinent en traits de craie verticaux à coins de 2px. Sauvega
 Indice non bloquant sous un bloc : trait `trait` de 2px au-dessus, icône 20px jaune (information) ou rouge (avertissement), texte 14px craie grise avec les chiffres utiles en craie. Il dit quoi faire, il n'empêche rien. Le bandeau d'état critique en combat est la seule version encadrée : contour rouge de 2px, coins 12px.
 
 ### Bottom sheet
-Panneau de dés et d'ajout d'effet. Fond `ardoise-1`, trait de craie de 2px en haut, coins du haut à 22px, poignée 44 × 5px en craie pâle, titre 22px graisse 800 avec bouton de fermeture 44px. Les PV restent visibles au-dessus du voile.
+Panneau de dés et d'ajout d'effet. Il glisse depuis le bas en 0,22 s à l'ouverture, une fois, sans mouvement à la fermeture (ticket 05) ; sans animation si le lecteur la réduit. Fond `ardoise-1`, trait de craie de 2px en haut, coins du haut à 22px, poignée 44 × 5px en craie pâle, titre 22px graisse 800 avec bouton de fermeture 44px. Les PV restent visibles au-dessus du voile.
 
 ### Dice dock
 Panneau de dés : sélecteur 1 dé / 2 dés, dés dessinés de 84px (trait craie de 3px, points de 14px), total en 64px, ligne d'ajustement de la CHANCE (creux `ardoise-2` + pas à pas), puis bouton de validation. Quand le total est ajusté, l'ancien total est barré en rouge 36px juste avant.
@@ -356,7 +358,7 @@ Panneau de dés : sélecteur 1 dé / 2 dés, dés dessinés de 84px (trait craie
 Historique des combats : grille 64px / 1fr / auto, hauteur 56px. Chapitre 18px graisse 800, issue 16px (rouge si « Perdu ») avec un sous-texte 13px, PV perdus en rouge à droite. Un appui déplie le détail (14px craie grise, valeurs en craie, pertes en rouge).
 
 ### Signature : la trace de craie
-Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graisse 700, trait de barre de 3px, 2px dans les lignes) juste avant la nouvelle, puis s'efface en 1,2 s avec un fondu en sortie exponentielle. L'ancienne valeur précède toujours la nouvelle, dans le sens de lecture. C'est la seule animation du système ; elle se joue une fois, jamais en boucle.
+Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graisse 700, trait de barre de 3px, 2px dans les lignes) juste avant la nouvelle, puis s'efface en 1,2 s avec un fondu en sortie exponentielle. L'ancienne valeur précède toujours la nouvelle, dans le sens de lecture. C'est la seule animation d'une valeur. Le système n'a qu'un autre mouvement, le glissement du panneau (voir « Bottom sheet »), et aucun des deux ne se répète : chacun se joue une fois, et `prefers-reduced-motion` les supprime tous les deux.
 
 ## Do's and Don'ts
 
@@ -374,6 +376,6 @@ Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graiss
 - **Don't** ajouter d'onglets ni de barre de navigation : la feuille est une seule page ; le contrôle segmenté ne change que le mode d'un formulaire ou d'un panneau.
 - **Don't** regrouper le contenu dans des cartes remplies ; les creux `ardoise-2` sont réservés aux champs, au contrôle segmenté, aux lignes d'ajustement et aux interrupteurs, et `ardoise-1` au panneau.
 - **Don't** utiliser d'ombre portée ni de texture.
-- **Don't** utiliser d'animation continue ou en boucle ; seule la trace de craie s'anime, une fois.
+- **Don't** utiliser d'animation continue ou en boucle ; seuls la trace de craie et le glissement du panneau bougent, chacun une fois.
 - **Don't** utiliser une seconde famille de caractères ni des chiffres proportionnels.
 - **Don't** donner un aplat de couleur au bouton de dés de la feuille : il reste en contour jaune ; l'aplat jaune sert à valider dans un panneau.

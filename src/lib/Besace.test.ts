@@ -39,9 +39,9 @@ const besaceEnregistree = () =>
   JSON.parse(localStorage.getItem(CLE_STOCKAGE)!).aventure.besace;
 const traits = () => dansSection().getByRole("img").querySelectorAll("i");
 const traitsRouges = () =>
-  dansSection().getByRole("img").querySelectorAll("i.over");
+  dansSection().getByRole("img").querySelectorAll('i[data-etat="en-trop"]');
 const traitsDeCraie = () =>
-  dansSection().getByRole("img").querySelectorAll("i.f");
+  dansSection().getByRole("img").querySelectorAll('i[data-etat="occupe"]');
 
 async function ajouter(
   lecteur: ReturnType<typeof userEvent.setup>,
@@ -181,7 +181,10 @@ describe("les 24 traits de comptage", () => {
     expect(traitsDeCraie()).toHaveLength(24);
     expect(traitsRouges()).toHaveLength(0);
     expect(dansSection().queryByRole("note")).not.toBeInTheDocument();
-    expect(dansSection().getByText("24 / 24")).not.toHaveClass("depasse");
+    expect(dansSection().getByText("24 / 24")).not.toHaveAttribute(
+      "data-etat",
+      "depasse",
+    );
   });
 
   it("chaque objet en trop ajoute un trait rouge au-delà des 24", () => {
@@ -190,7 +193,10 @@ describe("les 24 traits de comptage", () => {
     expect(traits()).toHaveLength(26);
     expect(traitsDeCraie()).toHaveLength(24);
     expect(traitsRouges()).toHaveLength(2);
-    expect(dansSection().getByText("26 / 24")).toHaveClass("depasse");
+    expect(dansSection().getByText("26 / 24")).toHaveAttribute(
+      "data-etat",
+      "depasse",
+    );
   });
 });
 

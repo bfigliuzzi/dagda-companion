@@ -90,11 +90,13 @@
 <section aria-labelledby="{id}-titre">
   <div class="sh">
     <h2 id="{id}-titre">Armes</h2>
-    <span class="meta" class:depasse>
+    <span class="meta" data-etat={depasse ? "depasse" : undefined}>
       {armes.length} / {ARMES_MAX} ·
       <TraceDeCraie valeur={degats} barre="2px" />
-      <span class:vert={ligne !== null}>{degats} aux dégâts</span>
-      {#if ligne}<small class="vert">{ligne}</small>{/if}
+      <span data-etat={ligne !== null ? "modifie" : undefined}>
+        {degats} aux dégâts
+      </span>
+      {#if ligne}<small data-etat="modifie">{ligne}</small>{/if}
     </span>
   </div>
 
@@ -230,11 +232,11 @@
   .meta {
     text-align: right;
   }
-  .meta.depasse {
+  .meta[data-etat="depasse"] {
     color: var(--rouge);
   }
   /* Craie verte : le bonus changé par un effet, et sa ligne d'explication. */
-  .vert {
+  [data-etat="modifie"] {
     color: var(--vert);
   }
   .meta small {
@@ -280,13 +282,14 @@
   .saisie {
     flex: 1;
     min-width: 0;
-    height: 36px;
-    padding: 0 var(--esp-sm);
+    height: 52px;
+    padding: 0 14px;
     background: var(--ardoise-2);
     border: 2px solid var(--jaune);
     border-radius: var(--r);
     outline: none;
     font: inherit;
+    font-size: 17px;
     color: var(--craie);
   }
 

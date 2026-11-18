@@ -83,7 +83,12 @@
 
 <svelte:window onkeydown={touche} />
 
-<div class="voile" role="presentation" onclick={onfermer}></div>
+<div
+  class="voile"
+  data-testid="voile"
+  role="presentation"
+  onclick={onfermer}
+></div>
 <div
   class="panneau"
   role="dialog"

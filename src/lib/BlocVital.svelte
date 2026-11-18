@@ -128,17 +128,22 @@
     <div class="etiquette">
       <span id="{id}-pv">Points de vie</span>
       {#if affiche.pointsDeVie.explication}
-        <small class="vert">{affiche.pointsDeVie.explication}</small>
+        <small data-etat="modifie">{affiche.pointsDeVie.explication}</small>
       {/if}
       {#if affiche.pointsDeVieMax.explication}
-        <small class="vert">max : {affiche.pointsDeVieMax.explication}</small>
+        <small data-etat="modifie">
+          max : {affiche.pointsDeVieMax.explication}
+        </small>
       {/if}
     </div>
     <div class="num">
       <TraceDeCraie valeur={pv} taille="24px" depuis={avant.pointsDeVie} />
       <b
-        class:critique
-        class:vert={!critique && affiche.pointsDeVie.explication !== null}
+        data-etat={critique
+          ? "critique"
+          : affiche.pointsDeVie.explication !== null
+            ? "modifie"
+            : undefined}
       >
         <ValeurEditable
           valeur={pv}
@@ -151,7 +156,9 @@
       </b>
       <span
         class="max"
-        class:vert={affiche.pointsDeVieMax.explication !== null}
+        data-etat={affiche.pointsDeVieMax.explication !== null
+          ? "modifie"
+          : undefined}
       >
         /
         <TraceDeCraie valeur={max} taille="24px" />
@@ -165,7 +172,10 @@
       </span>
     </div>
     <div class="barre" aria-hidden="true">
-      <u class:critique style:width="{remplissage}%"></u>
+      <u
+        data-etat={critique ? "critique" : undefined}
+        style:width="{remplissage}%"
+      ></u>
     </div>
     {#if critique}<span class="sr">état critique</span>{/if}
     <div class="steps">
@@ -197,7 +207,7 @@
       <div class="stat" role="group" aria-labelledby="{id}-{cible}">
         <span class="etiquette">
           <span id="{id}-{cible}">{nom}</span>
-          {#if explication}<small class="vert">{explication}</small>{/if}
+          {#if explication}<small data-etat="modifie">{explication}</small>{/if}
         </span>
         <span class="valeur">
           <TraceDeCraie
@@ -206,7 +216,7 @@
             barre="2px"
             depuis={cible === "chance" ? avant.chance : undefined}
           />
-          <b class:vert={explication !== null}>
+          <b data-etat={explication !== null ? "modifie" : undefined}>
             <ValeurEditable
               {valeur}
               {nom}
@@ -335,12 +345,12 @@
     text-align: left;
   }
 
-  .critique {
+  [data-etat="critique"] {
     color: var(--rouge);
   }
 
   /* Craie verte : une valeur changée par un effet, et sa ligne d'explication. */
-  .vert {
+  [data-etat="modifie"] {
     color: var(--vert);
   }
 
@@ -364,7 +374,7 @@
     border-radius: 3px;
   }
 
-  .barre u.critique {
+  .barre u[data-etat="critique"] {
     background: var(--rouge);
   }
 

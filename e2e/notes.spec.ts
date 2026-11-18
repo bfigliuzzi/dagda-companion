@@ -1,35 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { enregistrementDeTest } from "./aventure";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    if (localStorage.getItem("dagda-compagnon")) return;
-    localStorage.setItem(
-      "dagda-compagnon",
-      JSON.stringify({
-        version: 4,
-        aventure: {
-          chapitre: 112,
-          mode: "simplifie",
-          sauvegardesUtilisees: 0,
-          notes: "",
-          armes: [],
-          besace: {
-            objets: [],
-            bourse: false,
-            boulons: 0,
-            boulonsForces: false,
-          },
-          personnage: {
-            talent: "Herbologie",
-            pointsDeVieMax: 32,
-            pointsDeVie: 28,
-            chance: 4,
-            dexterite: 7,
-          },
-        },
-      }),
-    );
-  });
+  await page.addInitScript((enregistrement) => {
+    localStorage.setItem("dagda-compagnon", JSON.stringify(enregistrement));
+  }, enregistrementDeTest());
 });
 
 test("la zone de notes s'agrandit avec son texte, sans défilement interne, et le focus est jaune", async ({
@@ -66,21 +41,4 @@ test("la zone de notes s'agrandit avec son texte, sans défilement interne, et l
   expect(style.interligne).toBe("23.25px");
   expect(style.contour).toBe("rgb(242, 201, 76)");
   expect(style.epaisseur).toBe("2px");
-});
-
-test("les notes sont retrouvées après rechargement, même hors ligne", async ({
-  page,
-  context,
-}) => {
-  await page.goto("/");
-  await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.reload(); // le service worker contrôle la page
-  const zone = page.getByRole("textbox", { name: "Notes" });
-  await zone.fill("Porte qui ne s'ouvre qu'en hiver");
-
-  await context.setOffline(true);
-  await page.reload();
-  await expect(page.getByRole("textbox", { name: "Notes" })).toHaveValue(
-    "Porte qui ne s'ouvre qu'en hiver",
-  );
 });

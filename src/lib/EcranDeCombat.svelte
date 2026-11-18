@@ -79,7 +79,7 @@
   <div class="versus">
     <div class="side-c" role="group" aria-labelledby="{id}-vous">
       <div class="who" id="{id}-vous">Vous</div>
-      <b class:critique>
+      <b data-etat={critique ? "critique" : undefined}>
         <TraceDeCraie valeur={pvLecteur} taille="24px" />
         <span>{pvLecteur}</span><small>
           {` / ${combat.depart.lecteur.pointsDeVieMax}`}
@@ -87,7 +87,7 @@
       </b>
       <div class="bar" aria-hidden="true">
         <u
-          class:critique
+          data-etat={critique ? "critique" : undefined}
           style:width="{barre(
             pvLecteur,
             combat.depart.lecteur.pointsDeVieMax,
@@ -137,10 +137,14 @@
 
   <ol class="log" aria-label="Journal">
     {#each lignes as { jet, passe }, rang (combat.jets.length - rang)}
-      <li class="t-row" class:latest={rang === 0} class:passe>
+      <li
+        class="t-row"
+        class:latest={rang === 0}
+        data-etat={passe ? "passe" : "en-cours"}
+      >
         <div class="who">{passe ? `TOUR ${jet.tour} · ` : ""}{qui(jet)}</div>
         {#if jet.degats === null}
-          <div class="what rate">2 dés = {jet.total}, raté.</div>
+          <div class="what" data-etat="rate">2 dés = {jet.total}, raté.</div>
         {:else if jet.attaquant === "lecteur"}
           {@const auto = badge(jet)}
           <div class="what">
@@ -167,7 +171,7 @@
           <div class="what">
             2 dés = <b>{jet.total}</b>, touché. Dégâts 1 + {jet.degats
               .de}{bonus(jet.degats)} =
-            <span class="subis">−{jet.degats.total} PV</span>
+            <span data-etat="subis">−{jet.degats.total} PV</span>
           </div>
         {/if}
       </li>
@@ -235,7 +239,7 @@
     color: var(--craie-2);
   }
 
-  .side-c b.critique {
+  .side-c b[data-etat="critique"] {
     color: var(--rouge);
   }
 
@@ -253,7 +257,7 @@
     border-radius: 3px;
   }
 
-  .bar u.critique {
+  .bar u[data-etat="critique"] {
     background: var(--rouge);
   }
 
@@ -333,7 +337,7 @@
   }
 
   /* Coup manqué en craie pâle. */
-  .rate {
+  [data-etat="rate"] {
     color: var(--craie-3);
   }
 
@@ -365,17 +369,17 @@
   }
 
   /* Dégâts subis par le lecteur. */
-  .subis {
+  [data-etat="subis"] {
     font-weight: 800;
     color: var(--rouge);
   }
 
   /* Tours passés : craie grise, qui agit en craie pâle. */
-  .t-row.passe .what {
+  .t-row[data-etat="passe"] .what {
     color: var(--craie-2);
   }
 
-  .t-row.passe .who {
+  .t-row[data-etat="passe"] .who {
     color: var(--craie-3);
   }
 

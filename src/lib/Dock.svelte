@@ -25,7 +25,7 @@
   let { children, variante = "degrade" }: Props = $props();
 </script>
 
-<div class="dock" class:combat={variante === "combat"}>
+<div class="dock" data-testid="dock" class:combat={variante === "combat"}>
   <div class="contenu">{@render children()}</div>
 </div>
 

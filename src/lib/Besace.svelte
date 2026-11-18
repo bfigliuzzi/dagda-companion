@@ -82,7 +82,9 @@
 <section aria-labelledby="{id}-titre">
   <div class="sh">
     <h2 id="{id}-titre">Besace</h2>
-    <span class="meta" class:depasse>{occupes} / {EMPLACEMENTS_MAX}</span>
+    <span class="meta" data-etat={depasse ? "depasse" : undefined}>
+      {occupes} / {EMPLACEMENTS_MAX}
+    </span>
   </div>
   <div
     class="tally"
@@ -91,8 +93,11 @@
   >
     {#each Array.from({ length: traits }, (_, i) => i) as index (index)}
       <i
-        class:f={index < Math.min(occupes, EMPLACEMENTS_MAX)}
-        class:over={index >= EMPLACEMENTS_MAX}
+        data-etat={index >= EMPLACEMENTS_MAX
+          ? "en-trop"
+          : index < occupes
+            ? "occupe"
+            : "libre"}
       ></i>
     {/each}
   </div>
@@ -265,7 +270,7 @@
     font-size: 14px;
     color: var(--craie-2);
   }
-  .meta.depasse {
+  .meta[data-etat="depasse"] {
     color: var(--rouge);
   }
 
@@ -281,10 +286,10 @@
     border-radius: 2px;
     background: var(--trait);
   }
-  .tally i.f {
+  .tally i[data-etat="occupe"] {
     background: var(--craie);
   }
-  .tally i.over {
+  .tally i[data-etat="en-trop"] {
     background: var(--rouge);
   }
 
@@ -349,13 +354,14 @@
   .saisie {
     flex: 1;
     min-width: 0;
-    height: 36px;
-    padding: 0 var(--esp-sm);
+    height: 52px;
+    padding: 0 14px;
     background: var(--ardoise-2);
     border: 2px solid var(--jaune);
     border-radius: var(--r);
     outline: none;
     font: inherit;
+    font-size: 17px;
     color: var(--craie);
   }
 

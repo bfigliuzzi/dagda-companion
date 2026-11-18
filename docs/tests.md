@@ -35,22 +35,28 @@ Vitest + jsdom + `@testing-library/svelte` + `@testing-library/user-event`. La p
 
 Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le vrai état et le vrai enregistrement dans le `localStorage` de jsdom. Il agit *comme le lecteur* : il appuie, saisit, puis lit l'écran.
 
-- Trouve les éléments comme un lecteur : `getByRole`, `getByLabelText`, `getByText`, avec le texte français affiché. Garde `data-testid` pour un élément qu'aucun rôle ni texte ne désigne.
+- Trouve les éléments comme un lecteur : `getByRole`, `getByLabelText`, `getByText`, avec le texte français affiché. Garde `data-testid` pour un élément qu'aucun rôle ni texte ne désigne (le dock, le voile). Pour un état que seul l'œil voit (valeur en rouge, ligne passée, trait de besace en trop), lis un attribut sémantique, `data-etat="critique"` : le CSS s'appuie sur le même attribut, et un test ne lit jamais une classe CSS.
 - Vérifie l'écran, pas les *détails d'implémentation* : un renommage interne qui ne change rien à l'écran laisse tous les tests verts.
 - Remplace seulement ce qui vient du navigateur ou du hasard : les dés (injectés), `navigator.wakeLock` (absent de jsdom), l'horloge si besoin. Nos propres modules tournent pour de vrai, sans `vi.mock`.
 - Pour « Rien ne se perd » : modifie une valeur, démonte l'app, remonte-la, et vérifie que la valeur est toujours là.
 
 ### 4. Bout en bout : une fine couche
 
-Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite build` puis `vite preview`). Trois scénarios en tout :
+Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite build` puis `vite preview`). Un scénario n'a sa place ici que s'il vérifie ce que jsdom ne sait pas faire : un vrai service worker, le hors ligne, les styles réellement calculés (animations, position fixe, zones d'appui), la police servie. Tout le reste se vérifie en intégration.
 
-- l'app construite s'installe comme PWA (manifeste et service worker présents) et fonctionne hors ligne après un premier chargement ;
-- un parcours de lecteur : créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure ;
-- la trace de craie : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime (jsdom ne calcule pas les animations CSS).
+Les scénarios actuels, un par sujet :
+
+- `pwa.spec.ts` : l'app construite s'installe comme PWA (manifeste, service worker), se recharge hors ligne, y crée un personnage, y retrouve une valeur modifiée, ne fait aucune requête externe, sert sa police et son ardoise noire ;
+- `parcours.spec.ts` : un parcours de lecteur, créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure et l'historique ;
+- `trace-de-craie.spec.ts` : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime ; les valeurs du bloc vital ont une zone d'appui d'au moins 44 px ;
+- `des.spec.ts` : le dock de dés est le seul élément fixe et reste en bas quand la feuille défile ; le panneau glisse par-dessus la feuille, sauf avec `prefers-reduced-motion` ;
+- `notes.spec.ts` : la zone de notes s'agrandit avec son texte, sans défilement interne.
+
+Les aventures posées dans le `localStorage` avant le chargement viennent d'une seule fabrique, `enregistrementDeTest` dans `e2e/aventure.ts`, à la version courante de l'enregistrement.
 
 Pour fixer les dés dans le navigateur, l'app accepte une graine de dés (valeur de départ qui rend les tirages reproductibles) lue seulement en mode test : une suite de faces dans l'adresse, `/?graine=4,4,3,1,1,4`, rejouée dans l'ordre puis en boucle (`deDeLaGraine` dans `src/lib/des.ts`). Seule l'app construite avec `vite build --mode test`, celle que lance Playwright, la lit ; l'app publiée tire toujours au hasard.
 
-Un nouveau scénario s'ajoute seulement pour un ticket qui touche au vrai navigateur.
+Un nouveau scénario s'ajoute seulement pour un ticket qui touche au vrai navigateur, et jamais pour redire en e2e ce qu'un test d'intégration vérifie déjà (par exemple : retrouver ses notes après rechargement).
 
 ## Mesure de la suite
 

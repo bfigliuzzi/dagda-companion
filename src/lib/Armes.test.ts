@@ -221,7 +221,10 @@ describe("plus de 2 armes", () => {
 
   it("à 2 armes, le compteur n'est pas rouge et aucun indice ne paraît", () => {
     render(App);
-    expect(dansSection().getByText(/^2 \/ 2/)).not.toHaveClass("depasse");
+    expect(dansSection().getByText(/^2 \/ 2/)).not.toHaveAttribute(
+      "data-etat",
+      "depasse",
+    );
     expect(dansSection().queryByRole("note")).not.toBeInTheDocument();
   });
 
@@ -232,7 +235,10 @@ describe("plus de 2 armes", () => {
 
     expect(lignes()).toHaveLength(3);
     expect(armesEnregistrees()).toEqual([epeeCourte, baton, dague]);
-    expect(dansSection().getByText(/^3 \/ 2/)).toHaveClass("depasse");
+    expect(dansSection().getByText(/^3 \/ 2/)).toHaveAttribute(
+      "data-etat",
+      "depasse",
+    );
     expect(compteur()).toBe("3 / 2 · +2 aux dégâts");
     expect(dansSection().getByRole("note")).toHaveTextContent(
       "Les règles permettent 2 armes. Gardez-la si le livre l'autorise, sinon retirez-en une.",
@@ -248,7 +254,10 @@ describe("plus de 2 armes", () => {
     expect(dansSection().getByRole("note")).toBeInTheDocument();
     await lecteur.click(bouton("Retirer Dague d'os"));
     expect(dansSection().queryByRole("note")).not.toBeInTheDocument();
-    expect(dansSection().getByText(/^2 \/ 2/)).not.toHaveClass("depasse");
+    expect(dansSection().getByText(/^2 \/ 2/)).not.toHaveAttribute(
+      "data-etat",
+      "depasse",
+    );
   });
 });
 

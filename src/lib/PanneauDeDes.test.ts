@@ -63,8 +63,12 @@ describe("dock « Lancer les dés »", () => {
 
   it("garde le bouton dans un seul dock, sans autre élément fixe sur la feuille", () => {
     render(App);
-    expect(document.querySelectorAll(".dock")).toHaveLength(1);
-    expect(boutonDuDock().closest(".dock")).not.toBeNull();
+    expect(screen.getAllByTestId("dock")).toHaveLength(1);
+    expect(
+      within(screen.getByTestId("dock")).getByRole("button", {
+        name: "Lancer les dés",
+      }),
+    ).toBeInTheDocument();
   });
 });
 
@@ -99,7 +103,7 @@ describe("panneau de dés : ouverture et fermeture", () => {
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(boutonDuDock());
-    await lecteur.click(document.querySelector(".voile")!);
+    await lecteur.click(screen.getByTestId("voile"));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -457,7 +461,7 @@ describe("panneau de dés : valider ou fermer", () => {
     const lecteur = userEvent.setup();
     await ouvrirEtLancer(lecteur);
     await lecteur.click(bouton("Baisser le total"));
-    await lecteur.click(document.querySelector(".voile")!);
+    await lecteur.click(screen.getByTestId("voile"));
     expect(chanceEnregistree()).toBe(4);
   });
 

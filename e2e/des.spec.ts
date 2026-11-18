@@ -1,29 +1,15 @@
 import { expect, test } from "@playwright/test";
+import { enregistrementDeTest } from "./aventure";
 
-const aventure = {
-  version: 6,
-  aventure: {
-    chapitre: 112,
-    mode: "simplifie",
-    sauvegardesUtilisees: 0,
-    notes: "",
-    armes: [],
-    // Assez d'objets pour que la feuille défile : le dock doit rester en bas.
-    besace: {
-      objets: Array.from({ length: 12 }, (_, i) => `Objet ${i + 1}`),
-      bourse: false,
-      boulons: 0,
-      boulonsForces: false,
-    },
-    personnage: {
-      talent: "Herbologie",
-      pointsDeVieMax: 32,
-      pointsDeVie: 28,
-      chance: 4,
-      dexterite: 7,
-    },
+const aventure = enregistrementDeTest({
+  // Assez d'objets pour que la feuille défile : le dock doit rester en bas.
+  besace: {
+    objets: Array.from({ length: 12 }, (_, i) => `Objet ${i + 1}`),
+    bourse: false,
+    boulons: 0,
+    boulonsForces: false,
   },
-};
+});
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((enregistrement) => {
@@ -35,7 +21,7 @@ test("le dock de dés est le seul élément fixe : il reste en bas quand la feui
   page,
 }) => {
   await page.goto("/");
-  const dock = page.locator(".dock");
+  const dock = page.getByTestId("dock");
   await expect(dock).toHaveCount(1);
 
   const fixes = await page.evaluate(

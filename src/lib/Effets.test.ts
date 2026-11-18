@@ -150,14 +150,13 @@ describe("section Effets", () => {
   it("écrit les noms d'effets actifs en vert et les rappels en craie grise", () => {
     enregistrerAventure({ effets: [potion, herboriste] });
     render(App);
-    expect(dansSection().getByText("Potion d'agilité · DEX +1")).toHaveClass(
-      "vert",
-    );
+    expect(
+      dansSection().getByText("Potion d'agilité · DEX +1"),
+    ).toHaveAttribute("data-etat", "actif");
     const rappel = dansSection().getByText("retourner voir l'herboriste", {
       exact: false,
     });
-    expect(rappel).toHaveClass("gris");
-    expect(rappel).not.toHaveClass("vert");
+    expect(rappel).toHaveAttribute("data-etat", "rappel");
   });
 });
 
@@ -282,16 +281,22 @@ describe("valeurs effectives sur la feuille", () => {
     enregistrerAventure({ effets: [potion] });
     render(App);
     expect(valeurDe("Dextérité")).toHaveTextContent("8");
-    expect(valeurDe("Dextérité").closest("b")).toHaveClass("vert");
+    expect(valeurDe("Dextérité").closest("b")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(
       within(bloc("Dextérité").parentElement!).getByText("base 7 · potion +1"),
-    ).toHaveClass("vert");
+    ).toHaveAttribute("data-etat", "modifie");
   });
 
   it("garde la DEXTÉRITÉ en craie sans effet, sans ligne d'explication", () => {
     enregistrerAventure({ effets: [herboriste] });
     render(App);
-    expect(valeurDe("Dextérité").closest("b")).not.toHaveClass("vert");
+    expect(valeurDe("Dextérité").closest("b")).not.toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(screen.queryByText(/^base /)).not.toBeInTheDocument();
   });
 
@@ -308,8 +313,14 @@ describe("valeurs effectives sur la feuille", () => {
     });
     render(App);
     expect(valeurDe("Chance")).toHaveTextContent("6");
-    expect(valeurDe("Chance").closest("b")).toHaveClass("vert");
-    expect(screen.getByText("base 4 · trèfle +2")).toHaveClass("vert");
+    expect(valeurDe("Chance").closest("b")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
+    expect(screen.getByText("base 4 · trèfle +2")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
   });
 
   it("PV : un bonus de PV monte les PV et le maximum, en vert avec leurs lignes", () => {
@@ -320,7 +331,10 @@ describe("valeurs effectives sur la feuille", () => {
     });
     render(App);
     expect(pvAffiches()).toBe("30 / 34");
-    expect(valeurDe("Points de vie").closest("b")).toHaveClass("vert");
+    expect(valeurDe("Points de vie").closest("b")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(screen.getByText("base 28 · bague +2")).toBeInTheDocument();
     expect(screen.getByText("max : base 32 · bague +2")).toBeInTheDocument();
   });
@@ -338,12 +352,15 @@ describe("valeurs effectives sur la feuille", () => {
     });
     render(App);
     expect(pvAffiches()).toBe("28 / 34");
-    expect(valeurDe("Points de vie").closest("b")).not.toHaveClass("vert");
+    expect(valeurDe("Points de vie").closest("b")).not.toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(
       within(pointsDeVie()).getByRole("button", {
         name: /^Points de vie maximum, modifier/,
       }).parentElement,
-    ).toHaveClass("vert");
+    ).toHaveAttribute("data-etat", "modifie");
     expect(screen.getByText("max : base 32 · bague +2")).toBeInTheDocument();
   });
 
@@ -356,8 +373,14 @@ describe("valeurs effectives sur la feuille", () => {
     });
     render(App);
     const armes = within(screen.getByRole("region", { name: "Armes" }));
-    expect(armes.getByText("+3 aux dégâts")).toHaveClass("vert");
-    expect(armes.getByText("base +1 · rage +2")).toHaveClass("vert");
+    expect(armes.getByText("+3 aux dégâts")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
+    expect(armes.getByText("base +1 · rage +2")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
   });
 
   it("« − » et « + » changent les PV affichés, et la perte reste après le retrait du bonus", async () => {
@@ -468,7 +491,10 @@ describe("retirer un effet", () => {
     );
     expect(lignes()).toHaveLength(0);
     expect(valeurDe("Dextérité")).toHaveTextContent("7");
-    expect(valeurDe("Dextérité").closest("b")).not.toHaveClass("vert");
+    expect(valeurDe("Dextérité").closest("b")).not.toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(
       within(bloc("Dextérité")).getByText("8", { selector: "s" }),
     ).toHaveTextContent("avant : 8");
@@ -511,7 +537,10 @@ describe("retirer un effet", () => {
         dansSection().getByRole("button", { name: "Retirer l'effet Rage" }),
       );
     const armes = within(screen.getByRole("region", { name: "Armes" }));
-    expect(armes.getByText("+1 aux dégâts")).not.toHaveClass("vert");
+    expect(armes.getByText("+1 aux dégâts")).not.toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
     expect(armes.getByText("+3", { selector: "s" })).toBeInTheDocument();
   });
 });

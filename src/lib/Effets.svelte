@@ -57,12 +57,12 @@
         {@const rappel = estUnRappel(effet)}
         <li class="row">
           {#if rappel}
-            <span class="n gris">
+            <span class="n" data-etat="rappel">
               <span class="prefixe">Rappel ·</span>
               {effet.nom}
             </span>
           {:else}
-            <span class="n vert">{decrireUnEffet(effet)}</span>
+            <span class="n" data-etat="actif">{decrireUnEffet(effet)}</span>
           {/if}
           {#if effet.duree}<span class="d">{effet.duree}</span>{/if}
           <button
@@ -138,10 +138,10 @@
     flex: 1;
   }
   /* Craie verte : un effet actif (DESIGN.md, « Three Chalks Rule »). */
-  .vert {
+  [data-etat="actif"] {
     color: var(--vert);
   }
-  .gris {
+  [data-etat="rappel"] {
     color: var(--craie-2);
   }
   .prefixe {

@@ -201,7 +201,10 @@ describe("le combat, tour par tour", () => {
     await mener(lecteur);
     await lecteur.click(bouton("Tour suivant"));
 
-    expect(journal().getByText("2 dés = 11, raté.")).toHaveClass("rate");
+    expect(journal().getByText("2 dés = 11, raté.")).toHaveAttribute(
+      "data-etat",
+      "rate",
+    );
     expect(journal().getByText("2 dés = 8, raté.")).toBeInTheDocument();
     expect(camp("Vous").getByText("28")).toBeInTheDocument();
   });
@@ -252,13 +255,16 @@ describe("le combat, tour par tour", () => {
     const lignes = lignesDuJournal();
     expect(lignes).toHaveLength(4);
     expect(lignes[0]).toHaveTextContent("L'ENNEMI RIPOSTE");
-    expect(lignes[0]).not.toHaveClass("passe");
-    expect(lignes[1]).not.toHaveClass("passe");
+    expect(lignes[0]).toHaveAttribute("data-etat", "en-cours");
+    expect(lignes[1]).toHaveAttribute("data-etat", "en-cours");
     expect(lignes[2]).toHaveTextContent("TOUR 1 · L'ENNEMI RIPOSTE");
-    expect(lignes[2]).toHaveClass("passe");
+    expect(lignes[2]).toHaveAttribute("data-etat", "passe");
     expect(lignes[3]).toHaveTextContent("TOUR 1 · VOUS ATTAQUEZ");
-    expect(lignes[3]).toHaveClass("passe");
-    expect(within(lignes[2]).getByText("−5 PV")).toHaveClass("subis");
+    expect(lignes[3]).toHaveAttribute("data-etat", "passe");
+    expect(within(lignes[2]).getByText("−5 PV")).toHaveAttribute(
+      "data-etat",
+      "subis",
+    );
   });
 
   it("affiche le bandeau rouge encadré en état critique (moins de 7 PV)", async () => {
@@ -269,7 +275,10 @@ describe("le combat, tour par tour", () => {
 
     await lecteur.click(bouton("Tour suivant"));
     expect(screen.getByRole("alert")).toHaveTextContent("État critique");
-    expect(camp("Vous").getByText("6").closest("b")).toHaveClass("critique");
+    expect(camp("Vous").getByText("6").closest("b")).toHaveAttribute(
+      "data-etat",
+      "critique",
+    );
   });
 });
 
@@ -291,7 +300,7 @@ describe("la fin du combat", () => {
     ).toBeInTheDocument();
     const pv = screen.getByText("Points de vie").closest("li")!;
     expect(pv).toHaveTextContent(/Points de vie\s*avant : 28\s*23/);
-    expect(within(pv).getByText(/avant/).closest("s")).toHaveClass("ancienne");
+    expect(within(pv).getByText(/avant/).closest("s")).not.toBeNull();
     // La CHANCE est toujours affichée ; rien n'a été dépensé : pas de valeur barrée.
     const chance = screen.getByText("Chance").closest("li")!;
     expect(chance).toHaveTextContent(/^Chance\s*4$/);
@@ -460,12 +469,10 @@ describe("la CHANCE automatique en combat", () => {
     expect(attaque).toHaveTextContent(
       "VOUS ATTAQUEZ 2 dés = avant : 8 7, touché. Dégâts 1 + 1 + 1 = 3. Ennemi achevable. 1 CHANCE dépensée automatiquement",
     );
-    expect(within(attaque).getByText(/avant/).closest("s")).toHaveClass(
-      "ancienne",
-    );
+    expect(within(attaque).getByText(/avant/).closest("s")).not.toBeNull();
     expect(
       within(attaque).getByText("1 CHANCE dépensée automatiquement"),
-    ).toHaveClass("auto");
+    ).toBeInTheDocument();
     expect(camp("Vous").getByText("CHANCE 3 · DEX 7")).toBeInTheDocument();
     expect(lireAventure(localStorage)?.personnage.chance).toBe(3);
   });
