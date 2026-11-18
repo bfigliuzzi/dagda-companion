@@ -11,6 +11,7 @@ function enregistrerAventure() {
     chapitre: 1,
     mode: "narratif",
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes: "",
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },

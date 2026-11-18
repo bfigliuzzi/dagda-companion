@@ -124,6 +124,22 @@ export function formaterLesBoulons(boulons: number): string {
   return `${boulons} ${boulons > 1 ? "boulons" : "boulon"}`;
 }
 
+/**
+ * Une sauvegarde du livre (mode simplifié) : le chapitre en cours et l'état
+ * complet du personnage, c'est-à-dire ses caractéristiques (bases, sans les
+ * effets), ses armes, sa besace avec la bourse et les boulons, et ses effets.
+ * Ni les notes ni l'historique des combats n'en font partie : ce sont des
+ * traces de ce que le lecteur a lu et vécu, pas l'état du personnage (voir
+ * docs/regles-livre-1.md, « Modes de jeu »). Voir sauvegardes.ts.
+ */
+export interface Sauvegarde {
+  chapitre: number;
+  personnage: Personnage;
+  armes: Arme[];
+  besace: Besace;
+  effets: Effet[];
+}
+
 export interface Aventure {
   /** Dernier chapitre lu, noté par le lecteur avant une pause. */
   chapitre: number;
@@ -133,6 +149,12 @@ export interface Aventure {
    * 0 dans les autres modes.
    */
   sauvegardesUtilisees: number;
+  /**
+   * La sauvegarde la plus récente, `null` tant que le lecteur n'en a posé
+   * aucune (et toujours `null` hors du mode simplifié). Il n'en reste qu'une :
+   * poser la suivante remplace celle-ci.
+   */
+  sauvegarde: Sauvegarde | null;
   /** Notes libres du lecteur (texte brut, sauts de ligne compris). */
   notes: string;
   /** Les armes du lecteur, dans l'ordre où il les a ajoutées. */
@@ -209,6 +231,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     chapitre: 1,
     mode: mode!,
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes: "",
     armes: [],
     besace: besaceVide(),
@@ -294,6 +317,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
     chapitre: chapitre!,
     mode: mode!,
     sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
+    sauvegarde: null,
     notes: "",
     armes: [],
     besace: besaceVide(),
@@ -380,6 +404,7 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     mode,
     personnage,
     sauvegardesUtilisees,
+    sauvegarde,
     notes,
     armes,
     besace,
@@ -390,6 +415,7 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
   return (
     estUnChapitre(chapitre) &&
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
+    (sauvegarde === null || estUneSauvegarde(sauvegarde)) &&
     typeof notes === "string" &&
     Array.isArray(armes) &&
     armes.every(estUneArme) &&
@@ -401,6 +427,20 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     combats.every(estUnCombatDeLHistorique) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
+  );
+}
+
+function estUneSauvegarde(valeur: unknown): valeur is Sauvegarde {
+  if (typeof valeur !== "object" || valeur === null) return false;
+  const { chapitre, personnage, armes, besace, effets } = valeur as Sauvegarde;
+  return (
+    estUnChapitre(chapitre) &&
+    estUnPersonnage(personnage) &&
+    Array.isArray(armes) &&
+    armes.every(estUneArme) &&
+    estUneBesace(besace) &&
+    Array.isArray(effets) &&
+    effets.every(estUnEffet)
   );
 }
 

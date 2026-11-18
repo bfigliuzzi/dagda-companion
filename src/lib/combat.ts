@@ -107,6 +107,11 @@ export interface Combat {
   jets: Jet[];
   /** `null` tant que le combat continue. */
   issue: Issue | null;
+  /**
+   * Mode simplifié : le lecteur a perdu ce combat puis repris sa sauvegarde ;
+   * c'est le chapitre où il est revenu (« repris au § 52 » dans l'historique).
+   */
+  repriseAu?: number;
 }
 
 /** Ce que le lecteur a saisi sur l'écran « Nouveau combat ». */
@@ -478,7 +483,8 @@ export function estUnCombat(valeur: unknown): valeur is Combat {
     ]) &&
     sontDesEntiers(combat.depart.ennemi, CLES_D_UN_COMBATTANT) &&
     Array.isArray(combat.jets) &&
-    combat.jets.every(estUnJet)
+    combat.jets.every(estUnJet) &&
+    (combat.repriseAu === undefined || estUnChapitre(combat.repriseAu))
   );
 }
 

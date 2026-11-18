@@ -9,6 +9,7 @@
   import Effets from "./lib/Effets.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
+  import SectionAventure from "./lib/SectionAventure.svelte";
   import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
   import ResultatDuCombat from "./lib/ResultatDuCombat.svelte";
@@ -30,6 +31,11 @@
     valeursEffectives,
   } from "./lib/valeursEffectives";
   import { garderEcranAllume } from "./lib/ecranAllume";
+  import {
+    poserUneSauvegarde,
+    reprendreLaSauvegarde,
+    sauvegardesRestantes,
+  } from "./lib/sauvegardes";
   import { ecrireAventure, lireAventure } from "./lib/stockage";
 
   interface Props {
@@ -117,6 +123,24 @@
     remonter();
   }
 
+  /**
+   * Mode simplifié : poser une sauvegarde (elle garde le chapitre et l'état
+   * du personnage, voir sauvegardes.ts) et reprendre la plus récente. Après un
+   * combat perdu, la reprise le note dans l'historique (« repris au § 52 »).
+   */
+  function sauvegarder() {
+    aventure = poserUneSauvegarde($state.snapshot(aventure!));
+  }
+
+  function reprendre(apresUnCombatPerdu = false) {
+    aventure = reprendreLaSauvegarde($state.snapshot(aventure!), {
+      apresUnCombatPerdu,
+    });
+    resultat = null;
+    avantLeCombat = {};
+    remonter();
+  }
+
   /** Retour sur la feuille : la trace de craie montre ce que le combat a changé. */
   function revenirALaFeuille({ depart }: Combat) {
     avantLeCombat = {
@@ -148,6 +172,10 @@
   {@const combat = resultat}
   <ResultatDuCombat
     {combat}
+    mode={aventure.mode}
+    sauvegarde={aventure.sauvegarde}
+    sauvegardesRestantes={sauvegardesRestantes(aventure)}
+    onreprendre={() => reprendre(true)}
     onretour={() => revenirALaFeuille(combat)}
     ondetail={() => {
       // Le combat qui vient de finir est le dernier de l'historique. Le retour
@@ -189,6 +217,10 @@
     <BlocVital
       bind:personnage={aventure.personnage}
       effets={aventure.effets}
+      mode={aventure.mode}
+      sauvegardesUtilisees={aventure.sauvegardesUtilisees}
+      onsauvegardes={(utilisees) =>
+        (aventure!.sauvegardesUtilisees = utilisees)}
       avant={avantLeCombat}
     />
     <Armes
@@ -211,6 +243,13 @@
       onhistorique={() => ouvrirLHistorique()}
     />
     <Notes bind:notes={aventure.notes} />
+    <SectionAventure
+      mode={aventure.mode}
+      sauvegardesUtilisees={aventure.sauvegardesUtilisees}
+      sauvegarde={aventure.sauvegarde}
+      onsauvegarder={sauvegarder}
+      onreprendre={() => reprendre()}
+    />
   </main>
   <!-- La CHANCE disponible est la CHANCE effective ; la dépense sort de la base (valeursEffectives.ts). -->
   <DockDeDes

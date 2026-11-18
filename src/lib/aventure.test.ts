@@ -43,6 +43,7 @@ describe("recopier un personnage déjà en route", () => {
       chapitre: 112,
       mode: "simplifie",
       sauvegardesUtilisees: 1,
+      sauvegarde: null,
       notes: "",
       armes: [],
       besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },

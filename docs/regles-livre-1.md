@@ -58,6 +58,8 @@ Choisi en début d'aventure.
 
 - **Narratif** : pour un combat, le lecteur indique directement s'il l'a gagné ou perdu. Exception : au-delà de 5 adversaires simultanés, le combat se joue normalement. L'app a donc besoin du nombre d'adversaires.
 - **Simplifié** : toutes les règles s'appliquent, avec **3 sauvegardes pour tout le livre** (une sauvegarde utilisée est consommée). Une sauvegarde enregistre le chapitre en cours et l'état complet du personnage. On ne peut reprendre qu'à la sauvegarde la plus récente.
+  - *(choix par défaut)* « L'état complet du personnage » est ce que le livre appelle le personnage : caractéristiques (PV, PV max, CHANCE, DEXTÉRITÉ, TALENT, en valeurs de base), armes, besace avec la bourse et les boulons, et effets. Les notes et l'historique des combats ne sont pas gardés : ils disent ce que le lecteur a lu et vécu, ils ne sont pas l'état du personnage, et les perdre à la reprise nuirait au lecteur. La reprise les laisse tels quels.
+  - *(choix par défaut)* Poser une sauvegarde la consomme tout de suite et remplace la sauvegarde précédente (seule la plus récente se reprend). Reprendre ne consomme rien et ne rend pas la sauvegarde utilisée : la sauvegarde reste la plus récente, on peut y revenir encore. Le nombre de sauvegardes utilisées reste modifiable à la main, sans toucher à la sauvegarde déjà posée.
 - **Mortel** : toutes les règles s'appliquent. En cas de mort, on perd armes et équipement et on recommence au **chapitre 1** avec un nouveau personnage. L'app le propose ; elle ne l'impose pas.
 
 ## Combat

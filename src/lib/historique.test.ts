@@ -84,6 +84,14 @@ describe("sousTexteDUnCombat", () => {
   });
 });
 
+describe("sousTexteDUnCombat d'un combat perdu puis repris", () => {
+  it("dit au bout du sous-texte à quel chapitre le lecteur est revenu", () => {
+    expect(sousTexteDUnCombat({ ...perdu, repriseAu: 52 })).toBe(
+      "1 tour · 1 adversaire · repris au §\u00a052",
+    );
+  });
+});
+
 describe("resumeDeLHistorique", () => {
   it("compte les combats, les gagnés et les PV perdus en tout", () => {
     // Gagné : 0 PV perdu ; perdu : 6 ; interrompu : 5.

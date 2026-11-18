@@ -10,6 +10,7 @@ function enregistrerAventure(notes = "") {
     chapitre: 112,
     mode: "simplifie",
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes,
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },

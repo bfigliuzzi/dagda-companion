@@ -8,9 +8,9 @@ Références : `docs/regles-livre-1.md` (Modes de jeu : simplifié), `DESIGN.md`
 
 **Status:** ready-for-agent
 
-- [ ] Les 3 traits de sauvegarde apparaissent dans le bloc vital, seulement en mode simplifié.
-- [ ] Poser une sauvegarde consomme un trait et garde le chapitre et tout l'état du personnage.
-- [ ] Une fois les 3 utilisées, le bouton d'enregistrement est désactivé et son libellé le dit.
-- [ ] Reprendre demande une confirmation et restaure l'état de la sauvegarde la plus récente uniquement.
-- [ ] Le nombre de sauvegardes utilisées reste modifiable à la main.
-- [ ] L'enregistrement et la reprise sont testés.
+- [x] Les 3 traits de sauvegarde apparaissent dans le bloc vital, seulement en mode simplifié.
+- [x] Poser une sauvegarde consomme un trait et garde le chapitre et tout l'état du personnage.
+- [x] Une fois les 3 utilisées, le bouton d'enregistrement est désactivé et son libellé le dit.
+- [x] Reprendre demande une confirmation et restaure l'état de la sauvegarde la plus récente uniquement.
+- [x] Le nombre de sauvegardes utilisées reste modifiable à la main.
+- [x] L'enregistrement et la reprise sont testés.

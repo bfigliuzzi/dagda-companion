@@ -14,7 +14,8 @@ const accorder = (nombre: number, singulier: string, pluriel: string) =>
 
 /**
  * « 7 tours · 7 adversaires », avec « · quitté en cours » si le combat l'a
- * été ; « Narratif » quand le lecteur a indiqué l'issue (il n'y a ni tours à
+ * été, ou « · repris au § 52 » si le lecteur a repris sa sauvegarde après
+ * l'avoir perdu ; « Narratif » quand le lecteur a indiqué l'issue (il n'y a ni tours à
  * compter ni PV perdus).
  */
 export function sousTexteDUnCombat(combat: CombatDeLHistorique): string {
@@ -24,6 +25,8 @@ export function sousTexteDUnCombat(combat: CombatDeLHistorique): string {
     accorder(combat.adversaires, "adversaire", "adversaires"),
   ];
   if (combat.issue === "interrompu") morceaux.push("quitté en cours");
+  if (combat.repriseAu !== undefined)
+    morceaux.push(`repris au §\u00a0${combat.repriseAu}`);
   return morceaux.join(" · ");
 }
 

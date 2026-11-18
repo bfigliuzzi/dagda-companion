@@ -17,6 +17,7 @@ function enregistrerAventure(
     chapitre: 112,
     mode,
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes: "",
     armes: [{ nom: "Épée courte", bonus: 1 }],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },

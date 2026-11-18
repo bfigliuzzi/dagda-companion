@@ -5,8 +5,15 @@
    * lecteur à 0 PV) : l'app le signale et renvoie au livre ; elle propose des
    * issues sans en imposer aucune. Le combat ne décide jamais du chapitre
    * suivant : c'est le livre.
+   *
+   * En mode simplifié, « Reprendre la sauvegarde · § 87 » vient en premier,
+   * avec la confirmation de la reprise, quand une sauvegarde est posée ; un
+   * indice rappelle qu'on reprend toujours la plus récente. Les autres modes
+   * n'ont pas de sauvegarde et n'en parlent pas.
    */
+  import type { Mode, Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
+  import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
   import Dock from "./Dock.svelte";
 
   interface Props {
@@ -15,9 +22,27 @@
     onretour: () => void;
     /** « Voir le détail des N tours » : ouvre l'historique sur ce combat. */
     ondetail: () => void;
+    mode: Mode;
+    /** La sauvegarde la plus récente, `null` si le lecteur n'en a pas posé. */
+    sauvegarde: Sauvegarde | null;
+    /** Ce qui reste des 3 sauvegardes du livre. */
+    sauvegardesRestantes: number;
+    /** Le lecteur a confirmé la reprise de la sauvegarde. */
+    onreprendre: () => void;
   }
 
-  let { combat, onretour, ondetail }: Props = $props();
+  let {
+    combat,
+    onretour,
+    ondetail,
+    mode,
+    sauvegarde,
+    sauvegardesRestantes,
+    onreprendre,
+  }: Props = $props();
+
+  let confirmation = $state(false);
+  const simplifie = $derived(mode === "simplifie");
 
   const gagne = $derived(combat.issue === "gagne");
   const bilan = $derived(bilanDuCombat(combat));
@@ -98,10 +123,22 @@
   {:else}
     <!--
       Les issues possibles à 0 PV, aucune imposée (maquette, « Points de vie
-      à 0 »). « Reprendre la sauvegarde » (ticket 13) et « Recommencer au
-      chapitre 1 » (ticket 14) viendront s'ajouter à cette liste.
+      à 0 »). « Recommencer au chapitre 1 » (ticket 14) viendra s'ajouter à
+      cette liste, après « Le livre me laisse continuer ».
     -->
     <div class="issues">
+      {#if simplifie && sauvegarde}
+        <button
+          class="ghost"
+          type="button"
+          onclick={() => (confirmation = true)}
+        >
+          <span>Reprendre la sauvegarde · § {sauvegarde.chapitre}</span>
+          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
+          </svg>
+        </button>
+      {/if}
       <button class="ghost" type="button" onclick={onretour}>
         <span>Le livre me laisse continuer</span>
         <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
@@ -109,8 +146,41 @@
         </svg>
       </button>
     </div>
+    {#if simplifie}
+      <div class="hint">
+        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
+        </svg>
+        <span>
+          {#if sauvegarde}
+            Mode simplifié&nbsp;: on reprend toujours la <b>
+              sauvegarde la plus récente
+            </b>.
+          {:else}
+            Mode simplifié&nbsp;: aucune sauvegarde posée, il n'y a rien à
+            reprendre.
+          {/if}
+          {#if sauvegardesRestantes > 0}
+            Il vous en reste <b>{sauvegardesRestantes}</b>.
+          {:else}
+            Il ne vous en reste plus.
+          {/if}
+        </span>
+      </div>
+    {/if}
   {/if}
 </main>
+
+{#if confirmation && sauvegarde}
+  <ConfirmerLaReprise
+    chapitre={sauvegarde.chapitre}
+    onconfirmer={() => {
+      confirmation = false;
+      onreprendre();
+    }}
+    onfermer={() => (confirmation = false)}
+  />
+{/if}
 
 <style>
   .ecran {
@@ -214,6 +284,29 @@
     border: 2px solid var(--trait);
     border-radius: var(--r);
     font-weight: 700;
+    color: var(--craie);
+  }
+
+  /* Indice non bloquant sous les issues : voir DESIGN.md, « Hints ». */
+  .hint {
+    display: flex;
+    gap: 10px;
+    margin: 18px var(--gutter) 0;
+    padding: 10px 0 0;
+    border-top: 2px solid var(--trait);
+    font-size: 14px;
+    color: var(--craie-2);
+  }
+
+  .hint svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--jaune);
+  }
+
+  .hint b {
     color: var(--craie);
   }
 

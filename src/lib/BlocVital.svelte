@@ -8,6 +8,10 @@
    * valeursEffectives.ts) : en vert, avec la ligne « base 7 · potion +1 », quand un effet
    * les change. « − », « + » et les corrections à la main portent sur la
    * valeur affichée ; `baseApres` en tire la base à enregistrer.
+   *
+   * En mode simplifié, la pile de droite se termine par les sauvegardes : trois
+   * traits de craie, un de moins (en `trait`, discret) par sauvegarde utilisée.
+   * Un appui sur les traits ouvre le panneau qui corrige le nombre utilisé.
    */
   import {
     ajouterUnPointDeVie,
@@ -18,8 +22,12 @@
     estUnMaximumDePointsDeVie,
     estUnPointDeVieActuel,
     retirerUnPointDeVie,
+    SAUVEGARDES_DU_LIVRE,
+    type Mode,
     type Personnage,
   } from "./aventure";
+  import { sauvegardesRestantes } from "./sauvegardes";
+  import SauvegardesUtilisees from "./SauvegardesUtilisees.svelte";
   import {
     baseApres,
     explication,
@@ -34,6 +42,11 @@
     /** Les bases, sans les effets. */
     personnage: Personnage;
     effets: readonly Effet[];
+    /** Les sauvegardes n'existent qu'en mode simplifié. */
+    mode: Mode;
+    /** Sauvegardes déjà consommées (0 à 3), corrigeables à la main. */
+    sauvegardesUtilisees: number;
+    onsauvegardes: (utilisees: number) => void;
     /**
      * PV et CHANCE affichés avant un combat, au retour sur la feuille : la
      * trace de craie montre ce que le combat a changé.
@@ -41,7 +54,14 @@
     avant?: { pointsDeVie?: number; chance?: number };
   }
 
-  let { personnage = $bindable(), effets, avant = {} }: Props = $props();
+  let {
+    personnage = $bindable(),
+    effets,
+    mode,
+    sauvegardesUtilisees,
+    onsauvegardes,
+    avant = {},
+  }: Props = $props();
   const id = $props.id();
 
   type Valeur = Exclude<Cible, "degats">;
@@ -79,6 +99,10 @@
   ] as const;
 
   const critique = $derived(estCritique(pv));
+  const restantes = $derived(
+    sauvegardesRestantes({ mode, sauvegardesUtilisees }),
+  );
+  let correction = $state(false);
   const remplissage = $derived(Math.min(100, Math.max(0, (pv / max) * 100)));
 </script>
 
@@ -177,6 +201,23 @@
         </span>
       </div>
     {/each}
+    {#if mode === "simplifie"}
+      <div class="stat" role="group" aria-labelledby="{id}-sauvegardes">
+        <span class="etiquette" id="{id}-sauvegardes">Sauvegardes</span>
+        <button
+          class="marks"
+          type="button"
+          aria-label="{restantes} {restantes > 1
+            ? 'sauvegardes restantes'
+            : 'sauvegarde restante'} sur {SAUVEGARDES_DU_LIVRE}"
+          onclick={() => (correction = true)}
+        >
+          {#each Array.from({ length: SAUVEGARDES_DU_LIVRE }, (_, i) => i) as index (index)}
+            <i class:used={index < sauvegardesUtilisees}></i>
+          {/each}
+        </button>
+      </div>
+    {/if}
   </div>
   {#if depasseLeMaximum({ pointsDeVie: pv, pointsDeVieMax: max })}
     <div class="indice" role="status">
@@ -190,6 +231,14 @@
     </div>
   {/if}
 </div>
+
+{#if correction}
+  <SauvegardesUtilisees
+    utilisees={sauvegardesUtilisees}
+    onchoisir={onsauvegardes}
+    onfermer={() => (correction = false)}
+  />
+{/if}
 
 <style>
   .vital {
@@ -313,6 +362,31 @@
   .valeur {
     display: flex;
     align-items: baseline;
+  }
+
+  /*
+   * Les sauvegardes : traits de 6 × 24 px, craie si disponible, `trait` si
+   * utilisée (DESIGN.md, « Tally marks »). Le bouton les entoure pour porter
+   * une cible de 44 px ; son rembourrage ne bouge pas les traits.
+   */
+  .marks {
+    display: flex;
+    gap: var(--esp-xs);
+    align-items: center;
+    justify-content: flex-end;
+    min-width: var(--cible);
+    min-height: var(--cible);
+    margin: -10px 0;
+    padding: 10px 0 10px 10px;
+  }
+  .marks i {
+    width: 6px;
+    height: 24px;
+    border-radius: var(--rayon-tick);
+    background: var(--craie);
+  }
+  .marks i.used {
+    background: var(--trait);
   }
 
   .stat b {

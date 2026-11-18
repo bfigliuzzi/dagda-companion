@@ -12,7 +12,7 @@
 import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 9;
+export const VERSION = 10;
 
 interface Enregistrement {
   version: number;
@@ -44,6 +44,11 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   // la version empêche une app de la version 8 de lire (et d'écraser) un
   // enregistrement qui contient un combat narratif.
   8: (aventure) => aventure,
+  // Version 10 : la sauvegarde posée en mode simplifié (voir sauvegardes.ts). Une
+  // aventure de la version 9 n'en a posé aucune ; le nombre de sauvegardes déjà
+  // utilisées, lui, existe depuis la version 3 et reste tel quel. Il n'y a donc
+  // rien à reprendre pour elle, quelles que soient les sauvegardes consommées.
+  9: (aventure) => ({ ...(aventure as object), sauvegarde: null }),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

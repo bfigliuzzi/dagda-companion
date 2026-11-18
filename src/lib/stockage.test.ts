@@ -8,6 +8,7 @@ const herboriste: Aventure = {
   chapitre: 112,
   mode: "simplifie",
   sauvegardesUtilisees: 1,
+  sauvegarde: null,
   notes: "",
   armes: [],
   besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
@@ -49,10 +50,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 9", () => {
+  it("enregistre l'aventure avec le numéro de version 10", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 9,
+      version: 10,
       aventure: herboriste,
     });
   });
@@ -95,6 +96,7 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual({
       ...herboriste,
       sauvegardesUtilisees: 0,
+      sauvegarde: null,
       notes: "",
       armes: [],
     });
@@ -170,6 +172,91 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual({ ...herboriste, combats });
   });
 
+  it("migre un enregistrement de la version 9 : aucune sauvegarde posée, celles déjà utilisées restent comptées", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.sauvegarde;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 9, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual({
+      ...herboriste,
+      sauvegarde: null,
+      sauvegardesUtilisees: 1,
+    });
+  });
+
+  it("retrouve la sauvegarde posée, avec l'état du personnage qu'elle garde", () => {
+    const avecSauvegarde: Aventure = {
+      ...herboriste,
+      sauvegarde: {
+        chapitre: 87,
+        personnage: herboriste.personnage,
+        armes: [{ nom: "Épée courte", bonus: 1 }],
+        besace: {
+          objets: ["Corde de chanvre"],
+          bourse: true,
+          boulons: 12,
+          boulonsForces: false,
+        },
+        effets: [
+          { nom: "Bague", duree: "", cible: "pointsDeVieMax", valeur: 2 },
+        ],
+      },
+    };
+    ecrireAventure(localStorage, avecSauvegarde);
+    expect(lireAventure(localStorage)).toEqual(avecSauvegarde);
+  });
+
+  it("ne trouve aucune aventure si la sauvegarde est mal formée", () => {
+    const bonne = {
+      chapitre: 87,
+      personnage: herboriste.personnage,
+      armes: [],
+      besace: herboriste.besace,
+      effets: [],
+    };
+    const { chapitre, ...sansChapitre } = bonne;
+    void chapitre;
+    for (const sauvegarde of [
+      sansChapitre,
+      { ...bonne, chapitre: 0 },
+      { ...bonne, personnage: { talent: "Herbologie" } },
+      { ...bonne, armes: "épée" },
+      { ...bonne, besace: null },
+      { ...bonne, effets: [{ nom: "Bague" }] },
+      "87",
+    ]) {
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({
+          version: 10,
+          aventure: { ...herboriste, sauvegarde },
+        }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+    }
+  });
+
+  it("retrouve un combat perdu noté « repris au § 87 »", () => {
+    const perdu = {
+      ...unTourAu112,
+      issue: "perdu" as const,
+      repriseAu: 87,
+    };
+    const aventure: Aventure = { ...herboriste, combats: [perdu] };
+    ecrireAventure(localStorage, aventure);
+    expect(lireAventure(localStorage)).toEqual(aventure);
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 10,
+        aventure: { ...aventure, combats: [{ ...perdu, repriseAu: 0 }] },
+      }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
+  });
+
   it("retrouve les combats narratifs, parmi les combats joués", () => {
     const narratif: Aventure = {
       ...herboriste,
@@ -191,7 +278,7 @@ describe("stockage de l'aventure", () => {
       localStorage.setItem(
         CLE_STOCKAGE,
         JSON.stringify({
-          version: 9,
+          version: 10,
           aventure: { ...herboriste, combats: [combat] },
         }),
       );

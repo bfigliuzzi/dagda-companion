@@ -11,6 +11,7 @@ function enregistrerAventure(partiel: Partial<Besace> = {}) {
     chapitre: 112,
     mode: "simplifie",
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes: "",
     armes: [],
     besace: { ...besaceVide(), ...partiel },

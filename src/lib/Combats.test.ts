@@ -74,6 +74,7 @@ function enregistrerAventure(combats: Combat[]) {
     chapitre: 112,
     mode: "simplifie",
     sauvegardesUtilisees: 0,
+    sauvegarde: null,
     notes: "",
     armes: [{ nom: "Épée courte", bonus: 1 }],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
