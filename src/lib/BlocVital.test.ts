@@ -12,6 +12,7 @@ function enregistrerPersonnage(changement: Partial<Personnage> = {}) {
     chapitre: 112,
     mode: "simplifie",
     sauvegardesUtilisees: 0,
+    notes: "",
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,

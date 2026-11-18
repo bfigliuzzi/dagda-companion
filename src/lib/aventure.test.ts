@@ -27,6 +27,7 @@ describe("recopier un personnage déjà en route", () => {
       chapitre: 112,
       mode: "simplifie",
       sauvegardesUtilisees: 1,
+      notes: "",
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -50,6 +51,18 @@ describe("recopier un personnage déjà en route", () => {
       chance: 4,
     });
     expect(aventure.sauvegardesUtilisees).toBe(0);
+  });
+
+  it("commence une aventure, nouvelle ou recopiée, avec des notes vides", () => {
+    expect(recopierAventure(feuillePapier).notes).toBe("");
+    expect(
+      commencerAventure({
+        talent: "Instinct",
+        mode: "narratif",
+        pointsDeVieMax: 24,
+        chance: 3,
+      }).notes,
+    ).toBe("");
   });
 
   it("accepte des PV actuels au-dessus du maximum", () => {

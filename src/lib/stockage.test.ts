@@ -6,6 +6,7 @@ const herboriste: Aventure = {
   chapitre: 112,
   mode: "simplifie",
   sauvegardesUtilisees: 1,
+  notes: "",
   personnage: {
     talent: "Herbologie",
     pointsDeVieMax: 32,
@@ -27,10 +28,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 3", () => {
+  it("enregistre l'aventure avec le numéro de version 4", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 3,
+      version: 4,
       aventure: herboriste,
     });
   });
@@ -48,7 +49,7 @@ describe("stockage de l'aventure", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
       JSON.stringify({
-        version: 3,
+        version: 4,
         aventure: { ...herboriste, personnage: sansChance },
       }),
     );
@@ -73,14 +74,33 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual({
       ...herboriste,
       sauvegardesUtilisees: 0,
+      notes: "",
     });
+  });
+
+  it("migre un enregistrement de la version 3 : notes vides", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.notes;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 3, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual({ ...herboriste, notes: "" });
+  });
+
+  it("ne trouve aucune aventure si les notes ne sont pas du texte", () => {
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 4, aventure: { ...herboriste, notes: 12 } }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
   });
 
   it("ne trouve aucune aventure si les sauvegardes utilisées dépassent 3", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
       JSON.stringify({
-        version: 3,
+        version: 4,
         aventure: { ...herboriste, sauvegardesUtilisees: 4 },
       }),
     );

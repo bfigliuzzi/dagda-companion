@@ -8,7 +8,7 @@ Références : `docs/regles-livre-1.md` (Suivi de lecture et notes), `DESIGN.md`
 
 **Status:** ready-for-agent
 
-- [ ] La zone de notes s'agrandit avec son contenu, sans barre de défilement interne.
-- [ ] Le texte est enregistré pendant la frappe, sans bouton à appuyer.
-- [ ] Le texte est retrouvé après rechargement, même hors ligne.
-- [ ] Le focus affiche le contour jaune.
+- [x] La zone de notes s'agrandit avec son contenu, sans barre de défilement interne.
+- [x] Le texte est enregistré pendant la frappe, sans bouton à appuyer.
+- [x] Le texte est retrouvé après rechargement, même hors ligne.
+- [x] Le focus affiche le contour jaune.

@@ -12,7 +12,7 @@
 import { estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 3;
+export const VERSION = 4;
 
 interface Enregistrement {
   version: number;
@@ -29,6 +29,8 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   // Version 3 : on compte les sauvegardes utilisées. Une aventure de la
   // version 2 n'en a encore consommé aucune (la pose d'une sauvegarde n'existait pas).
   2: (aventure) => ({ ...(aventure as object), sauvegardesUtilisees: 0 }),
+  // Version 4 : les notes libres. Une aventure de la version 3 n'en a pas écrit.
+  3: (aventure) => ({ ...(aventure as object), notes: "" }),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

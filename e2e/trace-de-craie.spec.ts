@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 const aventure = {
-  version: 3,
+  version: 4,
   aventure: {
     chapitre: 112,
     mode: "simplifie",
     sauvegardesUtilisees: 0,
+    notes: "",
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,

@@ -56,6 +56,8 @@ export interface Aventure {
    * 0 dans les autres modes.
    */
   sauvegardesUtilisees: number;
+  /** Notes libres du lecteur (texte brut, sauts de ligne compris). */
+  notes: string;
   personnage: Personnage;
 }
 
@@ -113,6 +115,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     chapitre: 1,
     mode: mode!,
     sauvegardesUtilisees: 0,
+    notes: "",
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -192,6 +195,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
     chapitre: chapitre!,
     mode: mode!,
     sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
+    notes: "",
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -242,11 +246,12 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { chapitre, mode, personnage, sauvegardesUtilisees } =
+  const { chapitre, mode, personnage, sauvegardesUtilisees, notes } =
     valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
+    typeof notes === "string" &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );
