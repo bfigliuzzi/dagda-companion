@@ -8,9 +8,9 @@ Références : `docs/regles-livre-1.md` (Chance automatique en combat, choix par
 
 **Status:** ready-for-agent
 
-- [ ] La CHANCE ne modifie jamais les jets de l'ennemi.
-- [ ] Rien n'est dépensé si l'une des trois conditions manque.
-- [ ] Étape toucher : dépense minimale pour amener le total à la DEX effective ; rien si la CHANCE ne suffit pas.
-- [ ] Étape dégâts : dépense minimale pour atteindre les PV de l'ennemi, d6 plafonné à 6 ; rien si la CHANCE ne suffit pas.
-- [ ] Chaque dépense automatique s'affiche avec le badge et la trace de craie, et réduit la CHANCE de la feuille.
-- [ ] Chaque cas (conditions remplies ou non, CHANCE suffisante ou non, à chaque étape) est testé avec des dés fixés.
+- [x] La CHANCE ne modifie jamais les jets de l'ennemi.
+- [x] Rien n'est dépensé si l'une des trois conditions manque.
+- [x] Étape toucher : dépense minimale pour amener le total à la DEX effective ; rien si la CHANCE ne suffit pas.
+- [x] Étape dégâts : dépense minimale pour atteindre les PV de l'ennemi, d6 plafonné à 6 ; rien si la CHANCE ne suffit pas.
+- [x] Chaque dépense automatique s'affiche avec le badge et la trace de craie, et réduit la CHANCE de la feuille.
+- [x] Chaque cas (conditions remplies ou non, CHANCE suffisante ou non, à chaque étape) est testé avec des dés fixés.

@@ -24,11 +24,13 @@
  * valeursEffectives.ts), relevées une fois au début du combat.
  */
 import {
+  estCritique,
   estUnBonusDeDegats,
   estUnChapitre,
   estUneDexterite,
   estUnMaximumDePointsDeVie,
 } from "./aventure";
+import { ajusterLeTotal } from "./chance";
 import type { De } from "./des";
 import type { ValeursEffectives } from "./valeursEffectives";
 
@@ -66,7 +68,7 @@ export interface NouveauCombat {
 export interface Degats {
   /** Le d6 lancé. */
   de: number;
-  /** CHANCE ajoutée au d6 par l'app (ticket 10) ; 0 sinon. */
+  /** CHANCE ajoutée au d6 par la CHANCE automatique (6 au plus) ; 0 sinon. */
   chance: number;
   bonus: number;
   /** PV que perd la cible : 1 + de + chance + bonus, jamais moins de 0. */
@@ -79,7 +81,7 @@ export interface Jet {
   attaquant: Camp;
   /** Les deux dés du toucher. */
   des: [number, number];
-  /** CHANCE retirée du total par l'app pour toucher (ticket 10) ; 0 sinon. */
+  /** CHANCE retirée du total par la CHANCE automatique pour toucher ; 0 sinon. */
   chance: number;
   /** Total retenu : somme des dés − chance. Touché s'il est ≤ DEXTÉRITÉ. */
   total: number;
@@ -98,7 +100,7 @@ export interface Combat {
   depart: { lecteur: FicheDuLecteur; ennemi: Combattant };
   /** Où en sont les deux camps. */
   pointsDeVie: Record<Camp, number>;
-  /** CHANCE qui reste au lecteur (seule la CHANCE automatique du ticket 10 la dépense). */
+  /** CHANCE qui reste au lecteur (seule la CHANCE automatique la dépense en combat). */
   chance: number;
   /** Le journal, du premier jet au dernier. */
   jets: Jet[];
@@ -200,23 +202,70 @@ export function toursJoues(combat: Combat): number {
 }
 
 /**
- * POINT D'INSERTION DU TICKET 10 (CHANCE automatique, étape « toucher »).
- * Points de CHANCE que l'app retire du total des 2d6 pour que ce coup du
- * lecteur touche. Pour l'instant, elle n'en dépense jamais.
+ * LA CHANCE AUTOMATIQUE (docs/regles-livre-1.md, « Chance automatique en
+ * combat »). L'app ne dépense la CHANCE à la place du lecteur que si :
+ * - il est en état critique (moins de 7 PV) ;
+ * - un seul coup peut achever l'ennemi : PV de l'ennemi ≤ 1 + 6 + bonus ;
+ * - la CHANCE restante suffit pour l'étape en cours.
+ * Elle agit en deux étapes, chaque fois au minimum : `chanceAuToucher`, puis
+ * `chanceAuxDegats`. Une étape que la CHANCE ne couvre pas ne coûte rien ;
+ * l'étape « toucher » se décide avant le d6 de dégâts, donc sans savoir si
+ * l'étape « dégâts » sera payable.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function chanceAuToucher(combat: Combat, obtenu: number): number {
-  return 0;
+function chanceAutomatiquePossible(combat: Combat): boolean {
+  return (
+    estCritique(combat.pointsDeVie.lecteur) &&
+    ennemiAchevable(combat.pointsDeVie.ennemi, combat.depart.lecteur.bonus)
+  );
 }
 
 /**
- * POINT D'INSERTION DU TICKET 10 (CHANCE automatique, étape « dégâts »).
- * Points de CHANCE que l'app ajoute au d6 de dégâts (6 au plus) pour que ce
- * coup du lecteur achève l'ennemi. Pour l'instant, elle n'en dépense jamais.
+ * Un seul coup du lecteur peut achever l'ennemi encore debout : ses PV sont
+ * ≤ 1 + 6 + bonus de dommage du lecteur (le journal le dit : « Ennemi
+ * achevable. »).
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function ennemiAchevable(pointsDeVie: number, bonus: number): boolean {
+  return pointsDeVie > 0 && pointsDeVie <= 1 + 6 + bonus;
+}
+
+/**
+ * Le coût d'un décalage du total qui doit atteindre `cible` : `null` si la
+ * CHANCE disponible ne suffit pas (alors l'étape ne dépense rien).
+ */
+function coutPourAtteindre(
+  obtenu: number,
+  cible: number,
+  chanceDisponible: number,
+): number | null {
+  const { total, cout } = ajusterLeTotal(
+    obtenu,
+    cible - obtenu,
+    chanceDisponible,
+  );
+  return total === cible ? cout : null;
+}
+
+/**
+ * Étape « toucher » : points de CHANCE retirés du total des 2d6 pour que le
+ * coup du lecteur touche, juste jusqu'à sa DEXTÉRITÉ.
+ */
+function chanceAuToucher(combat: Combat, obtenu: number): number {
+  const { dexterite } = combat.depart.lecteur;
+  if (obtenu <= dexterite || !chanceAutomatiquePossible(combat)) return 0;
+  return coutPourAtteindre(obtenu, dexterite, combat.chance) ?? 0;
+}
+
+/**
+ * Étape « dégâts » : points de CHANCE ajoutés au d6 de dégâts (6 au plus)
+ * pour que le coup du lecteur achève l'ennemi. `combat.chance` est déjà
+ * diminuée de ce que l'étape « toucher » a coûté.
+ */
 function chanceAuxDegats(combat: Combat, de: number): number {
-  return 0;
+  if (!chanceAutomatiquePossible(combat)) return 0;
+  const { bonus } = combat.depart.lecteur;
+  const deNecessaire = combat.pointsDeVie.ennemi - 1 - bonus;
+  if (de >= deNecessaire || deNecessaire > 6) return 0;
+  return coutPourAtteindre(de, deNecessaire, combat.chance) ?? 0;
 }
 
 /**

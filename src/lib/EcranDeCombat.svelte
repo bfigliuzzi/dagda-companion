@@ -10,7 +10,13 @@
    * remonte les appuis. Les règles sont dans combat.ts.
    */
   import { estCritique } from "./aventure";
-  import { toursJoues, type Combat, type Degats, type Jet } from "./combat";
+  import {
+    ennemiAchevable,
+    toursJoues,
+    type Combat,
+    type Degats,
+    type Jet,
+  } from "./combat";
   import Dock from "./Dock.svelte";
   import TraceDeCraie from "./TraceDeCraie.svelte";
 
@@ -45,12 +51,29 @@
     return enPremier ? "L'ENNEMI ATTAQUE" : "L'ENNEMI RIPOSTE";
   }
 
-  /** « 1 + 3 + 1 », « 1 + 4 » sans bonus, « 1 + 4 − 1 » avec un malus. */
-  function formule({ de, chance, bonus }: Degats): string {
-    const signe = bonus > 0 ? ` + ${bonus}` : bonus < 0 ? ` − ${-bonus}` : "";
-    return `1 + ${de + chance}${signe}`;
+  /** Le bonus de la formule des dégâts : « + 1 », « − 1 », rien sans bonus. */
+  function bonus({ bonus }: Degats): string {
+    return bonus > 0 ? ` + ${bonus}` : bonus < 0 ? ` − ${-bonus}` : "";
+  }
+
+  /** Le texte du badge : « 1 CHANCE dépensée automatiquement ». */
+  function badge({ chance, degats }: Jet): string | null {
+    const points = chance + (degats?.chance ?? 0);
+    if (points === 0) return null;
+    return points > 1
+      ? `${points} CHANCE dépensées automatiquement`
+      : `${points} CHANCE dépensée automatiquement`;
   }
 </script>
+
+<!--
+  Une valeur changée par la CHANCE garde son ancienne valeur barrée juste
+  avant (DESIGN.md, Signature), sans fondu : le journal est un relevé, le jet
+  des dés doit y rester lisible.
+-->
+{#snippet ancienne(valeur: number)}
+  <s class="ancienne"><span class="sr">avant :&nbsp;</span>{valeur}</s>
+{/snippet}
 
 <main class="ecran">
   <div class="screen-h">
@@ -110,7 +133,10 @@
       <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
         <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
       </svg>
-      <span>État critique.</span>
+      <span>
+        État critique. La CHANCE sera dépensée seule si un coup peut achever
+        l'ennemi.
+      </span>
     </div>
   {/if}
 
@@ -130,14 +156,31 @@
         {#if jet.degats === null}
           <div class="what rate">2 dés = {jet.total}, raté.</div>
         {:else if jet.attaquant === "lecteur"}
+          {@const auto = badge(jet)}
           <div class="what">
-            2 dés = <b>{jet.total}</b>, touché. Dégâts {formule(jet.degats)} =
-            <b>{jet.degats.total}</b>.{#if jet.pointsDeVie === 0}
-              Ennemi achevé.{/if}
+            2 dés = {#if jet.chance > 0}{@render ancienne(
+                jet.des[0] + jet.des[1],
+              )}{/if} <b>{jet.total}</b>, touché. Dégâts 1 + {#if jet.degats.chance > 0}{@render ancienne(
+                jet.degats.de,
+              )}{/if}
+            {jet.degats.de + jet.degats.chance}{bonus(jet.degats)} =
+            <b>{jet.degats.total}</b>.
+            {#if jet.pointsDeVie === 0}Ennemi achevé.{:else if ennemiAchevable(jet.pointsDeVie, combat.depart.lecteur.bonus)}Ennemi
+              achevable.{/if}
           </div>
+          {#if auto}
+            <span class="auto">
+              <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+                <path
+                  d="M12 12c-3-1-5-3-5-5a2.5 2.5 0 0 1 5-.5 2.5 2.5 0 0 1 5 .5c0 2-2 4-5 5zm0 0c1 3 3 5 5 5a2.5 2.5 0 0 0 .5-5M12 12c-1 3-3 5-5 5a2.5 2.5 0 0 1-.5-5M12 12v9"
+                />
+              </svg>{auto}
+            </span>
+          {/if}
         {:else}
           <div class="what">
-            2 dés = <b>{jet.total}</b>, touché. Dégâts {formule(jet.degats)} =
+            2 dés = <b>{jet.total}</b>, touché. Dégâts 1 + {jet.degats
+              .de}{bonus(jet.degats)} =
             <span class="subis">−{jet.degats.total} PV</span>
           </div>
         {/if}
@@ -325,6 +368,33 @@
   /* Coup manqué en craie pâle. */
   .rate {
     color: var(--craie-3);
+  }
+
+  /* Ancienne valeur, barrée en rouge (2px dans une ligne). */
+  .ancienne {
+    font-weight: 700;
+    color: var(--rouge);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+
+  /* Badge automatique : chaque dépense de CHANCE faite par l'app. */
+  .auto {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-xs);
+    margin-top: var(--esp-xs);
+    padding: 3px 10px;
+    border: 1.5px solid var(--jaune);
+    border-radius: var(--rayon-pill);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--jaune);
+  }
+
+  .auto svg {
+    width: 14px;
+    height: 14px;
   }
 
   /* Dégâts subis par le lecteur. */

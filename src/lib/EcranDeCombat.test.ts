@@ -428,3 +428,116 @@ describe("quitter un combat en cours", () => {
     expect(lignesDuJournal()).toHaveLength(2);
   });
 });
+
+describe("la CHANCE automatique en combat", () => {
+  /** L'apprenti en état critique : 6 PV, CHANCE 4, DEX 7, épée courte (+1). */
+  beforeEach(() => enregistrerAventure({ personnage: { pointsDeVie: 6 } }));
+  afterEach(() => vi.useRealTimers());
+
+  it("annonce dans le bandeau critique que la CHANCE sera dépensée seule", async () => {
+    const lecteur = ouvrirLApp();
+    await mener(lecteur);
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "État critique. La CHANCE sera dépensée seule si un coup peut achever l'ennemi.",
+    );
+  });
+
+  it("signale la dépense dans le journal : ancien total barré, badge, CHANCE baissée", async () => {
+    // Ennemi à 8 PV ≤ 1 + 6 + 1. Lecteur : 5 + 3 = 8 → 7 pour 1 point ;
+    // d6 = 1 : il faudrait 5 points pour achever, il en reste 3 : rien. Ennemi : raté.
+    const lecteur = ouvrirLApp(desFixes(5, 3, 1, 6, 6));
+    await mener(lecteur, { pointsDeVie: "8" });
+    await lecteur.click(bouton("Tour suivant"));
+
+    const attaque = lignesDuJournal()[1];
+    expect(attaque).toHaveTextContent(
+      "VOUS ATTAQUEZ 2 dés = avant : 8 7, touché. Dégâts 1 + 1 + 1 = 3. Ennemi achevable. 1 CHANCE dépensée automatiquement",
+    );
+    expect(within(attaque).getByText(/avant/).closest("s")).toHaveClass(
+      "ancienne",
+    );
+    expect(
+      within(attaque).getByText("1 CHANCE dépensée automatiquement"),
+    ).toHaveClass("auto");
+    expect(camp("Vous").getByText("CHANCE 3 · DEX 7")).toBeInTheDocument();
+    expect(lireAventure(localStorage)?.personnage.chance).toBe(3);
+  });
+
+  it("dit « Ennemi achevable. » quand le coup laisse l'ennemi à portée d'un seul coup", async () => {
+    // Ennemi à 12 PV. Lecteur : 1 + 1, touché, d6 = 2 → 4 dégâts : 8 PV ≤ 1 + 6 + 1.
+    const lecteur = ouvrirLApp(desFixes(1, 1, 2, 6, 6));
+    await mener(lecteur, { pointsDeVie: "12" });
+    await lecteur.click(bouton("Tour suivant"));
+
+    expect(lignesDuJournal()[1]).toHaveTextContent(
+      "2 dés = 2, touché. Dégâts 1 + 2 + 1 = 4. Ennemi achevable.",
+    );
+  });
+
+  it("ne dit pas « Ennemi achevable. » tant que l'ennemi est hors de portée", async () => {
+    // Ennemi à 13 PV : 4 dégâts le laissent à 9 PV, au-dessus de 1 + 6 + 1.
+    const lecteur = ouvrirLApp(desFixes(1, 1, 2, 6, 6));
+    await mener(lecteur, { pointsDeVie: "13" });
+    await lecteur.click(bouton("Tour suivant"));
+
+    expect(lignesDuJournal()[1]).toHaveTextContent(
+      "2 dés = 2, touché. Dégâts 1 + 2 + 1 = 4.",
+    );
+    expect(screen.queryByText(/achevable/)).not.toBeInTheDocument();
+  });
+
+  it("ne montre ni badge ni total barré quand rien n'est dépensé", async () => {
+    // Ennemi à 9 PV : hors de portée d'un seul coup (1 + 6 + 1 = 8).
+    const lecteur = ouvrirLApp(desFixes(5, 3, 6, 6));
+    await mener(lecteur, { pointsDeVie: "9" });
+    await lecteur.click(bouton("Tour suivant"));
+
+    expect(lignesDuJournal()[1]).toHaveTextContent("2 dés = 8, raté.");
+    expect(screen.queryByText(/automatiquement/)).not.toBeInTheDocument();
+    expect(journal().queryByText(/avant/)).not.toBeInTheDocument();
+    expect(lireAventure(localStorage)?.personnage.chance).toBe(4);
+  });
+
+  it("retire la dépense de la base quand un effet soutient la CHANCE (4 + 2, dépenser 2 : base 2)", async () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 6 },
+      effets: [{ nom: "Trèfle", duree: "", cible: "chance", valeur: 2 }],
+    });
+    // Lecteur : 5 + 4 = 9 → 7 pour 2 points ; d6 = 1, l'ennemi (8 PV) survit. Ennemi : raté.
+    const lecteur = ouvrirLApp(desFixes(5, 4, 1, 6, 6));
+    await mener(lecteur, { pointsDeVie: "8" });
+    expect(camp("Vous").getByText("CHANCE 6 · DEX 7")).toBeInTheDocument();
+    await lecteur.click(bouton("Tour suivant"));
+
+    expect(
+      within(lignesDuJournal()[1]).getByText(
+        "2 CHANCE dépensées automatiquement",
+      ),
+    ).toBeInTheDocument();
+    expect(camp("Vous").getByText("CHANCE 4 · DEX 7")).toBeInTheDocument();
+    expect(lireAventure(localStorage)?.personnage.chance).toBe(2);
+  });
+
+  it("achève l'ennemi avec la CHANCE : bilan « Chance » barré, puis la CHANCE baissée sur la feuille", async () => {
+    vi.useFakeTimers();
+    render(App, { props: { de: desFixes(5, 3, 4) } });
+    const lecteur = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    // Ennemi à 8 PV. 5 + 3 = 8 → 7 pour 1 point ; d6 = 4 → 6 pour 2 points : 1 + 6 + 1 = 8.
+    await mener(lecteur, { pointsDeVie: "8" });
+    await lecteur.click(bouton("Tour suivant"));
+
+    expect(screen.getByRole("heading", { name: "Gagné" })).toBeInTheDocument();
+    const chance = screen.getByText("Chance").closest("li")!;
+    expect(chance).toHaveTextContent(/Chance\s*avant : 4\s*1/);
+    expect(
+      screen.getByText("Dont 3 points dépensés automatiquement"),
+    ).toBeInTheDocument();
+
+    await lecteur.click(bouton("Retour à la feuille"));
+    const feuille = within(screen.getByRole("group", { name: "Chance" }));
+    expect(feuille.getByText("1")).toBeInTheDocument();
+    expect(feuille.getByText(/avant/).closest("s")).toHaveTextContent("4");
+    expect(lireAventure(localStorage)?.personnage.chance).toBe(1);
+  });
+});
