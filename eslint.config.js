@@ -13,6 +13,7 @@ export default ts.config(
       "playwright-report/",
       "design/",
       ".impeccable/",
+      ".claude/",
     ],
   },
   js.configs.recommended,

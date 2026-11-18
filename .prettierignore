@@ -10,3 +10,4 @@ docs/
 package-lock.json
 public/
 .vitest/
+.claude/
