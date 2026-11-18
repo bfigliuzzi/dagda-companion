@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { deAuHasard, desFixes, tirerChance, tirerPointsDeVieMax } from "./des";
+import {
+  deAuHasard,
+  desFixes,
+  lancerDes,
+  tirerChance,
+  tirerPointsDeVieMax,
+  totalDesDes,
+} from "./des";
 
 describe("dés de création", () => {
   it("donne 32 POINTS DE VIE max quand les 2d6 font 3 et 5", () => {
@@ -36,5 +43,17 @@ describe("dés de création", () => {
     expect(Math.min(...valeurs)).toBeGreaterThanOrEqual(8);
     expect(Math.max(...valeurs)).toBeLessThanOrEqual(48);
     expect(valeurs.every((v) => v % 4 === 0)).toBe(true);
+  });
+});
+
+describe("lancer des dés", () => {
+  it("lance 2d6 avec des dés fixés : 4 puis 5, total 9", () => {
+    const jet = lancerDes(desFixes(4, 5), 2);
+    expect(jet).toEqual([4, 5]);
+    expect(totalDesDes(jet)).toBe(9);
+  });
+
+  it("lance 1d6 : un seul dé est tiré", () => {
+    expect(lancerDes(desFixes(3, 6), 1)).toEqual([3]);
   });
 });

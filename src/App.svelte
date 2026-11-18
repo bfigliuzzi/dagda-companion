@@ -2,6 +2,7 @@
   import Armes from "./lib/Armes.svelte";
   import Besace from "./lib/Besace.svelte";
   import BlocVital from "./lib/BlocVital.svelte";
+  import DockDeDes from "./lib/DockDeDes.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
@@ -44,6 +45,15 @@
     <Besace bind:besace={aventure.besace} />
     <Notes bind:notes={aventure.notes} />
   </main>
+  <DockDeDes
+    {de}
+    chance={aventure.personnage.chance}
+    ondepenser={(points) =>
+      (aventure!.personnage.chance = Math.max(
+        0,
+        aventure!.personnage.chance - points,
+      ))}
+  />
 {:else}
   <NouvelApprenti {de} oncommencer={(nouvelle) => (aventure = nouvelle)} />
 {/if}
@@ -52,6 +62,7 @@
   .feuille {
     max-width: 480px;
     margin: 0 auto;
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Place pour le dock fixe : 12 + 58 + 22 px, plus la zone de sécurité. */
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
   }
 </style>

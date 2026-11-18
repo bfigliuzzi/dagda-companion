@@ -29,3 +29,13 @@ export function tirerPointsDeVieMax(de: De): {
 export function tirerChance(de: De): number {
   return de();
 }
+
+/** Lance `nombre` dés, un tirage par dé, dans l'ordre. */
+export function lancerDes(de: De, nombre: number): number[] {
+  return Array.from({ length: nombre }, () => de());
+}
+
+/** Le total d'un jet : la somme de ses dés, quel qu'en soit le nombre. */
+export function totalDesDes(valeurs: readonly number[]): number {
+  return valeurs.reduce((somme, valeur) => somme + valeur, 0);
+}

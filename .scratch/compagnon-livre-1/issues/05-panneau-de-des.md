@@ -8,10 +8,10 @@ Références : `docs/regles-livre-1.md` (Chance), `DESIGN.md` (Dice dock, Bottom
 
 **Status:** ready-for-agent
 
-- [ ] Le dock de dés est le seul élément fixe de la feuille, sur un dégradé noir vers transparent.
-- [ ] Le panneau propose 1 dé / 2 dés ; les dés sont des d6 dessinés en SVG.
-- [ ] L'ajustement ne peut pas dépenser plus que la CHANCE disponible.
-- [ ] Un total ajusté montre l'ancien total barré en rouge avant le nouveau.
-- [ ] La validation retire de la CHANCE exactement le nombre de points dépensés ; fermer sans valider ne dépense rien.
-- [ ] Le panneau se ferme par son bouton de fermeture ou un appui sur le voile.
-- [ ] Le calcul du total ajusté et du coût en CHANCE est testé.
+- [x] Le dock de dés est le seul élément fixe de la feuille, sur un dégradé noir vers transparent.
+- [x] Le panneau propose 1 dé / 2 dés ; les dés sont des d6 dessinés en SVG.
+- [x] L'ajustement ne peut pas dépenser plus que la CHANCE disponible.
+- [x] Un total ajusté montre l'ancien total barré en rouge avant le nouveau.
+- [x] La validation retire de la CHANCE exactement le nombre de points dépensés ; fermer sans valider ne dépense rien.
+- [x] Le panneau se ferme par son bouton de fermeture ou un appui sur le voile.
+- [x] Le calcul du total ajusté et du coût en CHANCE est testé.
