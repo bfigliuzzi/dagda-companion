@@ -8,8 +8,8 @@ Références : `PRODUCT.md` (premier lancement : recopier un personnage), `DESIG
 
 **Status:** ready-for-agent
 
-- [ ] Le contrôle segmenté bascule le formulaire entre « Nouvelle aventure » et « Déjà en route » sans changer de page.
-- [ ] Chaque valeur chiffrée se saisit par un champ numérique avec pas à pas.
-- [ ] Le choix des sauvegardes utilisées n'apparaît qu'en mode simplifié.
-- [ ] Des PV actuels supérieurs au maximum déclenchent un indice, pas un blocage.
-- [ ] Après validation, la feuille montre exactement les valeurs saisies, chapitre compris.
+- [x] Le contrôle segmenté bascule le formulaire entre « Nouvelle aventure » et « Déjà en route » sans changer de page.
+- [x] Chaque valeur chiffrée se saisit par un champ numérique avec pas à pas.
+- [x] Le choix des sauvegardes utilisées n'apparaît qu'en mode simplifié.
+- [x] Des PV actuels supérieurs au maximum déclenchent un indice, pas un blocage.
+- [x] Après validation, la feuille montre exactement les valeurs saisies, chapitre compris.

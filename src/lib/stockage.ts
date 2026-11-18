@@ -12,7 +12,7 @@
 import { estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 2;
+export const VERSION = 3;
 
 interface Enregistrement {
   version: number;
@@ -25,7 +25,11 @@ interface Enregistrement {
  * Pas de migration depuis la version 1 : elle ne tenait que le chapitre, sans
  * personnage. Le lecteur repasse par « Nouvel apprenti ».
  */
-const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {};
+const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
+  // Version 3 : on compte les sauvegardes utilisées. Une aventure de la
+  // version 2 n'en a encore consommé aucune (la pose d'une sauvegarde n'existait pas).
+  2: (aventure) => ({ ...(aventure as object), sauvegardesUtilisees: 0 }),
+};
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */
 export function lireAventure(stockage: Storage): Aventure | null {

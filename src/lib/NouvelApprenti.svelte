@@ -3,13 +3,17 @@
     DEXTERITE_DE_DEPART,
     MODES,
     TALENTS,
+    SAUVEGARDES_DU_LIVRE,
     ceQuiManque,
+    ceQuiManqueEnRoute,
     commencerAventure,
+    recopierAventure,
     type Aventure,
     type Mode,
     type Talent,
   } from "./aventure";
   import { tirerChance, tirerPointsDeVieMax, type De } from "./des";
+  import ChampNumerique from "./ChampNumerique.svelte";
   import LigneDeJet from "./LigneDeJet.svelte";
 
   interface Props {
@@ -27,6 +31,30 @@
   let obtenu = $state<number | null>(null);
   let chance = $state<number | null>(null);
 
+  /** « Déjà en route » : le lecteur recopie un personnage commencé sur papier. */
+  let enRoute = $state(false);
+  let chapitre = $state<number | null>(1);
+  let pointsDeVie = $state<number | null>(null);
+  let dexterite = $state<number | null>(DEXTERITE_DE_DEPART);
+  let sauvegardesUtilisees = $state(0);
+
+  const recopie = $derived({
+    talent,
+    mode,
+    chapitre,
+    pointsDeVie,
+    pointsDeVieMax,
+    chance,
+    dexterite,
+    sauvegardesUtilisees,
+  });
+  const manqueEnRoute = $derived(ceQuiManqueEnRoute(recopie));
+  const pvAuDessusDuMax = $derived(
+    pointsDeVie !== null &&
+      pointsDeVieMax !== null &&
+      pointsDeVie > pointsDeVieMax,
+  );
+
   const brouillon = $derived({ talent, mode, pointsDeVieMax, chance });
   const manque = $derived(ceQuiManque(brouillon));
 
@@ -40,22 +68,47 @@
 <main class="ecran">
   <h1>Nouvel apprenti</h1>
 
-  <!-- « Déjà en route » (recopier un personnage commencé sur papier) : ticket 03. -->
   <div class="segments" role="radiogroup" aria-label="Type d'aventure">
     <label class="segment">
-      <input class="sr" type="radio" name="{id}-depart" checked />
+      <input
+        class="sr"
+        type="radio"
+        name="{id}-depart"
+        checked={!enRoute}
+        onchange={() => (enRoute = false)}
+      />
       Nouvelle aventure
     </label>
     <label class="segment">
-      <input class="sr" type="radio" name="{id}-depart" disabled />
+      <input
+        class="sr"
+        type="radio"
+        name="{id}-depart"
+        checked={enRoute}
+        onchange={() => (enRoute = true)}
+      />
       Déjà en route
     </label>
   </div>
 
-  <p class="intro">
-    La veille de votre examen à l'Académie de Dagda. Trois choix, puis
-    l'aventure commence au chapitre 1.
-  </p>
+  {#if enRoute}
+    <p class="intro">
+      Recopiez votre feuille papier. Tout reste modifiable ensuite.
+    </p>
+    <div class="champ-chapitre">
+      <ChampNumerique
+        nom="Dernier chapitre lu"
+        prefixe="§"
+        min={1}
+        bind:valeur={chapitre}
+      />
+    </div>
+  {:else}
+    <p class="intro">
+      La veille de votre examen à l'Académie de Dagda. Trois choix, puis
+      l'aventure commence au chapitre 1.
+    </p>
+  {/if}
 
   <section>
     <h2 id="{id}-talent">Talent</h2>
@@ -77,65 +130,146 @@
 
   <section>
     <h2 id="{id}-mode">Mode de jeu</h2>
-    <div class="choix" role="radiogroup" aria-labelledby="{id}-mode">
-      {#each Object.entries(MODES) as [cle, { nom, description }] (cle)}
-        <label class="choix-ligne">
-          <input
-            class="sr"
-            type="radio"
-            name="{id}-mode"
-            value={cle}
-            bind:group={mode}
-            aria-labelledby="{id}-mode-{cle}-nom"
-            aria-describedby="{id}-mode-{cle}-description"
-          />
-          <span class="radio" aria-hidden="true"></span>
-          <span class="t">
-            <b id="{id}-mode-{cle}-nom">{nom}</b>
-            <span id="{id}-mode-{cle}-description">{description}</span>
-          </span>
-        </label>
-      {/each}
-    </div>
+    {#if enRoute}
+      <div class="puces" role="radiogroup" aria-labelledby="{id}-mode">
+        {#each Object.entries(MODES) as [cle, { nom }] (cle)}
+          <label class="puce">
+            <input
+              class="sr"
+              type="radio"
+              name="{id}-mode-chips"
+              value={cle}
+              bind:group={mode}
+            />
+            {nom}
+          </label>
+        {/each}
+      </div>
+    {:else}
+      <div class="choix" role="radiogroup" aria-labelledby="{id}-mode">
+        {#each Object.entries(MODES) as [cle, { nom, description }] (cle)}
+          <label class="choix-ligne">
+            <input
+              class="sr"
+              type="radio"
+              name="{id}-mode"
+              value={cle}
+              bind:group={mode}
+              aria-labelledby="{id}-mode-{cle}-nom"
+              aria-describedby="{id}-mode-{cle}-description"
+            />
+            <span class="radio" aria-hidden="true"></span>
+            <span class="t">
+              <b id="{id}-mode-{cle}-nom">{nom}</b>
+              <span id="{id}-mode-{cle}-description">{description}</span>
+            </span>
+          </label>
+        {/each}
+      </div>
+    {/if}
   </section>
 
   <section>
     <h2>Caractéristiques</h2>
-    <LigneDeJet
-      nom="Points de vie"
-      etiquette="Points de vie maximum"
-      objet="les points de vie"
-      min={1}
-      detail={obtenu === null ? "2 dés × 4" : `2 dés × 4 · obtenu ${obtenu}`}
-      bind:valeur={pointsDeVieMax}
-      onlancer={lancerPointsDeVie}
-      onsaisie={() => (obtenu = null)}
-    />
-    <LigneDeJet
-      nom="Chance"
-      etiquette="Chance"
-      objet="la chance"
-      min={0}
-      detail="1 dé"
-      bind:valeur={chance}
-      onlancer={() => (chance = tirerChance(de))}
-    />
-    <div class="ligne-fixe">
-      <span class="n">
-        Dextérité<small>Fixée à 7 pour tous les apprentis</small>
-      </span>
-      <b>{DEXTERITE_DE_DEPART}</b>
-    </div>
+    {#if enRoute}
+      <div class="grille">
+        <ChampNumerique nom="PV actuels" min={0} bind:valeur={pointsDeVie} />
+        <ChampNumerique nom="PV maximum" min={1} bind:valeur={pointsDeVieMax} />
+        <ChampNumerique nom="Chance" min={0} bind:valeur={chance} />
+        <ChampNumerique nom="Dextérité" min={1} bind:valeur={dexterite} />
+      </div>
+      {#if mode === "simplifie"}
+        <div class="champ-puces">
+          <span class="etiquette" id="{id}-sauvegardes">
+            Sauvegardes déjà utilisées
+          </span>
+          <div
+            class="puces"
+            role="radiogroup"
+            aria-labelledby="{id}-sauvegardes"
+          >
+            {#each Array.from({ length: SAUVEGARDES_DU_LIVRE + 1 }, (_, n) => n) as n (n)}
+              <label class="puce">
+                <input
+                  class="sr"
+                  type="radio"
+                  name="{id}-sauvegardes"
+                  value={n}
+                  bind:group={sauvegardesUtilisees}
+                />
+                {n}
+              </label>
+            {/each}
+          </div>
+        </div>
+      {/if}
+      {#if pvAuDessusDuMax}
+        <div class="indice avertit" role="status">
+          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
+          </svg>
+          <span>
+            Les PV actuels dépassent le maximum. Vérifiez votre feuille papier :
+            vous pouvez continuer quand même.
+          </span>
+        </div>
+      {/if}
+      <div class="indice">
+        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
+        </svg>
+        <span>
+          Armes, effets, besace et notes se remplissent ensuite
+          <b>directement sur la feuille</b>.
+        </span>
+      </div>
+    {:else}
+      <LigneDeJet
+        nom="Points de vie"
+        etiquette="Points de vie maximum"
+        objet="les points de vie"
+        min={1}
+        detail={obtenu === null ? "2 dés × 4" : `2 dés × 4 · obtenu ${obtenu}`}
+        bind:valeur={pointsDeVieMax}
+        onlancer={lancerPointsDeVie}
+        onsaisie={() => (obtenu = null)}
+      />
+      <LigneDeJet
+        nom="Chance"
+        etiquette="Chance"
+        objet="la chance"
+        min={0}
+        detail="1 dé"
+        bind:valeur={chance}
+        onlancer={() => (chance = tirerChance(de))}
+      />
+      <div class="ligne-fixe">
+        <span class="n">
+          Dextérité<small>Fixée à 7 pour tous les apprentis</small>
+        </span>
+        <b>{DEXTERITE_DE_DEPART}</b>
+      </div>
+    {/if}
   </section>
 
   <div class="dock">
-    <button
-      class="valider"
-      disabled={manque !== null}
-      onclick={() => oncommencer(commencerAventure(brouillon))}
-    >
-      {manque ?? "Commencer l'aventure"}
-    </button>
+    {#if enRoute}
+      <button
+        class="valider"
+        disabled={manqueEnRoute !== null}
+        onclick={() => oncommencer(recopierAventure(recopie))}
+      >
+        {manqueEnRoute ?? "Ouvrir ma feuille"}
+      </button>
+    {:else}
+      <button
+        class="valider"
+        disabled={manque !== null}
+        onclick={() => oncommencer(commencerAventure(brouillon))}
+      >
+        {manque ?? "Commencer l'aventure"}
+      </button>
+    {/if}
   </div>
 </main>
 
@@ -180,9 +314,54 @@
     color: var(--noir);
   }
 
-  .segment:has(:disabled) {
-    color: var(--craie-3);
-    cursor: default;
+  .champ-chapitre {
+    padding: 0 var(--gutter);
+  }
+
+  .grille {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--esp-md);
+  }
+
+  .champ-puces {
+    margin-top: 14px;
+  }
+
+  .champ-puces .etiquette {
+    display: block;
+    font-size: 13px;
+    color: var(--craie-2);
+  }
+
+  .champ-puces .puces {
+    margin-top: var(--esp-sm);
+  }
+
+  .indice {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px 0 0;
+    border-top: 2px solid var(--trait);
+    font-size: 14px;
+    color: var(--craie-2);
+  }
+
+  .indice svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--jaune);
+  }
+
+  .indice.avertit svg {
+    color: var(--rouge);
+  }
+
+  .indice b {
+    color: var(--craie);
   }
 
   .intro {
@@ -317,6 +496,11 @@
     color: var(--jaune);
     font-size: 20px;
     font-weight: 800;
+  }
+
+  .valider:enabled {
+    background: var(--jaune);
+    color: var(--noir);
   }
 
   .valider:disabled {

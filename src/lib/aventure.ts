@@ -44,10 +44,18 @@ export interface Personnage {
   dexterite: number;
 }
 
+/** Nombre de sauvegardes dont dispose le lecteur en mode simplifié, pour tout le livre. */
+export const SAUVEGARDES_DU_LIVRE = 3;
+
 export interface Aventure {
   /** Dernier chapitre lu, noté par le lecteur avant une pause. */
   chapitre: number;
   mode: Mode;
+  /**
+   * Sauvegardes déjà consommées, de 0 à 3. Ne compte qu'en mode simplifié ;
+   * 0 dans les autres modes.
+   */
+  sauvegardesUtilisees: number;
   personnage: Personnage;
 }
 
@@ -104,12 +112,92 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
   return {
     chapitre: 1,
     mode: mode!,
+    sauvegardesUtilisees: 0,
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
       pointsDeVie: pointsDeVieMax!,
       chance: chance!,
       dexterite: DEXTERITE_DE_DEPART,
+    },
+  };
+}
+
+/** Ce que le lecteur recopie de sa feuille papier sur l'écran « Déjà en route ». */
+export interface Recopie {
+  talent: Talent | null;
+  mode: Mode | null;
+  chapitre: number | null;
+  pointsDeVie: number | null;
+  pointsDeVieMax: number | null;
+  chance: number | null;
+  dexterite: number | null;
+  sauvegardesUtilisees: number;
+}
+
+/** Une DEXTÉRITÉ : entier à partir de 1. */
+export function estUneDexterite(valeur: unknown): valeur is number {
+  return estUnEntierAuMoins(1, valeur);
+}
+
+/** Des POINTS DE VIE actuels : entier à partir de 0 (0 = à terre). */
+export function estUnPointDeVieActuel(valeur: unknown): valeur is number {
+  return estUnEntierAuMoins(0, valeur);
+}
+
+/** Sauvegardes utilisées : entier de 0 à 3. */
+export function estUnNombreDeSauvegardes(valeur: unknown): valeur is number {
+  return (
+    estUnEntierAuMoins(0, valeur) && (valeur as number) <= SAUVEGARDES_DU_LIVRE
+  );
+}
+
+/**
+ * Ce qui manque encore pour ouvrir la feuille recopiée, dit comme le libellé
+ * du bouton ; `null` quand tout est rempli. Des PV actuels au-dessus du
+ * maximum ne manquent pas : l'écran le signale seulement.
+ */
+export function ceQuiManqueEnRoute(recopie: Recopie): string | null {
+  const {
+    talent,
+    mode,
+    chapitre,
+    pointsDeVie,
+    pointsDeVieMax,
+    chance,
+    dexterite,
+  } = recopie;
+  if (talent === null) return "Choisissez d'abord un TALENT";
+  if (mode === null) return "Choisissez d'abord le mode de jeu";
+  if (!estUnChapitre(chapitre)) return "Corrigez le dernier chapitre lu";
+  if (pointsDeVieMax === null) return "Saisissez d'abord les PV maximum";
+  if (!estUnMaximumDePointsDeVie(pointsDeVieMax))
+    return "Corrigez les PV maximum";
+  if (pointsDeVie === null) return "Saisissez d'abord les PV actuels";
+  if (!estUnPointDeVieActuel(pointsDeVie)) return "Corrigez les PV actuels";
+  if (chance === null) return "Saisissez d'abord la CHANCE";
+  if (!estUneChance(chance)) return "Corrigez la CHANCE";
+  if (dexterite === null) return "Saisissez d'abord la DEXTÉRITÉ";
+  if (!estUneDexterite(dexterite)) return "Corrigez la DEXTÉRITÉ";
+  return null;
+}
+
+/** L'aventure recopiée de la feuille papier, valeurs reprises telles quelles. */
+export function recopierAventure(recopie: Recopie): Aventure {
+  if (ceQuiManqueEnRoute(recopie) !== null) {
+    throw new Error("La feuille recopiée n'est pas complète.");
+  }
+  const { mode, chapitre, sauvegardesUtilisees } = recopie;
+  return {
+    chapitre: chapitre!,
+    mode: mode!,
+    sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
+    personnage: {
+      talent: recopie.talent!,
+      pointsDeVieMax: recopie.pointsDeVieMax!,
+      pointsDeVie: recopie.pointsDeVie!,
+      chance: recopie.chance!,
+      dexterite: recopie.dexterite!,
     },
   };
 }
@@ -122,9 +210,11 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { chapitre, mode, personnage } = valeur as Aventure;
+  const { chapitre, mode, personnage, sauvegardesUtilisees } =
+    valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
+    estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );

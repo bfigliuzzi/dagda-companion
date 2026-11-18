@@ -10,6 +10,7 @@ function enregistrerAventure() {
   ecrireAventure(localStorage, {
     chapitre: 1,
     mode: "narratif",
+    sauvegardesUtilisees: 0,
     personnage: {
       talent: "Instinct",
       pointsDeVieMax: 24,
