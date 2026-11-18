@@ -3,11 +3,13 @@
   import Besace from "./lib/Besace.svelte";
   import BlocVital from "./lib/BlocVital.svelte";
   import DockDeDes from "./lib/DockDeDes.svelte";
+  import Effets from "./lib/Effets.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
   import { resume, type Aventure } from "./lib/aventure";
   import { deAuHasard, type De } from "./lib/des";
+  import { baseApres, valeurEffective } from "./lib/valeursEffectives";
   import { garderEcranAllume } from "./lib/ecranAllume";
   import { ecrireAventure, lireAventure } from "./lib/stockage";
 
@@ -29,29 +31,40 @@
 </script>
 
 {#if aventure}
+  {@const chance = valeurEffective(
+    "chance",
+    aventure.personnage.chance,
+    aventure.effets,
+  )}
   <main class="feuille">
     <EnTete
       resume={resume(aventure)}
       chapitre={aventure.chapitre}
       onchapitre={(chapitre) => (aventure!.chapitre = chapitre)}
     />
-    <BlocVital bind:personnage={aventure.personnage} />
-    <Armes bind:armes={aventure.armes} />
+    <BlocVital bind:personnage={aventure.personnage} effets={aventure.effets} />
+    <Armes bind:armes={aventure.armes} effets={aventure.effets} />
+    <Effets
+      bind:effets={aventure.effets}
+      bind:personnage={aventure.personnage}
+      armes={aventure.armes}
+    />
     <!--
-      Ordre de la feuille (maquette) : les Effets viennent ici, entre les
-      Armes et la Besace ; les Derniers combats suivent la Besace ; la
-      section Aventure suit les Notes, tout en bas.
+      Ordre de la feuille (maquette) : les Derniers combats suivent la
+      Besace ; la section Aventure suit les Notes, tout en bas.
     -->
     <Besace bind:besace={aventure.besace} />
     <Notes bind:notes={aventure.notes} />
   </main>
+  <!-- La CHANCE disponible est la CHANCE effective ; la dépense sort de la base (valeursEffectives.ts). -->
   <DockDeDes
     {de}
-    chance={aventure.personnage.chance}
+    {chance}
     ondepenser={(points) =>
-      (aventure!.personnage.chance = Math.max(
-        0,
-        aventure!.personnage.chance - points,
+      (aventure!.personnage.chance = baseApres(
+        "chance",
+        Math.max(0, chance - points),
+        aventure!.effets,
       ))}
   />
 {:else}

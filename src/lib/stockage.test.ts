@@ -9,6 +9,7 @@ const herboriste: Aventure = {
   notes: "",
   armes: [],
   besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
+  effets: [],
   personnage: {
     talent: "Herbologie",
     pointsDeVieMax: 32,
@@ -30,10 +31,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 6", () => {
+  it("enregistre l'aventure avec le numéro de version 7", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 6,
+      version: 7,
       aventure: herboriste,
     });
   });
@@ -109,6 +110,66 @@ describe("stockage de l'aventure", () => {
       JSON.stringify({ version: 5, aventure: ancienne }),
     );
     expect(lireAventure(localStorage)).toEqual(herboriste);
+  });
+
+  it("migre un enregistrement de la version 6 : aucun effet", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.effets;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 6, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual(herboriste);
+  });
+
+  it("retrouve les effets et les rappels enregistrés", () => {
+    const sousEffet: Aventure = {
+      ...herboriste,
+      effets: [
+        {
+          nom: "Potion d'agilité",
+          duree: "24 h",
+          cible: "dexterite",
+          valeur: 1,
+        },
+        {
+          nom: "retourner voir l'herboriste",
+          duree: "",
+          cible: null,
+          valeur: 0,
+        },
+      ],
+    };
+    ecrireAventure(localStorage, sousEffet);
+    expect(lireAventure(localStorage)).toEqual(sousEffet);
+  });
+
+  it("retrouve une base de CHANCE sous 0 quand un effet la soutient (sa CHANCE prêtée a été dépensée)", () => {
+    const depense: Aventure = {
+      ...herboriste,
+      effets: [{ nom: "Trèfle", duree: "", cible: "chance", valeur: 2 }],
+      personnage: { ...herboriste.personnage, chance: -1 },
+    };
+    ecrireAventure(localStorage, depense);
+    expect(lireAventure(localStorage)).toEqual(depense);
+  });
+
+  it("ne trouve aucune aventure si un effet est mal formé", () => {
+    const bon = { nom: "Potion", duree: "", cible: "dexterite", valeur: 1 };
+    for (const effets of [
+      "potion",
+      [null],
+      [{ ...bon, nom: 3 }],
+      [{ ...bon, duree: null }],
+      [{ ...bon, cible: "force" }],
+      [{ ...bon, valeur: 1.5 }],
+    ]) {
+      localStorage.setItem(
+        CLE_STOCKAGE,
+        JSON.stringify({ version: 7, aventure: { ...herboriste, effets } }),
+      );
+      expect(lireAventure(localStorage)).toBeNull();
+    }
   });
 
   it("retrouve la besace, la bourse et les boulons enregistrés", () => {

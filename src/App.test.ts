@@ -14,6 +14,7 @@ function enregistrerAventure() {
     notes: "",
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
+    effets: [],
     personnage: {
       talent: "Instinct",
       pointsDeVieMax: 24,

@@ -2,6 +2,7 @@
  * L'aventure telle que l'app la tient : le personnage, le mode de jeu et le
  * dernier chapitre lu. Règles : docs/regles-livre-1.md.
  */
+import { estUnEffet, type Effet } from "./valeursEffectives";
 
 export const TALENTS = [
   "Instinct",
@@ -132,6 +133,12 @@ export interface Aventure {
   armes: Arme[];
   /** La besace, la bourse et les boulons. */
   besace: Besace;
+  /** Effets temporaires et rappels, dans l'ordre où le lecteur les a ajoutés (voir valeursEffectives.ts). */
+  effets: Effet[];
+  /**
+   * Les valeurs de BASE du personnage, sans les effets. La feuille, le combat
+   * et la CHANCE emploient les valeurs effectives (valeursEffectives.ts).
+   */
   personnage: Personnage;
 }
 
@@ -192,6 +199,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
     notes: "",
     armes: [],
     besace: besaceVide(),
+    effets: [],
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -274,6 +282,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
     notes: "",
     armes: [],
     besace: besaceVide(),
+    effets: [],
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -357,6 +366,7 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     notes,
     armes,
     besace,
+    effets,
   } = valeur as Aventure;
   return (
     estUnChapitre(chapitre) &&
@@ -365,6 +375,8 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     Array.isArray(armes) &&
     armes.every(estUneArme) &&
     estUneBesace(besace) &&
+    Array.isArray(effets) &&
+    effets.every(estUnEffet) &&
     Object.hasOwn(MODES, mode) &&
     estUnPersonnage(personnage)
   );
@@ -388,14 +400,19 @@ function estUneArme(valeur: unknown): valeur is Arme {
   return typeof nom === "string" && estUnBonusDeDegats(bonus);
 }
 
+/**
+ * Les valeurs enregistrées sont des bases : tant qu'un effet la soutient, une
+ * base peut passer sous son plancher (la CHANCE prêtée par un effet a été
+ * dépensée, voir valeursEffectives.ts). On vérifie donc seulement des entiers.
+ */
 function estUnPersonnage(valeur: unknown): valeur is Personnage {
   if (typeof valeur !== "object" || valeur === null) return false;
   const personnage = valeur as Personnage;
   return (
     (TALENTS as readonly string[]).includes(personnage.talent) &&
-    estUnMaximumDePointsDeVie(personnage.pointsDeVieMax) &&
+    Number.isInteger(personnage.pointsDeVieMax) &&
     Number.isInteger(personnage.pointsDeVie) &&
-    estUneChance(personnage.chance) &&
+    Number.isInteger(personnage.chance) &&
     Number.isInteger(personnage.dexterite)
   );
 }

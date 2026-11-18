@@ -46,6 +46,7 @@ describe("recopier un personnage déjà en route", () => {
       notes: "",
       armes: [],
       besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
+      effets: [],
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -155,6 +156,20 @@ describe("mettre à jour les POINTS DE VIE", () => {
     expect(depasseLeMaximum({ pointsDeVie: 32, pointsDeVieMax: 32 })).toBe(
       false,
     );
+  });
+});
+
+describe("effets", () => {
+  it("commence une aventure, nouvelle ou recopiée, sans effet", () => {
+    expect(recopierAventure(feuillePapier).effets).toEqual([]);
+    expect(
+      commencerAventure({
+        talent: "Instinct",
+        mode: "narratif",
+        pointsDeVieMax: 24,
+        chance: 3,
+      }).effets,
+    ).toEqual([]);
   });
 });
 

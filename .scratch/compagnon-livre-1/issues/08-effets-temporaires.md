@@ -8,10 +8,10 @@ Références : `docs/regles-livre-1.md` (Effets temporaires et bonus d'objets), 
 
 **Status:** ready-for-agent
 
-- [ ] Le panneau permet de choisir la cible en puces, dont « rien » pour un simple rappel.
-- [ ] Les noms d'effets actifs sont en vert ; les rappels en craie grise.
-- [ ] Chaque caractéristique visée montre sa valeur effective en vert et la ligne « base … · effet … ».
-- [ ] La valeur effective du bonus de dommage additionne armes et effets.
-- [ ] Un bonus de PV augmente le maximum ; le retirer ramène le maximum à sa base.
-- [ ] Retirer un effet le fait disparaître, avec la trace de craie sur la valeur qui change.
-- [ ] Le calcul des valeurs effectives (base + effets) est testé pour chaque cible.
+- [x] Le panneau permet de choisir la cible en puces, dont « rien » pour un simple rappel.
+- [x] Les noms d'effets actifs sont en vert ; les rappels en craie grise.
+- [x] Chaque caractéristique visée montre sa valeur effective en vert et la ligne « base … · effet … ».
+- [x] La valeur effective du bonus de dommage additionne armes et effets.
+- [x] Un bonus de PV augmente le maximum ; le retirer ramène le maximum à sa base.
+- [x] Retirer un effet le fait disparaître, avec la trace de craie sur la valeur qui change.
+- [x] Le calcul des valeurs effectives (base + effets) est testé pour chaque cible.

@@ -12,7 +12,7 @@
 import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 6;
+export const VERSION = 7;
 
 interface Enregistrement {
   version: number;
@@ -35,6 +35,8 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   4: (aventure) => ({ ...(aventure as object), armes: [] }),
   // Version 6 : la besace, la bourse et les boulons. Une aventure de la version 5 n'en a rien noté.
   5: (aventure) => ({ ...(aventure as object), besace: besaceVide() }),
+  // Version 7 : les effets temporaires. Une aventure de la version 6 n'en a aucun.
+  6: (aventure) => ({ ...(aventure as object), effets: [] }),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

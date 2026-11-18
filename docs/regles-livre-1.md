@@ -48,6 +48,9 @@ Exemples rencontrés : une potion qui donne un bonus de DEXTÉRITÉ pendant 24 h
 - L'app ne connaît pas le temps de l'histoire : c'est le lecteur qui retire l'effet quand il prend fin.
 - La caractéristique affiche sa valeur de base et sa valeur effective (base + effets).
 - *(choix par défaut)* Un bonus de POINTS DE VIE venant d'un objet porté (la bague) s'applique au maximum.
+- *(choix par défaut)* Un effet sur les POINTS DE VIE monte à la fois les POINTS DE VIE et leur maximum (la bague +2 : 28 / 32 devient 30 / 34). Un effet sur les POINTS DE VIE max ne monte que le maximum.
+- *(choix par défaut)* Pertes, dépenses et corrections portent sur la valeur affichée, et l'effet garde sa valeur : le retirer enlève exactement cette valeur. Avec la bague, 30 / 34 puis −5 donne 25 / 34, et 23 / 32 sans la bague. Avec un effet CHANCE +2 sur une CHANCE de 4, dépenser 2 donne 4, puis 2 sans l'effet.
+- *(choix par défaut)* Si le retrait d'un effet fait passer les POINTS DE VIE au-dessus du maximum, ils redescendent au maximum. Une valeur ne tombe jamais sous 0 (POINTS DE VIE, CHANCE) ni le maximum sous 1 ; la DEXTÉRITÉ et le bonus de dommage n'ont pas de plancher.
 
 ## Modes de jeu
 

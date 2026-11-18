@@ -10,12 +10,18 @@
     /** Plus petite valeur que le pas à pas accepte. */
     min: number;
     valeur: number | null;
-    /** Devant la valeur, comme le « § » du chapitre. */
+    /** Collé devant la valeur : « § » (avec son espace) du chapitre, « + » d'un bonus. */
     prefixe?: string;
   }
 
   let { nom, min, valeur = $bindable(), prefixe }: Props = $props();
   const id = $props.id();
+
+  /**
+   * Avec un préfixe, le champ prend la largeur de son nombre : le préfixe
+   * reste collé à la valeur, comme « § 112 » ou « +2 » dans la maquette.
+   */
+  const largeur = $derived(Math.max(1, String(valeur ?? "").length));
 
   function diminuer() {
     valeur = valeur === null ? min : Math.max(min, Math.trunc(valeur) - 1);
@@ -44,6 +50,7 @@
         inputmode="numeric"
         {min}
         placeholder="–"
+        style:width={prefixe ? `${largeur}ch` : undefined}
         bind:value={valeur}
       />
     </span>
@@ -97,7 +104,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--esp-hair);
     font-size: 24px;
     font-weight: 700;
   }

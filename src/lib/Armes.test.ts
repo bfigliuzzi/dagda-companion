@@ -18,6 +18,7 @@ function enregistrerAventure(armes: Arme[] = []) {
     notes: "",
     armes,
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
+    effets: [],
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,
@@ -33,6 +34,15 @@ const dansSection = () => within(section());
 const bouton = (nom: string | RegExp) =>
   dansSection().getByRole("button", { name: nom });
 const lignes = () => dansSection().queryAllByRole("listitem");
+/**
+ * Le compteur à droite du titre, lu sans la trace de craie : quand le bonus
+ * change, l'ancien reste barré devant le nouveau, puis s'efface en 1,2 s.
+ */
+function compteur() {
+  const meta = dansSection().getByText(/\/ 2/).cloneNode(true) as HTMLElement;
+  meta.querySelectorAll("s").forEach((trace) => trace.remove());
+  return meta.textContent!.replace(/\s+/g, " ").trim();
+}
 const armesEnregistrees = () =>
   JSON.parse(localStorage.getItem(CLE_STOCKAGE)!).aventure.armes;
 
@@ -60,7 +70,7 @@ describe("section Armes", () => {
     expect(
       within(section()).getByRole("heading", { name: "Armes" }),
     ).toBeInTheDocument();
-    expect(section()).toHaveTextContent("0 / 2 · +0 aux dégâts");
+    expect(compteur()).toBe("0 / 2 · +0 aux dégâts");
     expect(lignes()).toHaveLength(0);
     expect(bouton("Ajouter une arme")).toBeInTheDocument();
   });
@@ -81,7 +91,7 @@ describe("section Armes", () => {
 
     expect(lignes()).toHaveLength(1);
     expect(lignes()[0]).toHaveTextContent(/^Épée courte\s*\+1$/);
-    expect(section()).toHaveTextContent("1 / 2 · +1 aux dégâts");
+    expect(compteur()).toBe("1 / 2 · +1 aux dégâts");
     // Le formulaire s'est refermé.
     expect(
       dansSection().queryByLabelText("Nom de l'arme"),
@@ -142,7 +152,7 @@ describe("section Armes", () => {
     const lecteur = userEvent.setup();
     await ajouter(lecteur, "Masse rouillée", "-2");
     expect(lignes()[0]).toHaveTextContent(/^Masse rouillée\s*−2$/);
-    expect(section()).toHaveTextContent("1 / 2 · −2 aux dégâts");
+    expect(compteur()).toBe("1 / 2 · −2 aux dégâts");
   });
 
   it("additionne les bonus : épée courte +1 et bâton +0 font +1 aux dégâts", async () => {
@@ -150,7 +160,7 @@ describe("section Armes", () => {
     const lecteur = userEvent.setup();
     await ajouter(lecteur, "Épée courte", "1");
     await ajouter(lecteur, "Bâton de l'Académie");
-    expect(section()).toHaveTextContent("2 / 2 · +1 aux dégâts");
+    expect(compteur()).toBe("2 / 2 · +1 aux dégâts");
     expect(armesEnregistrees()).toEqual([epeeCourte, baton]);
   });
 });
@@ -168,7 +178,7 @@ describe("modifier et retirer une arme", () => {
     expect(armesEnregistrees()[0]).toEqual({ nom: "Épée courte", bonus: 3 });
     await lecteur.keyboard("{Enter}");
     expect(lignes()[0]).toHaveTextContent(/^Épée courte\s*\+3$/);
-    expect(section()).toHaveTextContent("2 / 2 · +3 aux dégâts");
+    expect(compteur()).toBe("2 / 2 · +3 aux dégâts");
   });
 
   it("corrige le nom d'un appui, enregistré à la frappe", async () => {
@@ -198,7 +208,7 @@ describe("modifier et retirer une arme", () => {
     await lecteur.click(bouton("Retirer Épée courte"));
     expect(lignes()).toHaveLength(1);
     expect(lignes()[0]).toHaveTextContent("Bâton de l'Académie");
-    expect(section()).toHaveTextContent("1 / 2 · +0 aux dégâts");
+    expect(compteur()).toBe("1 / 2 · +0 aux dégâts");
     expect(armesEnregistrees()).toEqual([baton]);
   });
 });
@@ -219,9 +229,8 @@ describe("plus de 2 armes", () => {
 
     expect(lignes()).toHaveLength(3);
     expect(armesEnregistrees()).toEqual([epeeCourte, baton, dague]);
-    const compteur = dansSection().getByText(/^3 \/ 2/);
-    expect(compteur).toHaveClass("depasse");
-    expect(compteur).toHaveTextContent("3 / 2 · +2 aux dégâts");
+    expect(dansSection().getByText(/^3 \/ 2/)).toHaveClass("depasse");
+    expect(compteur()).toBe("3 / 2 · +2 aux dégâts");
     expect(dansSection().getByRole("note")).toHaveTextContent(
       "Les règles permettent 2 armes. Gardez-la si le livre l'autorise, sinon retirez-en une.",
     );

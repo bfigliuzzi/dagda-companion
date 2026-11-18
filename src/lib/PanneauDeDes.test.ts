@@ -14,6 +14,7 @@ function enregistrerAventure(chance = 4) {
     notes: "",
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
+    effets: [],
     personnage: {
       talent: "Herbologie",
       pointsDeVieMax: 32,

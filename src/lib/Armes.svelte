@@ -5,6 +5,10 @@
    * place dans la besace. Au-delà de 2 armes, le compteur passe en rouge avec
    * un indice, sans rien bloquer. Chaque changement remonte aussitôt, donc
    * s'enregistre aussitôt.
+   *
+   * Le compteur montre le bonus de dommage effectif : armes + effets (voir
+   * valeursEffectives.ts), en vert avec la ligne « base +1 · rage +2 » quand un effet le
+   * change, et la trace de craie quand il change.
    */
   import {
     ARMES_MAX,
@@ -15,17 +19,28 @@
     type Arme,
   } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
+  import {
+    explication,
+    valeurEffective,
+    type Effet,
+  } from "./valeursEffectives";
+  import TraceDeCraie from "./TraceDeCraie.svelte";
   import ValeurEditable from "./ValeurEditable.svelte";
 
   interface Props {
     armes: Arme[];
+    effets: readonly Effet[];
   }
 
-  let { armes = $bindable() }: Props = $props();
+  let { armes = $bindable(), effets }: Props = $props();
   const id = $props.id();
 
   const depasse = $derived(portePlusDArmesQueLesRegles(armes));
-  const bonusTotal = $derived(bonusDeDegatsDesArmes(armes));
+  const bonusDesArmes = $derived(bonusDeDegatsDesArmes(armes));
+  const degats = $derived(
+    formaterUnBonus(valeurEffective("degats", bonusDesArmes, effets)),
+  );
+  const ligne = $derived(explication("degats", bonusDesArmes, effets));
 
   // Ajout : le formulaire remplace le bouton « Ajouter une arme ».
   let enAjout = $state(false);
@@ -74,7 +89,10 @@
   <div class="sh">
     <h2 id="{id}-titre">Armes</h2>
     <span class="meta" class:depasse>
-      {armes.length} / {ARMES_MAX} · {formaterUnBonus(bonusTotal)} aux dégâts
+      {armes.length} / {ARMES_MAX} ·
+      <TraceDeCraie valeur={degats} barre="2px" />
+      <span class:vert={ligne !== null}>{degats} aux dégâts</span>
+      {#if ligne}<small class="vert">{ligne}</small>{/if}
     </span>
   </div>
 
@@ -199,8 +217,20 @@
     font-size: 14px;
     color: var(--craie-2);
   }
+  .meta {
+    text-align: right;
+  }
   .meta.depasse {
     color: var(--rouge);
+  }
+  /* Craie verte : le bonus changé par un effet, et sa ligne d'explication. */
+  .vert {
+    color: var(--vert);
+  }
+  .meta small {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
   }
 
   ul {

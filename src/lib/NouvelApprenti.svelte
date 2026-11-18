@@ -98,7 +98,7 @@
     <div class="champ-chapitre">
       <ChampNumerique
         nom="Dernier chapitre lu"
-        prefixe="§"
+        prefixe="§&nbsp;"
         min={1}
         bind:valeur={chapitre}
       />
