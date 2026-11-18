@@ -8,9 +8,9 @@ Références : `PRODUCT.md` (combats repérés par leur numéro de chapitre, his
 
 **Status:** ready-for-agent
 
-- [ ] Un combat terminé apparaît en tête de « Derniers combats ».
-- [ ] La section de la feuille n'affiche que les plus récents ; l'écran « Combats » les affiche tous, du plus récent au plus ancien.
-- [ ] Les lignes suivent la grille 64 px / 1fr / auto, hauteur 56 px.
-- [ ] Un appui déplie et replie le détail d'un combat.
-- [ ] L'écran plein a un bouton retour à gauche du titre.
-- [ ] L'historique est enregistré et retrouvé après rechargement.
+- [x] Un combat terminé apparaît en tête de « Derniers combats ».
+- [x] La section de la feuille n'affiche que les plus récents ; l'écran « Combats » les affiche tous, du plus récent au plus ancien.
+- [x] Les lignes suivent la grille 64 px / 1fr / auto, hauteur 56 px.
+- [x] Un appui déplie et replie le détail d'un combat.
+- [x] L'écran plein a un bouton retour à gauche du titre.
+- [x] L'historique est enregistré et retrouvé après rechargement.

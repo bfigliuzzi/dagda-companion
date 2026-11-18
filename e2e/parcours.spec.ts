@@ -53,4 +53,16 @@ test("parcours de lecteur : créer un personnage, mener un combat aux dés fixé
   await page.reload();
   await expect(page.getByText("Herbologie · Mode simplifié")).toBeVisible();
   await expect(pointsDeVie).toContainText("23 / 32");
+
+  // L'historique du combat est retrouvé : sur la feuille, puis dans l'écran « Combats ».
+  const combats = page.getByRole("region", { name: "Combats" });
+  await expect(combats).toContainText("§ 1");
+  await expect(combats).toContainText("3 tours · 1 adversaire");
+  await expect(combats).toContainText("−9 PV");
+  await combats.getByRole("button", { name: "Tout l'historique" }).click();
+  await expect(page.getByRole("heading", { name: "Combats" })).toBeVisible();
+  await page.getByRole("button", { name: /^§ 1/ }).click();
+  await expect(
+    page.getByRole("region", { name: "Détail du § 1" }),
+  ).toContainText("PV 32 → 23");
 });

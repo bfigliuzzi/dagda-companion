@@ -13,9 +13,11 @@
     /** Un combat terminé, gagné ou perdu. */
     combat: Combat;
     onretour: () => void;
+    /** « Voir le détail des N tours » : ouvre l'historique sur ce combat. */
+    ondetail: () => void;
   }
 
-  let { combat, onretour }: Props = $props();
+  let { combat, onretour, ondetail }: Props = $props();
 
   const gagne = $derived(combat.issue === "gagne");
   const bilan = $derived(bilanDuCombat(combat));
@@ -86,6 +88,11 @@
     <Dock>
       <button class="cta" type="button" onclick={onretour}>
         Retour à la feuille
+      </button>
+      <button class="link" type="button" onclick={ondetail}>
+        {bilan.tours > 1
+          ? `Voir le détail des ${bilan.tours} tours`
+          : "Voir le détail du tour"}
       </button>
     </Dock>
   {:else}
@@ -208,6 +215,20 @@
     border-radius: var(--r);
     font-weight: 700;
     color: var(--craie);
+  }
+
+  /* Lien discret sous le bouton : craie grise soulignée (maquette, `.link`). */
+  .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--cible);
+    color: var(--craie-2);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--craie-3);
   }
 
   .cta {

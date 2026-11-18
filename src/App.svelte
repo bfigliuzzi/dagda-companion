@@ -4,6 +4,8 @@
   import BlocVital from "./lib/BlocVital.svelte";
   import DockDeDes from "./lib/DockDeDes.svelte";
   import EcranDeCombat from "./lib/EcranDeCombat.svelte";
+  import DerniersCombats from "./lib/DerniersCombats.svelte";
+  import EcranDesCombats from "./lib/EcranDesCombats.svelte";
   import Effets from "./lib/Effets.svelte";
   import EnTete from "./lib/EnTete.svelte";
   import Notes from "./lib/Notes.svelte";
@@ -51,6 +53,8 @@
    * écrans, oubliés au rechargement.
    */
   let saisieDuCombat = $state(false);
+  /** L'écran « Combats » : `ouvert` est le rang du combat déplié à l'ouverture. */
+  let historique = $state<{ ouvert: number | null } | null>(null);
   /** Le combat qui vient de finir, montré par l'écran de résultat. */
   let resultat = $state<Combat | null>(null);
   /** PV et CHANCE d'avant le combat : la trace de craie au retour sur la feuille. */
@@ -64,6 +68,11 @@
   function ouvrirLeCombat() {
     avantLeCombat = {};
     saisieDuCombat = true;
+    remonter();
+  }
+
+  function ouvrirLHistorique(ouvert: number | null = null) {
+    historique = { ouvert };
     remonter();
   }
 
@@ -126,7 +135,25 @@
   />
 {:else if aventure && resultat}
   {@const combat = resultat}
-  <ResultatDuCombat {combat} onretour={() => revenirALaFeuille(combat)} />
+  <ResultatDuCombat
+    {combat}
+    onretour={() => revenirALaFeuille(combat)}
+    ondetail={() => {
+      // Le combat qui vient de finir est le dernier de l'historique. Le retour
+      // se fait vers la feuille, qui joue alors la trace de craie.
+      revenirALaFeuille(combat);
+      ouvrirLHistorique(aventure!.combats.length - 1);
+    }}
+  />
+{:else if aventure && historique}
+  <EcranDesCombats
+    combats={aventure.combats}
+    ouvertAuDepart={historique.ouvert}
+    onretour={() => {
+      historique = null;
+      remonter();
+    }}
+  />
 {:else if aventure && saisieDuCombat}
   <NouveauCombat
     chapitre={aventure.chapitre}
@@ -166,6 +193,10 @@
       Besace ; la section Aventure suit les Notes, tout en bas.
     -->
     <Besace bind:besace={aventure.besace} />
+    <DerniersCombats
+      combats={aventure.combats}
+      onhistorique={() => ouvrirLHistorique()}
+    />
     <Notes bind:notes={aventure.notes} />
   </main>
   <!-- La CHANCE disponible est la CHANCE effective ; la dépense sort de la base (valeursEffectives.ts). -->
