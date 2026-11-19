@@ -5,6 +5,8 @@ import { svelteTesting } from "@testing-library/svelte/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  // GitHub Pages sert l'app sous /dagda-companion/ ; en local et en test, à la racine.
+  base: process.env.BASE_PATH ?? "/",
   plugins: [
     svelte(),
     svelteTesting(),
