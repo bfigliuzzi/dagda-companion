@@ -28,9 +28,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - run: npm run build
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+      # GitHub Pages sert l'app sous /<nom du dépôt>/ ; en local, elle reste à la racine.
+      - run: npm run build -- --base /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
