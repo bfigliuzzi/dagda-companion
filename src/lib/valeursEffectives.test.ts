@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Aventure, Personnage } from "./aventure";
 import {
   baseApres,
+  decomposition,
   decrireUnEffet,
   explication,
   retirerUnEffet,
@@ -36,13 +37,13 @@ describe("valeurs effectives : base + effets", () => {
     expect(valeurEffective("dexterite", 7, [potion])).toBe(8);
   });
 
-  it("choix par défaut : un bonus de PV (la bague +2) monte les PV et le maximum", () => {
-    const bague = effet("Bague de vigueur", "pointsDeVie", 2);
-    expect(valeurEffective("pointsDeVie", 28, [bague])).toBe(30);
-    expect(valeurEffective("pointsDeVieMax", 32, [bague])).toBe(34);
+  it("choix par défaut : un effet sur les PV ne change que les PV, qui dépassent alors le maximum (34 / 34, +2, donne 36 / 34)", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
+    expect(valeurEffective("pointsDeVie", 34, [elixir])).toBe(36);
+    expect(valeurEffective("pointsDeVieMax", 34, [elixir])).toBe(34);
   });
 
-  it("un bonus de PV max monte le maximum seulement", () => {
+  it("choix par défaut : la bague +2 d'un objet porté vise les PV max, et ne change que le maximum (28 / 32 devient 28 / 34)", () => {
     const bague = effet("Bague de vigueur", "pointsDeVieMax", 2);
     expect(valeurEffective("pointsDeVie", 28, [bague])).toBe(28);
     expect(valeurEffective("pointsDeVieMax", 32, [bague])).toBe(34);
@@ -137,12 +138,42 @@ describe("ligne d'explication sous une valeur modifiée", () => {
     );
   });
 
-  it("explique le maximum monté par un bonus de PV", () => {
-    const bague = effet("Bague de vigueur", "pointsDeVie", 2);
-    expect(explication("pointsDeVieMax", 32, [bague])).toBe(
+  it("explique les PV par leurs seuls effets, et le maximum par les siens", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
+    const bague = effet("Bague de vigueur", "pointsDeVieMax", 2);
+    expect(explication("pointsDeVie", 34, [elixir, bague])).toBe(
+      "base 34 · élixir +2",
+    );
+    expect(explication("pointsDeVieMax", 32, [elixir, bague])).toBe(
       "base 32 · bague +2",
     );
-    expect(explication("pointsDeVie", 28, [bague])).toBe("base 28 · bague +2");
+    expect(explication("pointsDeVieMax", 32, [elixir])).toBeNull();
+  });
+});
+
+describe("décomposition des PV à côté du gros chiffre : « 36 (34 + 2) / 34 »", () => {
+  it("écrit la base et le bonus des effets sur les PV", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
+    expect(decomposition("pointsDeVie", 34, [elixir])).toBe("(34 + 2)");
+  });
+
+  it("écrit un malus avec le vrai signe moins : « (34 − 4) »", () => {
+    const poison = effet("Poison", "pointsDeVie", -4);
+    expect(decomposition("pointsDeVie", 34, [poison])).toBe("(34 − 4)");
+  });
+
+  it("additionne plusieurs effets en un seul terme : +2 et −1 donnent « (34 + 1) »", () => {
+    const effets = [
+      effet("Élixir de vigueur", "pointsDeVie", 2),
+      effet("Poison", "pointsDeVie", -1),
+    ];
+    expect(decomposition("pointsDeVie", 34, effets)).toBe("(34 + 1)");
+  });
+
+  it("ne dit rien sans effet sur les PV, même avec un effet sur le maximum", () => {
+    const bague = effet("Bague de vigueur", "pointsDeVieMax", 2);
+    expect(decomposition("pointsDeVie", 28, [bague])).toBeNull();
+    expect(decomposition("pointsDeVie", 28, [])).toBeNull();
   });
 });
 
@@ -183,8 +214,10 @@ describe("changer une valeur effective : les dépenses et les pertes portent sur
     expect(baseApres("dexterite", 9, [potion])).toBe(8);
   });
 
-  it("corriger le maximum affiché tient compte d'un bonus de PV", () => {
-    const bague = effet("Bague de vigueur", "pointsDeVie", 2);
+  it("corriger le maximum à la main ignore un effet sur les PV, et tient compte d'un effet sur le maximum", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
+    const bague = effet("Bague de vigueur", "pointsDeVieMax", 2);
+    expect(baseApres("pointsDeVieMax", 36, [elixir])).toBe(36);
     expect(baseApres("pointsDeVieMax", 36, [bague])).toBe(34);
   });
 
@@ -235,32 +268,37 @@ describe("retirer un effet", () => {
     expect(affiche(apres).dex).toBe(8);
   });
 
-  it("retirer un bonus de PV ramène les PV et le maximum à leur base", () => {
-    const bague = effet("Bague de vigueur", "pointsDeVie", 2);
-    const avant = { personnage: herboriste, effets: [bague] };
-    expect(affiche(avant)).toMatchObject({ pv: 30, max: 34 });
+  it("retirer un effet sur les PV ramène les PV à leur base, sans toucher au maximum : 36 / 34 redevient 34 / 34", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
+    const avant = {
+      personnage: { ...herboriste, pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir],
+    };
+    expect(affiche(avant)).toMatchObject({ pv: 36, max: 34 });
     expect(affiche(retirerUnEffet(avant, 0))).toMatchObject({
-      pv: 28,
-      max: 32,
+      pv: 34,
+      max: 34,
     });
   });
 
-  it("garde les PV perdus pendant l'effet : 30 / 34, −5, puis sans la bague 23 / 32", () => {
-    const bague = effet("Bague de vigueur", "pointsDeVie", 2);
+  it("choix par défaut : garde les PV perdus pendant l'effet : 36 / 34, −5, donne 31 / 34, puis sans l'élixir 29 / 34", () => {
+    const elixir = effet("Élixir de vigueur", "pointsDeVie", 2);
     const blesse = {
       personnage: {
         ...herboriste,
-        pointsDeVie: baseApres("pointsDeVie", 30 - 5, [bague]),
+        pointsDeVieMax: 34,
+        pointsDeVie: baseApres("pointsDeVie", 36 - 5, [elixir]),
       },
-      effets: [bague],
+      effets: [elixir],
     };
+    expect(affiche(blesse)).toMatchObject({ pv: 31, max: 34 });
     expect(affiche(retirerUnEffet(blesse, 0))).toMatchObject({
-      pv: 23,
-      max: 32,
+      pv: 29,
+      max: 34,
     });
   });
 
-  it("retirer un bonus de PV max ramène le maximum à sa base, et les PV au maximum s'ils le dépassent alors", () => {
+  it("choix par défaut : retirer un bonus de PV max ne touche pas aux PV, même s'ils dépassent alors le maximum (34 / 34 devient 34 / 32)", () => {
     const bague = effet("Bague de vigueur", "pointsDeVieMax", 2);
     const soigne = {
       personnage: { ...herboriste, pointsDeVie: 34 },
@@ -268,7 +306,20 @@ describe("retirer un effet", () => {
     };
     expect(affiche(soigne)).toMatchObject({ pv: 34, max: 34 });
     expect(affiche(retirerUnEffet(soigne, 0))).toMatchObject({
-      pv: 32,
+      pv: 34,
+      max: 32,
+    });
+  });
+
+  it("retirer un malus de PV rend les PV d'avant le malus, même au-dessus du maximum", () => {
+    const poison = effet("Poison", "pointsDeVie", -4);
+    const empoisonne = {
+      personnage: { ...herboriste, pointsDeVie: 34, pointsDeVieMax: 32 },
+      effets: [poison],
+    };
+    expect(affiche(empoisonne)).toMatchObject({ pv: 30, max: 32 });
+    expect(affiche(retirerUnEffet(empoisonne, 0))).toMatchObject({
+      pv: 34,
       max: 32,
     });
   });

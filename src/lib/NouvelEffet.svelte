@@ -179,10 +179,6 @@
               PV passeront {@render passage(
                 avant.pointsDeVie,
                 apres.pointsDeVie,
-              )}
-              et PV max {@render passage(
-                avant.pointsDeVieMax,
-                apres.pointsDeVieMax,
               )}.
             {:else if apercu.cible === "pointsDeVieMax"}
               PV max passera {@render passage(

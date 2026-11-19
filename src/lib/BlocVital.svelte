@@ -9,6 +9,14 @@
    * les change. « − », « + » et les corrections à la main portent sur la
    * valeur affichée ; `baseApres` en tire la base à enregistrer.
    *
+   * PV et PV max sont deux valeurs distinctes : un effet sur les PV peut les
+   * porter au-dessus du maximum. Le gros chiffre est alors suivi de sa
+   * décomposition en vert, empilée au-dessus du maximum : « 36 (34 + 2) / 34 ».
+   * Le « + » s'arrête quand la base atteint le maximum (36 avec un effet +2
+   * sur un maximum de 34), et l'indice de dépassement ne parle que d'une base
+   * au-dessus du maximum, saisie à la main : le dépassement dû à un effet est
+   * voulu.
+   *
    * En mode simplifié, la pile de droite se termine par les sauvegardes : trois
    * traits de craie, un de moins (en `trait`, discret) par sauvegarde utilisée.
    * Un appui sur les traits ouvre le panneau qui corrige le nombre utilisé.
@@ -37,6 +45,7 @@
   import SauvegardesUtilisees from "./SauvegardesUtilisees.svelte";
   import {
     baseApres,
+    decomposition,
     explication,
     valeurEffective,
     type Cible,
@@ -96,6 +105,12 @@
   });
   const pv = $derived(affiche.pointsDeVie.valeur);
   const max = $derived(affiche.pointsDeVieMax.valeur);
+  /** « (34 + 2) » à côté du gros chiffre, quand un effet vise les PV. */
+  const detail = $derived(
+    decomposition("pointsDeVie", personnage.pointsDeVie, effets),
+  );
+  /** Où le « + » s'arrête : la base au maximum, plus les effets sur les PV. */
+  const plafond = $derived(valeurEffective("pointsDeVie", max, effets));
 
   /** Le lecteur change la valeur affichée : on enregistre la base qui la donne. */
   function changer(cible: Valeur, valeur: number) {
@@ -154,21 +169,26 @@
           onchange={(valeur) => changer("pointsDeVie", valeur)}
         />
       </b>
-      <span
-        class="max"
-        data-etat={affiche.pointsDeVieMax.explication !== null
-          ? "modifie"
-          : undefined}
-      >
-        /
-        <TraceDeCraie valeur={max} taille="24px" />
-        <ValeurEditable
-          valeur={max}
-          nom="Points de vie maximum"
-          champ="Points de vie maximum"
-          valide={estUnMaximumDePointsDeVie}
-          onchange={(valeur) => changer("pointsDeVieMax", valeur)}
-        />
+      <span class="apres">
+        {#if detail}
+          <small class="detail" data-etat="modifie">{detail}</small>
+        {/if}
+        <span
+          class="max"
+          data-etat={affiche.pointsDeVieMax.explication !== null
+            ? "modifie"
+            : undefined}
+        >
+          /
+          <TraceDeCraie valeur={max} taille="24px" />
+          <ValeurEditable
+            valeur={max}
+            nom="Points de vie maximum"
+            champ="Points de vie maximum"
+            valide={estUnMaximumDePointsDeVie}
+            onchange={(valeur) => changer("pointsDeVieMax", valeur)}
+          />
+        </span>
       </span>
     </div>
     <div class="barre" aria-hidden="true">
@@ -193,7 +213,7 @@
         class="step"
         type="button"
         aria-label="Ajouter un point de vie"
-        onclick={() => changer("pointsDeVie", ajouterUnPointDeVie(pv, max))}
+        onclick={() => changer("pointsDeVie", ajouterUnPointDeVie(pv, plafond))}
       >
         <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M12 5v14M5 12h14" />
@@ -246,7 +266,7 @@
       </div>
     {/if}
   </div>
-  {#if depasseLeMaximum({ pointsDeVie: pv, pointsDeVieMax: max })}
+  {#if depasseLeMaximum({ pointsDeVie: pv, pointsDeVieMax: plafond })}
     <div class="indice" role="status">
       <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
         <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
@@ -312,6 +332,14 @@
     border-bottom: 2px solid var(--trait);
   }
 
+  /*
+   * La colonne des PV garde sa largeur : la trace de craie, posée 1,2 s
+   * devant le gros chiffre, ne pousse pas la pile de droite.
+   */
+  .pv {
+    min-width: 0;
+  }
+
   .etiquette {
     font-size: 13px;
     color: var(--craie-2);
@@ -332,6 +360,31 @@
     font-weight: 800;
     line-height: 0.92;
     letter-spacing: -0.03em;
+  }
+
+  /*
+   * Après le gros chiffre : la décomposition « (34 + 2) », s'il y en a une,
+   * empilée au-dessus du maximum « / 34 ». Le maximum reste sur la ligne de
+   * base du gros chiffre, et la pile ne prend que la largeur de sa plus
+   * longue ligne : à 390 px, la colonne des PV garde sa place.
+   */
+  .apres {
+    display: flex;
+    flex-direction: column;
+    align-self: last baseline;
+  }
+
+  /*
+   * La décomposition : craie verte, puisqu'elle vient d'un effet ; corps de
+   * l'étiquette (13 px) mais en graisse 700, car ce sont des chiffres. Ce
+   * corps la garde à peu près aussi large que « / 34 » : même avec la trace
+   * de craie devant le gros chiffre, la ligne reste à l'écart de la pile de
+   * droite à 390 px.
+   */
+  .detail {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
   }
 
   .max {

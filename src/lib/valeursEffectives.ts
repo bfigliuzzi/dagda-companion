@@ -9,8 +9,10 @@
  * effets)` pour une seule.
  *
  * Règles retenues (docs/regles-livre-1.md, « Effets temporaires ») :
- * - un bonus de PV monte les PV et le maximum (la bague +2 : 28 / 32 devient
- *   30 / 34) ; un bonus de PV max ne monte que le maximum ;
+ * - chaque effet ne change que la valeur qu'il vise : un effet sur les PV ne
+ *   change que les PV actuels, qui peuvent alors dépasser le maximum (34 / 34,
+ *   +2, s'écrit « 36 (34 + 2) / 34 ») ; un effet sur les PV max ne change que
+ *   le maximum ;
  * - une perte, une dépense ou une correction à la main porte sur la valeur
  *   affichée et s'enregistre dans la base (`baseApres`) : l'effet garde sa
  *   valeur, et son retrait retire exactement cette valeur ;
@@ -77,15 +79,6 @@ export function estUnEffet(valeur: unknown): valeur is Effet {
   );
 }
 
-/** Les cibles dont les effets s'ajoutent à une valeur : un bonus de PV monte aussi le maximum. */
-const CIBLES_QUI_COMPTENT: Record<Cible, readonly Cible[]> = {
-  pointsDeVie: ["pointsDeVie"],
-  pointsDeVieMax: ["pointsDeVieMax", "pointsDeVie"],
-  chance: ["chance"],
-  dexterite: ["dexterite"],
-  degats: ["degats"],
-};
-
 /** Plus petite valeur effective : une réserve ne descend pas sous 0, le maximum sous 1. */
 const PLANCHERS: Record<Cible, number> = {
   pointsDeVie: 0,
@@ -97,10 +90,7 @@ const PLANCHERS: Record<Cible, number> = {
 
 /** Les effets qui changent cette valeur, dans l'ordre où le lecteur les a ajoutés. */
 function effetsSur(cible: Cible, effets: readonly Effet[]): Effet[] {
-  return effets.filter(
-    (effet) =>
-      effet.cible !== null && CIBLES_QUI_COMPTENT[cible].includes(effet.cible),
-  );
+  return effets.filter((effet) => effet.cible === cible);
 }
 
 /** Ce que les effets ajoutent à cette valeur. */
@@ -170,13 +160,13 @@ const VALEURS_DU_PERSONNAGE = [
 /**
  * Retire l'effet n° `index`. Chaque valeur revient à sa base, plus les
  * effets qui restent : les pertes et dépenses faites pendant l'effet restent
- * acquises (30 / 34 avec la bague, −5, donne 23 / 32 sans elle).
+ * acquises (36 / 34 avec un élixir +2, −5, donne 29 / 34 sans lui).
  *
- * - Une base passée sous son plancher (0 PV, 1 PV max, 0 CHANCE) parce que
- *   l'effet a été dépensé y revient : le retrait ne laisse aucune dette cachée.
- * - Si le retrait fait passer les PV au-dessus du maximum (soigné jusqu'à
- *   34 / 34 avec un bonus de PV max), ils redescendent au maximum. Des PV
- *   déjà au-dessus avant le retrait (le livre peut déroger) restent tels quels.
+ * Une base passée sous son plancher (0 PV, 1 PV max, 0 CHANCE) parce que
+ * l'effet a été dépensé y revient : le retrait ne laisse aucune dette cachée.
+ * Rien d'autre ne bouge : des PV qui dépassent le maximum après le retrait
+ * (un bonus de PV max retiré à 34 / 34 donne 34 / 32) restent tels quels, et
+ * la feuille le signale (le livre peut déroger).
  */
 export function retirerUnEffet(
   { personnage, effets }: Pick<Aventure, "personnage" | "effets">,
@@ -188,22 +178,6 @@ export function retirerUnEffet(
     apres[cible] = Math.max(
       apres[cible],
       PLANCHERS[cible] - bonusDesEffets(cible, restants),
-    );
-  }
-  const avant = valeursEffectives({ personnage, armes: [], effets });
-  const maintenant = valeursEffectives({
-    personnage: apres,
-    armes: [],
-    effets: restants,
-  });
-  if (
-    avant.pointsDeVie <= avant.pointsDeVieMax &&
-    maintenant.pointsDeVie > maintenant.pointsDeVieMax
-  ) {
-    apres.pointsDeVie = baseApres(
-      "pointsDeVie",
-      maintenant.pointsDeVieMax,
-      restants,
     );
   }
   return { personnage: apres, effets: restants };
@@ -233,4 +207,21 @@ export function explication(
       (effet) => `${nomCourt(effet)} ${formaterUnBonus(effet.valeur)}`,
     ),
   ].join(" · ");
+}
+
+/**
+ * À côté d'une valeur modifiée, la base et ce que les effets y ajoutent, en
+ * un seul terme : « (34 + 2) », « (34 − 4) ». Plusieurs effets s'additionnent
+ * (+2 et −1 donnent « (34 + 1) ») ; la ligne d'explication les nomme un à un.
+ * `null` quand aucun effet ne vise la valeur.
+ */
+export function decomposition(
+  cible: Cible,
+  base: number,
+  effets: readonly Effet[],
+): string | null {
+  if (effetsSur(cible, effets).length === 0) return null;
+  const bonus = bonusDesEffets(cible, effets);
+  const signe = bonus < 0 ? "−" : "+";
+  return `(${formaterUnNombre(base)} ${signe} ${Math.abs(bonus)})`;
 }

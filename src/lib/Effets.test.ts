@@ -39,6 +39,20 @@ const pvAffiches = () =>
   `${valeurDe("Points de vie").textContent!.trim()} / ${within(pointsDeVie())
     .getByRole("button", { name: /^Points de vie maximum, modifier/ })
     .textContent!.trim()}`;
+const elixir = (valeur = 2): Effet => ({
+  nom: valeur < 0 ? "Poison" : "Élixir de vigueur",
+  duree: "",
+  cible: "pointsDeVie",
+  valeur,
+});
+const bague: Effet = {
+  nom: "Bague de vigueur",
+  duree: "",
+  cible: "pointsDeVieMax",
+  valeur: 2,
+};
+const indiceDeDepassement = () =>
+  screen.queryByText(/Vos PV dépassent le maximum/);
 const effetsEnregistres = () =>
   JSON.parse(localStorage.getItem(CLE_STOCKAGE)!).aventure.effets;
 const personnageEnregistre = () =>
@@ -231,6 +245,21 @@ describe("panneau « Nouvel effet »", () => {
     );
   });
 
+  it("annonce un effet sur les PV sans toucher au maximum : « PV passeront de 28 à 30 »", async () => {
+    render(App);
+    const lecteur = userEvent.setup();
+    await lecteur.click(
+      dansSection().getByRole("button", { name: "Ajouter un effet" }),
+    );
+    await lecteur.click(dansPanneau().getByRole("radio", { name: "PV" }));
+    await lecteur.click(
+      dansPanneau().getByRole("button", { name: "Augmenter De combien" }),
+    );
+    expect(panneau()).toHaveTextContent(
+      "PV passeront de 28 à 30. Vous retirerez l'effet quand le livre le dira.",
+    );
+  });
+
   it("se ferme par la croix sans rien ajouter", async () => {
     render(App);
     const lecteur = userEvent.setup();
@@ -291,20 +320,69 @@ describe("valeurs effectives sur la feuille", () => {
     );
   });
 
-  it("PV : un bonus de PV monte les PV et le maximum, en vert avec leurs lignes", () => {
+  it("PV : un effet sur les PV ne change que les PV, écrits « 36 (34 + 2) / 34 » avec la décomposition en vert", () => {
     enregistrerAventure({
-      effets: [
-        { nom: "Bague de vigueur", duree: "", cible: "pointsDeVie", valeur: 2 },
-      ],
+      personnage: { pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir(2)],
     });
     render(App);
-    expect(pvAffiches()).toBe("30 / 34");
+    expect(pointsDeVie()).toHaveTextContent("36 (34 + 2) / 34");
     expect(valeurDe("Points de vie").closest("b")).toHaveAttribute(
       "data-etat",
       "modifie",
     );
-    expect(screen.getByText("base 28 · bague +2")).toBeInTheDocument();
-    expect(screen.getByText("max : base 32 · bague +2")).toBeInTheDocument();
+    expect(within(pointsDeVie()).getByText("(34 + 2)")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
+    expect(screen.getByText("base 34 · élixir +2")).toBeInTheDocument();
+    // Le maximum ne bouge pas : ni vert, ni ligne « max : ».
+    expect(
+      within(pointsDeVie()).getByRole("button", {
+        name: /^Points de vie maximum, modifier/,
+      }).parentElement,
+    ).not.toHaveAttribute("data-etat", "modifie");
+    expect(screen.queryByText(/^max :/)).not.toBeInTheDocument();
+    // Le dépassement vient de l'effet : pas d'indice.
+    expect(indiceDeDepassement()).not.toBeInTheDocument();
+  });
+
+  it("PV : un malus s'écrit avec le vrai signe moins, « 30 (34 − 4) / 34 »", () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir(-4)],
+    });
+    render(App);
+    expect(pointsDeVie()).toHaveTextContent("30 (34 − 4) / 34");
+  });
+
+  it("PV : plusieurs effets s'additionnent en un terme, et la ligne les nomme un à un", () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir(2), elixir(-1)],
+    });
+    render(App);
+    expect(pointsDeVie()).toHaveTextContent("35 (34 + 1) / 34");
+    expect(
+      screen.getByText("base 34 · élixir +2 · poison −1"),
+    ).toBeInTheDocument();
+  });
+
+  it("PV : l'état critique garde le rouge sur le gros chiffre, la décomposition reste verte", () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 3 },
+      effets: [elixir(2)],
+    });
+    render(App);
+    expect(pointsDeVie()).toHaveTextContent("5 (3 + 2) / 32");
+    expect(valeurDe("Points de vie").closest("b")).toHaveAttribute(
+      "data-etat",
+      "critique",
+    );
+    expect(within(pointsDeVie()).getByText("(3 + 2)")).toHaveAttribute(
+      "data-etat",
+      "modifie",
+    );
   });
 
   it("PV max : seul le maximum monte, en vert avec sa ligne", () => {
@@ -330,6 +408,7 @@ describe("valeurs effectives sur la feuille", () => {
       }).parentElement,
     ).toHaveAttribute("data-etat", "modifie");
     expect(screen.getByText("max : base 32 · bague +2")).toBeInTheDocument();
+    expect(within(pointsDeVie()).queryByText(/^\(/)).not.toBeInTheDocument();
   });
 
   it("dégâts : la valeur effective additionne armes et effets, en vert avec sa ligne", () => {
@@ -351,23 +430,20 @@ describe("valeurs effectives sur la feuille", () => {
     );
   });
 
-  it("« − » et « + » changent les PV affichés, et la perte reste après le retrait du bonus", async () => {
-    enregistrerAventure({
-      effets: [
-        { nom: "Bague de vigueur", duree: "", cible: "pointsDeVie", valeur: 2 },
-      ],
-    });
+  it("« − » et « + » changent les PV affichés, et la perte reste après le retrait de l'effet", async () => {
+    enregistrerAventure({ effets: [elixir(2)] });
     render(App);
     const lecteur = userEvent.setup();
+    expect(pointsDeVie()).toHaveTextContent("30 (28 + 2) / 32");
     await lecteur.click(
       screen.getByRole("button", { name: "Retirer un point de vie" }),
     );
-    expect(pvAffiches()).toBe("29 / 34");
+    expect(pointsDeVie()).toHaveTextContent("29 (27 + 2) / 32");
     expect(personnageEnregistre().pointsDeVie).toBe(27);
 
     await lecteur.click(
       dansSection().getByRole("button", {
-        name: "Retirer l'effet Bague de vigueur",
+        name: "Retirer l'effet Élixir de vigueur",
       }),
     );
     expect(pvAffiches()).toBe("27 / 32");
@@ -376,14 +452,7 @@ describe("valeurs effectives sur la feuille", () => {
   it("« + » s'arrête au maximum effectif", async () => {
     enregistrerAventure({
       personnage: { pointsDeVie: 32 },
-      effets: [
-        {
-          nom: "Bague de vigueur",
-          duree: "",
-          cible: "pointsDeVieMax",
-          valeur: 2,
-        },
-      ],
+      effets: [bague],
     });
     render(App);
     const lecteur = userEvent.setup();
@@ -394,6 +463,59 @@ describe("valeurs effectives sur la feuille", () => {
     await lecteur.click(plus);
     await lecteur.click(plus);
     expect(pvAffiches()).toBe("34 / 34");
+  });
+
+  it("choix par défaut : avec un effet sur les PV, « + » s'arrête au maximum plus l'effet (36 (34 + 2) / 34 : « + » ne fait rien, « − » donne 35)", async () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir(2)],
+    });
+    render(App);
+    const lecteur = userEvent.setup();
+    const plus = screen.getByRole("button", {
+      name: "Ajouter un point de vie",
+    });
+    await lecteur.click(plus);
+    expect(pointsDeVie()).toHaveTextContent("36 (34 + 2) / 34");
+    await lecteur.click(
+      screen.getByRole("button", { name: "Retirer un point de vie" }),
+    );
+    expect(pointsDeVie()).toHaveTextContent("35 (33 + 2) / 34");
+    await lecteur.click(plus);
+    await lecteur.click(plus);
+    expect(pointsDeVie()).toHaveTextContent("36 (34 + 2) / 34");
+  });
+
+  it("choix par défaut : avec un malus sur les PV, « + » s'arrête au maximum moins le malus (30 (34 − 4) / 34)", async () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 33, pointsDeVieMax: 34 },
+      effets: [elixir(-4)],
+    });
+    render(App);
+    const lecteur = userEvent.setup();
+    const plus = screen.getByRole("button", {
+      name: "Ajouter un point de vie",
+    });
+    await lecteur.click(plus);
+    await lecteur.click(plus);
+    expect(pointsDeVie()).toHaveTextContent("30 (34 − 4) / 34");
+  });
+
+  it("choix par défaut : l'indice de dépassement revient quand la base elle-même dépasse le maximum (saisie à la main)", async () => {
+    enregistrerAventure({
+      personnage: { pointsDeVie: 34, pointsDeVieMax: 34 },
+      effets: [elixir(2)],
+    });
+    render(App);
+    const lecteur = userEvent.setup();
+    await lecteur.click(valeurDe("Points de vie"));
+    const saisie = screen.getByLabelText("Points de vie actuels");
+    await lecteur.clear(saisie);
+    await lecteur.type(saisie, "38{Enter}");
+    expect(pointsDeVie()).toHaveTextContent("38 (36 + 2) / 34");
+    expect(indiceDeDepassement()).toHaveTextContent(
+      "Vos PV dépassent le maximum de 34",
+    );
   });
 
   it("une correction à la main porte sur la valeur affichée", async () => {
@@ -470,16 +592,7 @@ describe("retirer un effet", () => {
   });
 
   it("retirer un bonus de PV max ramène le maximum à sa base", async () => {
-    enregistrerAventure({
-      effets: [
-        {
-          nom: "Bague de vigueur",
-          duree: "",
-          cible: "pointsDeVieMax",
-          valeur: 2,
-        },
-      ],
-    });
+    enregistrerAventure({ effets: [bague] });
     render(App);
     expect(pvAffiches()).toBe("28 / 34");
     await userEvent.setup().click(
@@ -491,6 +604,22 @@ describe("retirer un effet", () => {
     expect(
       within(pointsDeVie()).getByText("34", { selector: "s" }),
     ).toBeInTheDocument();
+  });
+
+  it("choix par défaut : retirer un bonus de PV max à 34 / 34 laisse les PV à 34, avec l'indice de dépassement", async () => {
+    enregistrerAventure({ personnage: { pointsDeVie: 34 }, effets: [bague] });
+    render(App);
+    expect(indiceDeDepassement()).not.toBeInTheDocument();
+    await userEvent.setup().click(
+      dansSection().getByRole("button", {
+        name: "Retirer l'effet Bague de vigueur",
+      }),
+    );
+    expect(pvAffiches()).toBe("34 / 32");
+    expect(personnageEnregistre().pointsDeVie).toBe(34);
+    expect(indiceDeDepassement()).toHaveTextContent(
+      "Vos PV dépassent le maximum de 32",
+    );
   });
 
   it("retirer un bonus de dommage ramène les dégâts au bonus des armes, avec la trace", async () => {

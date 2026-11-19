@@ -13,7 +13,7 @@ Les décisions marquées *(choix par défaut)* sont des interprétations retenue
 | Élément | Règle |
 |---|---|
 | TALENT | Un seul, choisi parmi : Instinct, Herbologie, Discrétion, Persuasion, Observation, Doigts agiles, Empratique. |
-| POINTS DE VIE max | 2d6 × 4. On commence avec tous ses points de vie. Les points de vie ne dépassent jamais ce maximum, sauf mention contraire du livre. |
+| POINTS DE VIE max | 2d6 × 4. On commence avec tous ses points de vie. Les points de vie ne dépassent jamais ce maximum, sauf mention contraire du livre (un effet sur les POINTS DE VIE peut les y porter, voir « Effets temporaires »). |
 | CHANCE | 1d6. |
 | DEXTÉRITÉ | 7 (valeur fixe en début d'aventure). Peut évoluer en cours d'aventure. |
 
@@ -47,10 +47,11 @@ Exemples rencontrés : une potion qui donne un bonus de DEXTÉRITÉ pendant 24 h
 - Il vise soit une caractéristique chiffrée (POINTS DE VIE, POINTS DE VIE max, CHANCE, DEXTÉRITÉ, bonus de dommage), qui est alors recalculée, soit rien de chiffré : c'est un simple rappel en texte (« les gardes vous reconnaissent »). Cela couvre les cas que les règles n'ont pas prévus.
 - L'app ne connaît pas le temps de l'histoire : c'est le lecteur qui retire l'effet quand il prend fin.
 - La caractéristique affiche sa valeur de base et sa valeur effective (base + effets).
-- *(choix par défaut)* Un bonus de POINTS DE VIE venant d'un objet porté (la bague) s'applique au maximum.
-- *(choix par défaut)* Un effet sur les POINTS DE VIE monte à la fois les POINTS DE VIE et leur maximum (la bague +2 : 28 / 32 devient 30 / 34). Un effet sur les POINTS DE VIE max ne monte que le maximum.
-- *(choix par défaut)* Pertes, dépenses et corrections portent sur la valeur affichée, et l'effet garde sa valeur : le retirer enlève exactement cette valeur. Avec la bague, 30 / 34 puis −5 donne 25 / 34, et 23 / 32 sans la bague. Avec un effet CHANCE +2 sur une CHANCE de 4, dépenser 2 donne 4, puis 2 sans l'effet.
-- *(choix par défaut)* Si le retrait d'un effet fait passer les POINTS DE VIE au-dessus du maximum, ils redescendent au maximum. Une valeur ne tombe jamais sous 0 (POINTS DE VIE, CHANCE) ni le maximum sous 1 ; la DEXTÉRITÉ et le bonus de dommage n'ont pas de plancher.
+- *(choix par défaut)* Les POINTS DE VIE max sont une caractéristique comme une autre. Un effet sur les POINTS DE VIE ne change que les POINTS DE VIE actuels ; un effet sur les POINTS DE VIE max ne change que le maximum. Les POINTS DE VIE peuvent donc dépasser le maximum : un effet +2 sur 34 / 34 donne 36 / 34, que la feuille écrit « 36 (34 + 2) / 34 » (la valeur, puis la base et les effets, puis le maximum).
+- *(choix par défaut)* Un bonus de POINTS DE VIE venant d'un objet porté (la bague) vise les POINTS DE VIE max : la bague +2 fait passer 28 / 32 à 28 / 34.
+- *(choix par défaut)* Pertes, dépenses et corrections portent sur la valeur affichée, et l'effet garde sa valeur : le retirer enlève exactement cette valeur. Avec un effet POINTS DE VIE +2, 36 / 34 puis −5 donne 31 / 34, et 29 / 34 sans l'effet. Avec un effet CHANCE +2 sur une CHANCE de 4, dépenser 2 donne 4, puis 2 sans l'effet.
+- *(choix par défaut)* Le « + » de la feuille s'arrête quand la base des POINTS DE VIE atteint le maximum : avec un effet +2, à 36 (34 + 2) / 34, « + » ne fait rien et « − » donne 35 ; avec un effet −4, « + » s'arrête à 30 (34 − 4) / 34. L'indice « PV au-dessus du maximum » ne parle que d'une base au-dessus du maximum (saisie à la main) : un dépassement dû à un effet est voulu.
+- *(choix par défaut)* Retirer un effet ne remet jamais les POINTS DE VIE au maximum : retirer la bague à 34 / 34 donne 34 / 32, et la feuille le signale par l'indice (le livre peut déroger). Une valeur ne tombe jamais sous 0 (POINTS DE VIE, CHANCE) ni le maximum sous 1 ; la DEXTÉRITÉ et le bonus de dommage n'ont pas de plancher.
 
 ## Modes de jeu
 

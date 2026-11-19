@@ -245,6 +245,30 @@ describe("le bilan d'un combat", () => {
 });
 
 describe("le lecteur se bat avec ses valeurs effectives", () => {
+  it("entre en combat à 36 / 34 avec un effet PV +2 sur 34 / 34 : le maximum ne bouge pas", () => {
+    const fiche = ficheDuLecteur(
+      valeursEffectives({
+        personnage: {
+          talent: "Herbologie",
+          pointsDeVieMax: 34,
+          pointsDeVie: 34,
+          chance: 4,
+          dexterite: 7,
+        },
+        armes: [],
+        effets: [
+          {
+            nom: "Élixir de vigueur",
+            duree: "",
+            cible: "pointsDeVie",
+            valeur: 2,
+          },
+        ],
+      }),
+    );
+    expect(fiche).toMatchObject({ pointsDeVie: 36, pointsDeVieMax: 34 });
+  });
+
   it("prend la DEX et le bonus de dommage des armes et des effets", () => {
     const fiche = ficheDuLecteur(
       valeursEffectives({
