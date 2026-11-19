@@ -15,9 +15,13 @@
  * pas de combat en cours à ce moment-là : la sauvegarde se pose et se reprend
  * sur la feuille, ou depuis l'écran « Perdu » d'un combat terminé.
  *
- * Toutes les fonctions rendent une nouvelle aventure, sans toucher à celle
- * qu'on leur donne, et sans rien partager avec elle : l'appelant lui passe un
- * simple objet (`$state.snapshot`), pas un proxy.
+ * Poser et reprendre rendent une nouvelle aventure, sans modifier celle qu'on
+ * leur donne. Ce qui va sur la feuille (chapitre, personnage, armes, besace,
+ * effets) en est une copie ; le reste, sauvegarde comprise, est repris tel
+ * quel. La feuille et la sauvegarde ne partagent donc rien : jouer après une
+ * pose ou une reprise ne change pas la sauvegarde. L'appelant passe un simple
+ * objet (`$state.snapshot`), pas un proxy de Svelte, que `structuredClone`
+ * refuse.
  */
 import {
   SAUVEGARDES_DU_LIVRE,
@@ -49,6 +53,17 @@ export function peutReprendre({
   return mode === "simplifie" && sauvegarde !== null;
 }
 
+/** Ce que garde une sauvegarde, pris d'une aventure ou d'une autre sauvegarde. */
+function ceQueGardeUneSauvegarde({
+  chapitre,
+  personnage,
+  armes,
+  besace,
+  effets,
+}: Sauvegarde): Sauvegarde {
+  return { chapitre, personnage, armes, besace, effets };
+}
+
 /**
  * Pose une sauvegarde au chapitre en cours : elle garde l'état complet du
  * personnage, remplace la précédente et consomme une des 3.
@@ -57,18 +72,11 @@ export function poserUneSauvegarde(aventure: Aventure): Aventure {
   if (!peutSauvegarder(aventure)) {
     throw new Error("Aucune sauvegarde à poser.");
   }
-  const { chapitre, personnage, armes, besace, effets } = aventure;
-  const sauvegarde: Sauvegarde = structuredClone({
-    chapitre,
-    personnage,
-    armes,
-    besace,
-    effets,
-  });
   return {
-    ...structuredClone(aventure),
+    ...aventure,
+    ...structuredClone(ceQueGardeUneSauvegarde(aventure)),
     sauvegardesUtilisees: aventure.sauvegardesUtilisees + 1,
-    sauvegarde,
+    sauvegarde: ceQueGardeUneSauvegarde(aventure),
   };
 }
 
@@ -92,28 +100,23 @@ export function reprendreLaSauvegarde(
   if (!peutReprendre(aventure)) {
     throw new Error("Aucune sauvegarde à reprendre.");
   }
-  const copie = structuredClone(aventure);
-  const { chapitre, personnage, armes, besace, effets } = structuredClone(
-    aventure.sauvegarde!,
-  );
-  const combats = copie.combats;
+  const sauvegarde = aventure.sauvegarde!;
+  const { combats } = aventure;
   const dernier = combats.at(-1);
-  if (
+  const noterLaReprise =
     apresUnCombatPerdu &&
     dernier !== undefined &&
     !estNarratif(dernier) &&
-    dernier.issue === "perdu"
-  ) {
-    combats[combats.length - 1] = { ...dernier, repriseAu: chapitre };
-  }
+    dernier.issue === "perdu";
   return {
-    ...copie,
-    chapitre,
-    personnage,
-    armes,
-    besace,
-    effets,
+    ...aventure,
+    ...structuredClone(ceQueGardeUneSauvegarde(sauvegarde)),
     combat: null,
-    combats,
+    combats: noterLaReprise
+      ? [
+          ...combats.slice(0, -1),
+          { ...dernier, repriseAu: sauvegarde.chapitre },
+        ]
+      : combats,
   };
 }
