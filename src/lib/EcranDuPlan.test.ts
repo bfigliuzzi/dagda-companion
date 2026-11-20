@@ -16,7 +16,9 @@ import { enregistrerAventure } from "./test/uneAventure";
 /**
  * Le lecteur trace au doigt sur la grille. Dans jsdom, la grille est collée en
  * haut à gauche de l'écran (0, 0) : le point (c, l) de la grille est à
- * c × 44 px, l × 44 px. Les positions des tests sont en cases.
+ * c × 44 px, l × 44 px, en comptant depuis son coin en haut à gauche. Les
+ * positions des tests sont en cases. Les murs, eux, sont dessinés dans les
+ * coordonnées du plan, qui ne changent pas quand la grille grandit.
  */
 const COTE = 44;
 
@@ -230,5 +232,105 @@ describe("retrouver ses murs", () => {
     expect(mursDessines()).toEqual(["44,44 44,88", "44,88 44,132"]);
     // Rien à défaire en rouvrant : l'historique tient à l'écran ouvert.
     expect(annuler()).toBeDisabled();
+  });
+});
+
+const nomDeLaGrille = () => grille().getAttribute("aria-label");
+const grilleEnregistree = () => lireAventure(localStorage)!.plans[0].grille;
+
+describe("la grille grandit", () => {
+  it("un mur tracé sur le bord du haut ajoute une rangée en haut ; les murs gardent leur place dans le plan", async () => {
+    enregistrerAventure({ plans: [unPlan([horizontal(2, 3)])] });
+    await ouvrirLePlan();
+
+    await glisser([0, 0], [3, 0]);
+
+    expect(nomDeLaGrille()).toMatch(/8 colonnes sur 9 lignes/);
+    expect(grilleEnregistree()).toEqual({
+      colonne: 0,
+      ligne: -1,
+      colonnes: 8,
+      lignes: 9,
+    });
+    expect(mursDessines()).toEqual([
+      "88,132 132,132",
+      "0,0 44,0",
+      "44,0 88,0",
+      "88,0 132,0",
+    ]);
+
+    // La nouvelle rangée se trace : son bord du haut est le nouveau bord extérieur.
+    await glisser([0, 0], [0, 1]);
+    expect(nomDeLaGrille()).toMatch(/9 colonnes sur 9 lignes/);
+    expect(mursEnregistres()).toContainEqual({
+      sens: "vertical",
+      colonne: 0,
+      ligne: -1,
+    });
+  });
+
+  it("un mur tracé à l'intérieur ne change pas la taille", async () => {
+    enregistrerAventure({ plans: [unPlan()] });
+    await ouvrirLePlan();
+    await glisser([1, 1], [3, 1]);
+    expect(nomDeLaGrille()).toMatch(/8 colonnes sur 8 lignes/);
+  });
+
+  it("« Annuler » retire le mur mais garde la rangée ajoutée", async () => {
+    enregistrerAventure({ plans: [unPlan()] });
+    const lecteur = await ouvrirLePlan();
+    await glisser([8, 2], [8, 4]);
+    expect(nomDeLaGrille()).toMatch(/9 colonnes sur 8 lignes/);
+
+    await lecteur.click(annuler());
+    expect(mursDessines()).toEqual([]);
+    expect(nomDeLaGrille()).toMatch(/9 colonnes sur 8 lignes/);
+  });
+
+  it("la taille de la grille est retrouvée après avoir fermé puis rouvert l'app", async () => {
+    enregistrerAventure({ plans: [unPlan()] });
+    await ouvrirLePlan();
+    await glisser([0, 3], [0, 5]);
+    cleanup();
+
+    await ouvrirLePlan();
+    expect(nomDeLaGrille()).toMatch(/9 colonnes sur 8 lignes/);
+    expect(mursDessines()).toEqual(["0,132 0,176", "0,176 0,220"]);
+  });
+});
+
+describe("deux doigts", () => {
+  const doigt = (pointerId: number, x: number, y: number) => ({
+    pointerId,
+    pointerType: "touch",
+    isPrimary: pointerId === 1,
+    clientX: x * COTE,
+    clientY: y * COTE,
+  });
+
+  it("un second doigt posé pendant un trait l'abandonne : aucun mur, rien à annuler", async () => {
+    enregistrerAventure({ plans: [unPlan()] });
+    await ouvrirLePlan();
+
+    await fireEvent.pointerDown(grille(), doigt(1, 1, 1));
+    await fireEvent.pointerMove(grille(), doigt(1, 3, 1));
+    expect(mursDessines()).toHaveLength(2);
+
+    await fireEvent.pointerDown(grille(), doigt(2, 1, 3));
+    expect(mursDessines()).toEqual([]);
+    await fireEvent.pointerMove(grille(), doigt(1, 3, 2));
+    await fireEvent.pointerMove(grille(), doigt(2, 1, 4));
+    await fireEvent.pointerUp(grille(), doigt(2, 1, 4));
+    // Le premier doigt continue seul : il ne trace plus, le geste est un défilement.
+    await fireEvent.pointerMove(grille(), doigt(1, 5, 2));
+    await fireEvent.pointerUp(grille(), doigt(1, 5, 2));
+
+    expect(mursDessines()).toEqual([]);
+    expect(mursEnregistres()).toEqual([]);
+    expect(annuler()).toBeDisabled();
+
+    // Le geste suivant, à un doigt, trace de nouveau.
+    await glisser([1, 1], [2, 1]);
+    expect(mursDessines()).toHaveLength(1);
   });
 });

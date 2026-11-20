@@ -367,11 +367,14 @@ Historique des combats : grille 64px / 1fr / auto, hauteur 56px. Chapitre 18px g
 
 ### Plan
 L'écran d'un plan s'ouvre en plein écran, comme celui des combats. Il n'a pas de maquette dédiée : il est fait des seuls motifs de ce document.
-- **Grille pointée:** aucune ligne ; un point de 5px (rayon 2,5px) couleur `trait` à chaque croisement, sur des cases de 44px. Une grille de 8 × 8 cases a 9 × 9 points ; les points du bord dépassent d'un rien dans la marge.
+- **Grille pointée:** aucune ligne ; un point de 5px (rayon 2,5px) couleur `trait` à chaque croisement, sur des cases de 44px. Une grille de 8 × 8 cases a 9 × 9 points. Les points sont peints par un motif SVG, pas un par un, pour qu'une grille de 30 × 30 reste fluide.
+- **Cadre du plan:** la grille occupe toute la hauteur libre entre l'en-tête et « Supprimer ce plan », d'un bord à l'autre de l'écran, sans fond, sans contour et sans barre de défilement : le cadre coupe simplement la grille à ses bords. À l'ouverture, la grille est centrée en largeur et posée en haut du cadre, à une case du bord, si elle tient en hauteur ; sinon elle est centrée.
 - **Repère du nord:** un « N » 13px en craie pâle, centré au-dessus du bord haut. Le nord est toujours en haut.
 - **Mur:** trait de craie (`craie`) de 3px, bouts arrondis (`stroke-linecap: round`), d'un point au point voisin, sur le bord d'une case. Comme les dés dessinés, c'est un trait de 3px.
 - **Mur effacé:** il passe en craie rouge puis s'efface en 1,2s (voir « Signature : la trace de craie ») ; avec `prefers-reduced-motion`, il disparaît tout de suite. Un mur retiré par « Annuler » fait de même.
 - **Tracer:** un doigt sur la grille dessine (`touch-action: none`), il ne fait pas défiler la page. Le trait se cale sur les bords des cases : il n'y a pas à viser juste.
+- **Grandir:** un mur posé sur le bord extérieur ajoute une rangée ou une colonne de ce côté, jusqu'à 30 × 30 cases. Rien ne bouge à l'écran quand la grille grandit, même par le haut ou la gauche : la nouvelle rangée apparaît au bord, les murs déjà tracés restent sous le doigt.
+- **Défiler:** deux doigts font glisser le plan, dans les deux modes ; un doigt seul ne fait jamais défiler. Le plan s'arrête une case au-delà du bord de la grille. Un second doigt posé pendant un trait abandonne ce trait. Sans mouvement d'inertie : le plan s'arrête quand les doigts s'arrêtent.
 - **Indice:** tant que le plan n'a aucun mur, « Glissez le doigt le long des points pour tracer un mur. » sous la grille ; il s'en va au premier mur.
 - **Barre du bas:** fixe, fond noir opaque et filet `trait` en haut, comme le dock de combat ; contrôle segmenté « Murs / Cases » puis « Annuler », bouton secondaire de 52px (contour `trait`, texte craie 700 ; désactivé : texte en craie pâle, quand il n'y a rien à défaire). « Supprimer ce plan » (bouton secondaire de danger) reste au-dessus de la barre.
 

@@ -8,8 +8,8 @@ Références : `.scratch/plans/spec.md` (États et ordres de grandeur, Interacti
 
 **Status:** ready-for-agent
 
-- [ ] Un mur tracé sur le bord extérieur ajoute une rangée ou une colonne de ce côté.
-- [ ] Quand la grille grandit par le haut ou par la gauche, les murs déjà tracés restent sous le doigt à l'écran.
-- [ ] Un glissé à deux doigts fait défiler le plan sans tracer de mur ; un glissé à un doigt trace sans faire défiler.
-- [ ] Un plan d'environ 30 × 30 cases reste fluide à tracer et à faire défiler sur un téléphone.
-- [ ] La taille de la grille est enregistrée et retrouvée après rechargement.
+- [x] Un mur tracé sur le bord extérieur ajoute une rangée ou une colonne de ce côté.
+- [x] Quand la grille grandit par le haut ou par la gauche, les murs déjà tracés restent sous le doigt à l'écran.
+- [x] Un glissé à deux doigts fait défiler le plan sans tracer de mur ; un glissé à un doigt trace sans faire défiler.
+- [x] Un plan d'environ 30 × 30 cases reste fluide à tracer et à faire défiler sur un téléphone.
+- [x] La taille de la grille est enregistrée et retrouvée après rechargement.

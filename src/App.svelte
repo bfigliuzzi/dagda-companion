@@ -216,6 +216,7 @@
     {plan}
     onrenommer={(nom) => (plan.nom = nom)}
     onmurs={(murs) => (plan.murs = murs)}
+    ongrille={(grille) => (plan.grille = grille)}
     onretour={() => aller(laFeuille())}
     onsupprimer={() => {
       aventure!.plans = aventure!.plans.filter((p) => p.id !== plan.id);

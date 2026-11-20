@@ -4,12 +4,13 @@
    * retour à gauche du titre ramène à la feuille, et le titre est le nom du
    * plan, que le lecteur corrige d'un appui. Dessous, la grille (GrilleDuPlan),
    * où le lecteur trace les murs au doigt, et, tant que le plan n'a aucun mur,
-   * un indice qui dit comment en tracer un. « Supprimer ce plan », sous la
+   * un indice qui dit comment en tracer un. La grille prend toute la hauteur
+   * libre de l'écran ; le plan y défile à deux doigts (GrilleDuPlan). « Supprimer ce plan », sous la
    * grille, demande une confirmation avant d'effacer.
    *
    * La barre fixe du bas porte le contrôle « Murs / Cases » (seul Murs agit
    * pour l'instant ; les cases arrivent avec leur ticket) et « Annuler », qui
-   * défait le dernier trait entier. L'historique des traits tient à l'écran
+   * défait le dernier trait entier, sans rétrécir la grille. L'historique des traits tient à l'écran
    * ouvert : il repart à zéro quand on revient à la feuille.
    */
   import ControleSegmente from "./ControleSegmente.svelte";
@@ -19,24 +20,28 @@
   import Indice from "./Indice.svelte";
   import PanneauDeConfirmation from "./PanneauDeConfirmation.svelte";
   import {
+    agrandirLaGrille,
     appliquerLeTrait,
     defaireLeTrait,
     type Bord,
     type Changement,
   } from "./murs";
-  import type { Plan } from "./plans";
+  import type { Grille, Plan } from "./plans";
 
   interface Props {
     plan: Plan;
     onrenommer: (nom: string) => void;
     /** Les murs ont changé (un trait, ou « Annuler ») : le plan les enregistre. */
     onmurs: (murs: Bord[]) => void;
+    /** Un mur tracé sur le bord a fait grandir la grille : le plan l'enregistre. */
+    ongrille: (grille: Grille) => void;
     onretour: () => void;
     /** Le lecteur a confirmé : le plan est effacé. */
     onsupprimer: () => void;
   }
 
-  let { plan, onrenommer, onmurs, onretour, onsupprimer }: Props = $props();
+  let { plan, onrenommer, onmurs, ongrille, onretour, onsupprimer }: Props =
+    $props();
 
   let confirmation = $state(false);
   let outil = $state<"murs" | "cases">("murs");
@@ -44,6 +49,8 @@
   let traits = $state.raw<Changement[]>([]);
 
   function tracer(changement: Changement) {
+    const grille = agrandirLaGrille(plan.grille, changement);
+    if (grille !== plan.grille) ongrille(grille);
     onmurs(appliquerLeTrait(plan.murs, changement));
     traits = [...traits, changement];
   }
@@ -121,7 +128,12 @@
 {/if}
 
 <style>
+  /* L'écran tient dans la hauteur du téléphone : en-tête, grille (qui prend
+     la place libre), indice et « Supprimer ce plan », puis la barre fixe. */
   .ecran {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
     max-width: 480px;
     margin: 0 auto;
     /* Place pour la barre fixe : 1 + 12 + 52 + 22 px, puis l'écart d'une

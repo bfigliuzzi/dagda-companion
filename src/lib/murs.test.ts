@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  agrandirLaGrille,
   appliquerLeTrait,
   bordLePlusProche,
   commencerUnTrait,
@@ -170,5 +171,97 @@ describe("appliquer et défaire un trait", () => {
       vertical(3, 3),
       horizontal(0, 0),
     ]);
+  });
+});
+
+describe("la grille grandit sous un mur tracé sur son bord extérieur", () => {
+  const pose = (...bords: Bord[]) => ({ mode: "pose" as const, bords });
+
+  it("un mur sur le bord du haut ajoute une rangée en haut : la ligne de départ passe à -1", () => {
+    expect(agrandirLaGrille(grille, pose(horizontal(3, 0)))).toEqual({
+      colonne: 0,
+      ligne: -1,
+      colonnes: 8,
+      lignes: 9,
+    });
+  });
+
+  it("un mur sur le bord de gauche ajoute une colonne à gauche", () => {
+    expect(agrandirLaGrille(grille, pose(vertical(0, 5)))).toEqual({
+      colonne: -1,
+      ligne: 0,
+      colonnes: 9,
+      lignes: 8,
+    });
+  });
+
+  it("un mur sur le bord du bas ou de droite ajoute une rangée ou une colonne de ce côté", () => {
+    expect(agrandirLaGrille(grille, pose(horizontal(2, 8)))).toEqual({
+      ...grille,
+      lignes: 9,
+    });
+    expect(agrandirLaGrille(grille, pose(vertical(8, 2)))).toEqual({
+      ...grille,
+      colonnes: 9,
+    });
+  });
+
+  it("un trait le long du bord du haut n'ajoute qu'une rangée, quel que soit le nombre de murs", () => {
+    expect(
+      agrandirLaGrille(
+        grille,
+        pose(horizontal(0, 0), horizontal(1, 0), horizontal(2, 0)),
+      ),
+    ).toEqual({ colonne: 0, ligne: -1, colonnes: 8, lignes: 9 });
+  });
+
+  it("un trait qui tourne au coin haut-gauche ajoute une rangée en haut et une colonne à gauche", () => {
+    expect(
+      agrandirLaGrille(
+        grille,
+        pose(horizontal(1, 0), horizontal(0, 0), vertical(0, 0)),
+      ),
+    ).toEqual({ colonne: -1, ligne: -1, colonnes: 9, lignes: 9 });
+  });
+
+  it("un mur à l'intérieur, ou un mur horizontal qui touche le bord de gauche par un bout, ne change rien", () => {
+    expect(agrandirLaGrille(grille, pose(horizontal(0, 3)))).toBe(grille);
+    expect(agrandirLaGrille(grille, pose(vertical(4, 0)))).toBe(grille);
+  });
+
+  it("un trait qui efface sur le bord ne fait pas grandir la grille", () => {
+    expect(
+      agrandirLaGrille(grille, { mode: "efface", bords: [horizontal(3, 0)] }),
+    ).toBe(grille);
+  });
+
+  it("suit la grille déjà agrandie, en coordonnées négatives", () => {
+    const agrandie: Grille = {
+      colonne: -2,
+      ligne: -1,
+      colonnes: 10,
+      lignes: 9,
+    };
+    expect(agrandirLaGrille(agrandie, pose(vertical(-2, 0)))).toEqual({
+      colonne: -3,
+      ligne: -1,
+      colonnes: 11,
+      lignes: 9,
+    });
+    expect(agrandirLaGrille(agrandie, pose(horizontal(0, 8)))).toEqual({
+      ...agrandie,
+      lignes: 10,
+    });
+  });
+
+  it("s'arrête à 30 colonnes et 30 lignes : le mur se pose, la grille ne grandit plus de ce côté", () => {
+    const pleine: Grille = { colonne: -11, ligne: 0, colonnes: 30, lignes: 29 };
+    expect(
+      agrandirLaGrille(pleine, pose(vertical(-11, 2), horizontal(-11, 0))),
+    ).toEqual({ colonne: -11, ligne: -1, colonnes: 30, lignes: 30 });
+    const auMaximum: Grille = { ...pleine, lignes: 30 };
+    expect(agrandirLaGrille(auMaximum, pose(horizontal(0, 30)))).toBe(
+      auMaximum,
+    );
   });
 });

@@ -50,9 +50,9 @@ test("un doigt qui glisse sur la grille trace des murs de craie, sans faire déf
   const grille = page.getByRole("img", { name: /Grille du plan/ });
   const { x, y } = (await grille.boundingBox())!;
   expect(
-    await grille.evaluate(
-      (svg) => getComputedStyle(svg.parentElement!).touchAction,
-    ),
+    await page
+      .getByTestId("vue-du-plan")
+      .evaluate((vue) => getComputedStyle(vue).touchAction),
   ).toBe("none");
 
   // Un vrai glissé tactile, un peu à côté des points, du point (1, 2) au point (4, 2).
@@ -104,4 +104,88 @@ test("un doigt qui glisse sur la grille trace des murs de craie, sans faire déf
     .getByRole("button", { name: "Supprimer ce plan" })
     .boundingBox())!;
   expect(supprimer.y + supprimer.height).toBeLessThanOrEqual(boiteBarre.y);
+});
+
+test("la grille grandit par le haut et par la gauche sans que rien ne bouge à l'écran ; deux doigts font défiler le plan sans tracer", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Nouveau plan" }).click();
+  await page.getByLabel("Nom du plan").fill("Labyrinthe");
+  await page.getByRole("button", { name: "Créer le plan" }).click();
+  await page.getByRole("button", { name: "Labyrinthe" }).click();
+
+  const grille = page.getByRole("img", { name: /Grille du plan/ });
+  const coin = (await grille.boundingBox())!;
+  const cdp = await page.context().newCDPSession(page);
+  /** Un glissé d'un vrai doigt, d'un point de grille à l'autre, à l'écran. */
+  async function glisser(...points: [number, number][]) {
+    const [depart, ...suite] = points;
+    const toucher = (
+      type: "touchStart" | "touchMove",
+      [x, y]: [number, number],
+    ) =>
+      cdp.send("Input.dispatchTouchEvent", {
+        type,
+        touchPoints: [{ x, y, id: 1 }],
+      });
+    await toucher("touchStart", depart);
+    for (const point of suite) await toucher("touchMove", point);
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+  }
+  /**
+   * Le point de grille (c, l) du plan neuf, à l'écran, mesuré une fois pour
+   * toutes : ni l'indice qui s'en va au premier mur, ni la grille qui grandit
+   * ne doivent le déplacer.
+   */
+  const point = (c: number, l: number): [number, number] => [
+    coin.x + c * 44,
+    coin.y + l * 44,
+  ];
+  const murs = grille.locator('line[data-etat="mur"]');
+  const premierMur = async () => (await murs.first().boundingBox())!;
+
+  await glisser(point(1, 2), point(2, 2), point(3, 2));
+  await expect(murs).toHaveCount(2);
+  const avant = await premierMur();
+
+  // Le long du bord du haut : une rangée s'ajoute en haut, rien ne bouge.
+  await glisser(point(0, 0), point(1, 0), point(2, 0));
+  await expect(grille).toHaveAccessibleName(/8 colonnes sur 9 lignes/);
+  expect(await premierMur()).toEqual(avant);
+
+  // Le long du bord de gauche : une colonne s'ajoute à gauche, rien ne bouge.
+  await glisser(point(0, 1), point(0, 2), point(0, 3));
+  await expect(grille).toHaveAccessibleName(/9 colonnes sur 9 lignes/);
+  expect(await premierMur()).toEqual(avant);
+  await expect(murs).toHaveCount(6);
+
+  // Deux doigts glissent de 30 px à droite et 40 px vers le bas : le plan suit,
+  // aucun mur n'est tracé et la page ne défile pas.
+  const deux = (dx: number, dy: number) => [
+    { x: 150 + dx, y: 600 + dy, id: 1 },
+    { x: 250 + dx, y: 600 + dy, id: 2 },
+  ];
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: deux(0, 0),
+  });
+  for (let pas = 1; pas <= 10; pas++) {
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: deux(3 * pas, 4 * pas),
+    });
+  }
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+  const apres = await premierMur();
+  expect(apres.x - avant.x).toBeCloseTo(30, 0);
+  expect(apres.y - avant.y).toBeCloseTo(40, 0);
+  await expect(murs).toHaveCount(6);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });

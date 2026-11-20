@@ -276,6 +276,62 @@ const ajouter = (murs: readonly Bord[], bords: readonly Bord[]) => [
 const retirer = (murs: readonly Bord[], bords: readonly Bord[]) =>
   murs.filter((mur) => !contient(bords, mur));
 
+/**
+ * Au-delà de 30 colonnes ou de 30 lignes, la grille ne grandit plus de ce
+ * côté-là : le mur tracé sur le bord se pose quand même. 30 × 30 cases, c'est
+ * déjà 1 320 px de côté, trois écrans de téléphone dans chaque sens.
+ */
+export const TAILLE_MAXIMALE = 30;
+
+/**
+ * La grille après un trait. Un mur posé sur le bord extérieur de la grille
+ * ajoute une rangée ou une colonne de ce côté : en haut, la grille commence
+ * une ligne plus haut (`ligne` − 1) ; à gauche, une colonne plus à gauche.
+ * Les coordonnées des murs ne changent pas.
+ *
+ * « Sur le bord extérieur » : le bord est sur le pourtour et dans son sens,
+ * un bord horizontal sur la ligne de points du haut ou du bas, un bord
+ * vertical sur la colonne de points de gauche ou de droite. Un bord qui ne
+ * fait que toucher le pourtour par un bout ne compte pas. Un trait ajoute au
+ * plus une rangée ou une colonne par côté, même s'il longe tout le bord ; un
+ * trait qui tourne au coin en ajoute une de chaque côté touché. Un trait qui
+ * efface ne fait jamais grandir la grille, et la grille ne rétrécit jamais
+ * (« Annuler » remet les murs, pas la taille).
+ *
+ * Renvoie la même grille si rien ne change.
+ */
+export function agrandirLaGrille(
+  grille: Grille,
+  { mode, bords }: Changement,
+): Grille {
+  if (mode !== "pose") return grille;
+  const finColonne = grille.colonne + grille.colonnes;
+  const finLigne = grille.ligne + grille.lignes;
+  const sur = (sens: Sens, test: (bord: Bord) => boolean) =>
+    bords.some((bord) => bord.sens === sens && test(bord));
+  const haut = sur("horizontal", (bord) => bord.ligne === grille.ligne);
+  const bas = sur("horizontal", (bord) => bord.ligne === finLigne);
+  const gauche = sur("vertical", (bord) => bord.colonne === grille.colonne);
+  const droite = sur("vertical", (bord) => bord.colonne === finColonne);
+
+  const enHauteur = Number(haut) + Number(bas);
+  const enLargeur = Number(gauche) + Number(droite);
+  // À 30, on ne grandit plus. S'il ne reste qu'une rangée de place et que le
+  // trait touche le haut et le bas, elle va en haut (de même, à gauche).
+  const lignes = Math.min(TAILLE_MAXIMALE, grille.lignes + enHauteur);
+  const colonnes = Math.min(TAILLE_MAXIMALE, grille.colonnes + enLargeur);
+  if (lignes === grille.lignes && colonnes === grille.colonnes) return grille;
+  return {
+    colonne:
+      gauche && colonnes > grille.colonnes
+        ? grille.colonne - 1
+        : grille.colonne,
+    ligne: haut && lignes > grille.lignes ? grille.ligne - 1 : grille.ligne,
+    colonnes,
+    lignes,
+  };
+}
+
 /** Vérifie un bord relu depuis l'appareil. */
 export function estUnBord(valeur: unknown): valeur is Bord {
   if (typeof valeur !== "object" || valeur === null) return false;
