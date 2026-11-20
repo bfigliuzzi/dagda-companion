@@ -9,7 +9,7 @@
    * ligne n'existe pas. Dans tous les modes, en dernière ligne : « Recommencer
    * une aventure », en rouge, qui demande confirmation puis efface l'aventure.
    */
-  import type { Mode, Sauvegarde } from "./aventure";
+  import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
   import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
   import { sauvegardesRestantes } from "./sauvegardes";
@@ -53,7 +53,7 @@
 <section class="game" aria-labelledby="{id}-titre">
   <div class="sh"><h2 id="{id}-titre">Aventure</h2></div>
   <ul>
-    {#if mode === "simplifie"}
+    {#if MODES[mode].sauvegardes}
       <li>
         {#if restantes > 0}
           <button class="row" type="button" onclick={sauvegarder}>

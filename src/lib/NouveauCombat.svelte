@@ -13,7 +13,7 @@
    * parce que le lecteur choisit « Jouer le combat aux dés ».
    */
   import { untrack } from "svelte";
-  import type { Mode } from "./aventure";
+  import { MODES, type Mode } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
   import {
     ADVERSAIRES_MAX_EN_NARRATIF,
@@ -163,7 +163,7 @@
           <span class="sw" aria-hidden="true"></span>
         </label>
       {/if}
-      {#if mode === "narratif"}
+      {#if MODES[mode].issueAuChoix}
         <div class="hint">
           <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />

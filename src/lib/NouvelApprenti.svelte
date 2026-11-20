@@ -188,7 +188,7 @@
         <ChampNumerique nom="Chance" min={0} bind:valeur={chance} />
         <ChampNumerique nom="Dextérité" min={1} bind:valeur={dexterite} />
       </div>
-      {#if mode === "simplifie"}
+      {#if mode !== null && MODES[mode].sauvegardes}
         <div class="champ-puces">
           <span class="etiquette" id="{id}-sauvegardes">
             Sauvegardes déjà utilisées

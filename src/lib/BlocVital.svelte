@@ -35,6 +35,7 @@
     estUnMaximumDePointsDeVie,
     estUnPointDeVieActuel,
     proposeDeRecommencer,
+    MODES,
     retirerUnPointDeVie,
     SAUVEGARDES_DU_LIVRE,
     type Mode,
@@ -248,7 +249,7 @@
         </span>
       </div>
     {/each}
-    {#if mode === "simplifie"}
+    {#if MODES[mode].sauvegardes}
       <div class="stat" role="group" aria-labelledby="{id}-sauvegardes">
         <span class="etiquette" id="{id}-sauvegardes">Sauvegardes</span>
         <button

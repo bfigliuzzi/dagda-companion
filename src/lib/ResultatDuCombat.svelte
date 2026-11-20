@@ -15,7 +15,7 @@
    * laisse continuer », en rouge : le lecteur accepte (après confirmation) ou
    * ignore, l'app ne décide pas de la mort.
    */
-  import type { Mode, Sauvegarde } from "./aventure";
+  import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
   import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
@@ -51,8 +51,8 @@
 
   let confirmation = $state(false);
   let recommencement = $state(false);
-  const mortel = $derived(mode === "mortel");
-  const simplifie = $derived(mode === "simplifie");
+  const recommencerALaMort = $derived(MODES[mode].recommencerALaMort);
+  const avecSauvegardes = $derived(MODES[mode].sauvegardes);
 
   const gagne = $derived(combat.issue === "gagne");
   const bilan = $derived(bilanDuCombat(combat));
@@ -136,7 +136,7 @@
       à 0 »).
     -->
     <div class="issues">
-      {#if simplifie && sauvegarde}
+      {#if avecSauvegardes && sauvegarde}
         <button
           class="ghost"
           type="button"
@@ -154,7 +154,7 @@
           <path d="M5 6l7 6-7 6M13 6l7 6-7 6" />
         </svg>
       </button>
-      {#if mortel}
+      {#if recommencerALaMort}
         <button
           class="ghost danger"
           type="button"
@@ -167,7 +167,7 @@
         </button>
       {/if}
     </div>
-    {#if simplifie}
+    {#if avecSauvegardes}
       <div class="hint">
         <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />

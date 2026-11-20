@@ -22,21 +22,46 @@ export const TALENTS = [
 
 export type Talent = (typeof TALENTS)[number];
 
+/**
+ * Un mode de jeu (docs/regles-livre-1.md, « Modes de jeu ») : son nom, sa
+ * description sur l'écran « Nouvel apprenti », et ce qu'il permet. Toute
+ * l'app lit ici ce qu'un mode permet, au lieu de tester son nom.
+ */
+interface ModeDeJeu {
+  nom: string;
+  description: string;
+  /** Le lecteur indique l'issue des combats, jusqu'à 5 adversaires. */
+  issueAuChoix: boolean;
+  /** Le lecteur dispose de 3 sauvegardes pour tout le livre. */
+  sauvegardes: boolean;
+  /** À 0 PV, l'app propose de recommencer au chapitre 1. */
+  recommencerALaMort: boolean;
+}
+
 export const MODES = {
   narratif: {
     nom: "Narratif",
     description:
       "Vous décidez de l'issue des combats, sauf au-delà de 5 adversaires.",
+    issueAuChoix: true,
+    sauvegardes: false,
+    recommencerALaMort: false,
   },
   simplifie: {
     nom: "Simplifié",
     description: "Toutes les règles, avec 3 sauvegardes pour tout le livre.",
+    issueAuChoix: false,
+    sauvegardes: true,
+    recommencerALaMort: false,
   },
   mortel: {
     nom: "Mortel",
     description: "Toutes les règles. Mourir, c'est recommencer au chapitre 1.",
+    issueAuChoix: false,
+    sauvegardes: false,
+    recommencerALaMort: true,
   },
-} as const;
+} as const satisfies Record<string, ModeDeJeu>;
 
 export type Mode = keyof typeof MODES;
 
@@ -254,7 +279,7 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
  * ignore, et le livre peut déroger. Les autres modes ne le proposent pas.
  */
 export function proposeDeRecommencer(mode: Mode, pointsDeVie: number): boolean {
-  return mode === "mortel" && pointsDeVie <= 0;
+  return MODES[mode].recommencerALaMort && pointsDeVie <= 0;
 }
 
 /**
@@ -341,7 +366,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
   return {
     chapitre: chapitre!,
     mode: mode!,
-    sauvegardesUtilisees: mode === "simplifie" ? sauvegardesUtilisees : 0,
+    sauvegardesUtilisees: MODES[mode!].sauvegardes ? sauvegardesUtilisees : 0,
     sauvegarde: null,
     notes: "",
     armes: [],

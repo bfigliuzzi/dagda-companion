@@ -29,8 +29,9 @@ import {
   estUnChapitre,
   estUneDexterite,
   estUnMaximumDePointsDeVie,
+  MODES,
+  type Mode,
 } from "./aventure";
-import type { Mode } from "./aventure";
 import { ajusterLeTotal } from "./chance";
 import type { De } from "./des";
 import type { ValeursEffectives } from "./valeursEffectives";
@@ -158,7 +159,7 @@ export const ADVERSAIRES_MAX_EN_NARRATIF = 5;
  * les autres modes jouent toujours.
  */
 export function lecteurChoisitLIssue(mode: Mode, adversaires: number): boolean {
-  return mode === "narratif" && adversaires <= ADVERSAIRES_MAX_EN_NARRATIF;
+  return MODES[mode].issueAuChoix && adversaires <= ADVERSAIRES_MAX_EN_NARRATIF;
 }
 
 /**

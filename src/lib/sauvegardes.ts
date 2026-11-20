@@ -24,6 +24,7 @@
  * refuse.
  */
 import {
+  MODES,
   SAUVEGARDES_DU_LIVRE,
   type Aventure,
   type Sauvegarde,
@@ -35,7 +36,7 @@ export function sauvegardesRestantes({
   mode,
   sauvegardesUtilisees,
 }: Pick<Aventure, "mode" | "sauvegardesUtilisees">): number {
-  if (mode !== "simplifie") return 0;
+  if (!MODES[mode].sauvegardes) return 0;
   return Math.max(0, SAUVEGARDES_DU_LIVRE - sauvegardesUtilisees);
 }
 
@@ -50,7 +51,7 @@ export function peutReprendre({
   mode,
   sauvegarde,
 }: Pick<Aventure, "mode" | "sauvegarde">): boolean {
-  return mode === "simplifie" && sauvegarde !== null;
+  return MODES[mode].sauvegardes && sauvegarde !== null;
 }
 
 /** Ce que garde une sauvegarde, pris d'une aventure ou d'une autre sauvegarde. */
