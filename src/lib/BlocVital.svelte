@@ -46,11 +46,10 @@
   import SauvegardesUtilisees from "./SauvegardesUtilisees.svelte";
   import {
     baseApres,
-    decomposition,
-    explication,
+    detaillerLePersonnage,
     valeurEffective,
-    type Cible,
     type Effet,
+    type ValeurDuPersonnage,
   } from "./valeursEffectives";
   import TraceDeCraie from "./TraceDeCraie.svelte";
   import ValeurEditable from "./ValeurEditable.svelte";
@@ -89,32 +88,17 @@
   }: Props = $props();
   const id = $props.id();
 
-  type Valeur = Exclude<Cible, "degats">;
-
   /** La valeur affichée et sa ligne d'explication (`null` sans effet). */
-  const affiche = $derived.by(() => {
-    const lire = (cible: Valeur) => ({
-      valeur: valeurEffective(cible, personnage[cible], effets),
-      explication: explication(cible, personnage[cible], effets),
-    });
-    return {
-      pointsDeVie: lire("pointsDeVie"),
-      pointsDeVieMax: lire("pointsDeVieMax"),
-      chance: lire("chance"),
-      dexterite: lire("dexterite"),
-    };
-  });
+  const affiche = $derived(detaillerLePersonnage({ personnage, effets }));
   const pv = $derived(affiche.pointsDeVie.valeur);
   const max = $derived(affiche.pointsDeVieMax.valeur);
   /** « (34 + 2) » à côté du gros chiffre, quand un effet vise les PV. */
-  const detail = $derived(
-    decomposition("pointsDeVie", personnage.pointsDeVie, effets),
-  );
+  const detail = $derived(affiche.pointsDeVie.decomposition);
   /** Où le « + » s'arrête : la base au maximum, plus les effets sur les PV. */
   const plafond = $derived(valeurEffective("pointsDeVie", max, effets));
 
   /** Le lecteur change la valeur affichée : on enregistre la base qui la donne. */
-  function changer(cible: Valeur, valeur: number) {
+  function changer(cible: ValeurDuPersonnage, valeur: number) {
     personnage[cible] = baseApres(cible, valeur, effets);
   }
 

@@ -6,7 +6,8 @@
  * armes pour les dégâts). Tout ce qui lit une valeur pour jouer (la feuille,
  * le panneau de dés, le combat, la CHANCE automatique) lit la valeur
  * effective : `valeursEffectives(aventure)`, ou `valeurEffective(cible, base,
- * effets)` pour une seule.
+ * effets)` pour une seule. Pour l'afficher avec ce qui la change (« base 7 ·
+ * potion +1 »), `detailler`, ou `detaillerLePersonnage` pour la feuille.
  *
  * Règles retenues (docs/regles-livre-1.md, « Effets temporaires ») :
  * - chaque effet ne change que la valeur qu'il vise : un effet sur les PV ne
@@ -157,6 +158,8 @@ const VALEURS_DU_PERSONNAGE = [
   "dexterite",
 ] as const;
 
+export type ValeurDuPersonnage = (typeof VALEURS_DU_PERSONNAGE)[number];
+
 /**
  * Retire l'effet n° `index`. Chaque valeur revient à sa base, plus les
  * effets qui restent : les pertes et dépenses faites pendant l'effet restent
@@ -224,4 +227,46 @@ export function decomposition(
   const bonus = bonusDesEffets(cible, effets);
   const signe = bonus < 0 ? "−" : "+";
   return `(${formaterUnNombre(base)} ${signe} ${Math.abs(bonus)})`;
+}
+
+/** Tout ce que la feuille montre d'une valeur. */
+export interface ValeurDetaillee {
+  /** La valeur effective : base + effets. */
+  valeur: number;
+  base: number;
+  /** « base 7 · potion +1 » ; `null` quand aucun effet ne vise la valeur. */
+  explication: string | null;
+  /** « (34 + 2) » ; `null` quand aucun effet ne vise la valeur. */
+  decomposition: string | null;
+}
+
+export function detailler(
+  cible: Cible,
+  base: number,
+  effets: readonly Effet[],
+): ValeurDetaillee {
+  return {
+    valeur: valeurEffective(cible, base, effets),
+    base,
+    explication: explication(cible, base, effets),
+    decomposition: decomposition(cible, base, effets),
+  };
+}
+
+/** Les valeurs du personnage telles que la feuille les montre. */
+export function detaillerLePersonnage({
+  personnage,
+  effets,
+}: {
+  personnage: Personnage;
+  effets: readonly Effet[];
+}): Record<ValeurDuPersonnage, ValeurDetaillee> {
+  const lire = (cible: ValeurDuPersonnage) =>
+    detailler(cible, personnage[cible], effets);
+  return {
+    pointsDeVie: lire("pointsDeVie"),
+    pointsDeVieMax: lire("pointsDeVieMax"),
+    chance: lire("chance"),
+    dexterite: lire("dexterite"),
+  };
 }

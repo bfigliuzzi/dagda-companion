@@ -25,11 +25,7 @@
     type NouveauCombat as Nouveau,
   } from "./lib/combat";
   import { deAuHasard, type De } from "./lib/des";
-  import {
-    baseApres,
-    valeurEffective,
-    valeursEffectives,
-  } from "./lib/valeursEffectives";
+  import { baseApres, valeursEffectives } from "./lib/valeursEffectives";
   import { garderEcranAllume } from "./lib/ecranAllume";
   import {
     poserUneSauvegarde,
@@ -158,11 +154,7 @@
 
   $effect(() => {
     if (!aventure) return;
-    const pointsDeVie = valeurEffective(
-      "pointsDeVie",
-      aventure.personnage.pointsDeVie,
-      aventure.effets,
-    );
+    const { pointsDeVie } = valeursEffectives(aventure);
     // Tant que les PV sont au-dessus de 0, il n'y a plus de proposition à ignorer.
     if (pointsDeVie > 0) propositionIgnoree = false;
   });
@@ -256,11 +248,7 @@
     onannuler={() => (saisieDuCombat = false)}
   />
 {:else if aventure}
-  {@const chance = valeurEffective(
-    "chance",
-    aventure.personnage.chance,
-    aventure.effets,
-  )}
+  {@const { chance } = valeursEffectives(aventure)}
   <main class="feuille">
     <EnTete
       resume={resume(aventure)}

@@ -4,6 +4,8 @@ import {
   baseApres,
   decomposition,
   decrireUnEffet,
+  detailler,
+  detaillerLePersonnage,
   explication,
   retirerUnEffet,
   valeurEffective,
@@ -410,5 +412,41 @@ describe("valeurs effectives de toute la feuille, pour le combat et la CHANCE", 
       dexterite: 8,
       degats: 3,
     });
+  });
+});
+
+describe("le détail d'une valeur, tel que la feuille le montre", () => {
+  it("donne la valeur effective, la base, l'explication et la décomposition : 36 (34 + 2) avec un élixir +2", () => {
+    expect(
+      detailler("pointsDeVie", 34, [
+        effet("Élixir de vigueur", "pointsDeVie", 2),
+      ]),
+    ).toEqual({
+      valeur: 36,
+      base: 34,
+      explication: "base 34 · élixir +2",
+      decomposition: "(34 + 2)",
+    });
+  });
+
+  it("sans effet sur la valeur, ni explication ni décomposition", () => {
+    expect(detailler("dexterite", 7, [effet("Trèfle", "chance", 1)])).toEqual({
+      valeur: 7,
+      base: 7,
+      explication: null,
+      decomposition: null,
+    });
+  });
+
+  it("détaille les quatre valeurs du personnage, chacune avec ses seuls effets", () => {
+    const detail = detaillerLePersonnage({
+      personnage: herboriste,
+      effets: [potion, effet("Trèfle", "chance", 1)],
+    });
+    expect(detail.dexterite.valeur).toBe(8);
+    expect(detail.dexterite.explication).toBe("base 7 · potion +1");
+    expect(detail.chance.valeur).toBe(5);
+    expect(detail.pointsDeVie).toEqual(detailler("pointsDeVie", 28, []));
+    expect(detail.pointsDeVieMax.valeur).toBe(32);
   });
 });
