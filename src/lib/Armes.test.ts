@@ -4,15 +4,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import type { Arme } from "./aventure";
 import { CLE_STOCKAGE } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
+import { enregistrerAventure } from "./test/uneAventure";
 
 const epeeCourte: Arme = { nom: "Épée courte", bonus: 1 };
 const baton: Arme = { nom: "Bâton de l'Académie", bonus: 0 };
 const dague: Arme = { nom: "Dague d'os", bonus: 1 };
-
-function enregistrerAventure(armes: Arme[] = []) {
-  enregistrer({ armes });
-}
 
 const section = () => screen.getByRole("region", { name: "Armes" });
 const dansSection = () => within(section());
@@ -151,7 +147,7 @@ describe("section Armes", () => {
 });
 
 describe("modifier et retirer une arme", () => {
-  beforeEach(() => enregistrerAventure([epeeCourte, baton]));
+  beforeEach(() => enregistrerAventure({ armes: [epeeCourte, baton] }));
 
   it("corrige le bonus d'un appui, enregistré à la frappe, et met le total à jour", async () => {
     render(App);
@@ -199,7 +195,7 @@ describe("modifier et retirer une arme", () => {
 });
 
 describe("plus de 2 armes", () => {
-  beforeEach(() => enregistrerAventure([epeeCourte, baton]));
+  beforeEach(() => enregistrerAventure({ armes: [epeeCourte, baton] }));
 
   it("à 2 armes, le compteur n'est pas rouge et aucun indice ne paraît", () => {
     render(App);
@@ -230,7 +226,7 @@ describe("plus de 2 armes", () => {
   });
 
   it("retirer l'arme en trop fait disparaître le rouge et l'indice", async () => {
-    enregistrerAventure([epeeCourte, baton, dague]);
+    enregistrerAventure({ armes: [epeeCourte, baton, dague] });
     render(App);
     const lecteur = userEvent.setup();
     expect(dansSection().getByRole("note")).toBeInTheDocument();
@@ -245,7 +241,7 @@ describe("plus de 2 armes", () => {
 
 describe("les armes et la besace", () => {
   it("ne prennent aucune place : la besace reste à 0 / 24", () => {
-    enregistrerAventure([epeeCourte, baton, dague]);
+    enregistrerAventure({ armes: [epeeCourte, baton, dague] });
     render(App);
     expect(dansSection().queryByText(/\/ 24/)).not.toBeInTheDocument();
     expect(

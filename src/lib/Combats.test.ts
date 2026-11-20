@@ -12,7 +12,7 @@ import {
 } from "./combat";
 import { desFixes, type De } from "./des";
 import { lireAventure } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
+import { enregistrerAventure } from "./test/uneAventure";
 
 /** Une fiche de lecteur : DEX 7, 32 PV max, CHANCE 4, bonus de dommage +1. */
 const lecteur = (pointsDeVie: number) => ({
@@ -69,9 +69,8 @@ const interrompu = combat(
 );
 
 /** Du plus ancien au plus récent : § 112, 98, 61, 40. */
-function enregistrerAventure(combats: Combat[]) {
-  enregistrer({ armes: [{ nom: "Épée courte", bonus: 1 }], combats });
-}
+/** L'apprenti porte l'épée courte (+1) : elle compte dans les dégâts des combats. */
+const armes = [{ nom: "Épée courte", bonus: 1 }];
 
 function ouvrirLApp(de: De = desFixes(6, 6)) {
   render(App, { props: { de } });
@@ -86,7 +85,7 @@ const ligne = (chapitre: number) => bouton(new RegExp(`§\\s${chapitre}\\b`));
 
 describe("la section « Combats » de la feuille", () => {
   it("n'apparaît pas tant qu'aucun combat n'est terminé", () => {
-    enregistrerAventure([]);
+    enregistrerAventure({ armes, combats: [] });
     ouvrirLApp();
 
     expect(
@@ -95,7 +94,7 @@ describe("la section « Combats » de la feuille", () => {
   });
 
   it("montre les deux combats les plus récents, le plus récent en tête, entre la Besace et les Notes", () => {
-    enregistrerAventure([long, gagne, perdu, interrompu]);
+    enregistrerAventure({ armes, combats: [long, gagne, perdu, interrompu] });
     ouvrirLApp();
 
     const section = sectionDeLaFeuille();
@@ -116,7 +115,7 @@ describe("la section « Combats » de la feuille", () => {
   });
 
   it("résume chaque combat : chapitre, issue, tours et adversaires, PV perdus", () => {
-    enregistrerAventure([long, gagne, perdu]);
+    enregistrerAventure({ armes, combats: [long, gagne, perdu] });
     ouvrirLApp();
 
     const [recent, ancien] = sectionDeLaFeuille().getAllByRole("listitem");
@@ -131,14 +130,14 @@ describe("la section « Combats » de la feuille", () => {
   });
 
   it("garde un compteur au singulier pour un seul combat", () => {
-    enregistrerAventure([gagne]);
+    enregistrerAventure({ armes, combats: [gagne] });
     ouvrirLApp();
 
     expect(sectionDeLaFeuille().getByText("1 livré")).toBeInTheDocument();
   });
 
   it("montre en tête un combat qui vient de se terminer", async () => {
-    enregistrerAventure([gagne]);
+    enregistrerAventure({ armes, combats: [gagne] });
     // Dés : l'ennemi (5 PV) est touché pour 5 au premier tour.
     const lecteurQuiJoue = ouvrirLApp(desFixes(2, 3, 3));
     await lecteurQuiJoue.click(bouton("Combattre"));
@@ -161,7 +160,9 @@ describe("la section « Combats » de la feuille", () => {
 });
 
 describe("l'écran « Combats »", () => {
-  beforeEach(() => enregistrerAventure([long, gagne, perdu, interrompu]));
+  beforeEach(() =>
+    enregistrerAventure({ armes, combats: [long, gagne, perdu, interrompu] }),
+  );
 
   async function ouvrirLHistorique() {
     const lecteurQuiLit = ouvrirLApp();
@@ -284,7 +285,7 @@ describe("l'écran « Combats »", () => {
       chance: 3,
       jets: gagne.jets.map((jet) => ({ ...jet, chance: 1, total: 4 })),
     };
-    enregistrerAventure([avecChance]);
+    enregistrerAventure({ armes, combats: [avecChance] });
     const lecteurQuiLit = ouvrirLApp();
     await lecteurQuiLit.click(bouton("Tout l'historique"));
     await lecteurQuiLit.click(ligne(98));
@@ -298,7 +299,7 @@ describe("l'écran « Combats »", () => {
 });
 
 describe("depuis la fin d'un combat", () => {
-  beforeEach(() => enregistrerAventure([gagne]));
+  beforeEach(() => enregistrerAventure({ armes, combats: [gagne] }));
 
   async function gagnerUnCombat() {
     // Tour 1 : chacun touche. Tour 2 : l'ennemi (10 PV) tombe. Trois tours si PV 14.
@@ -329,7 +330,7 @@ describe("depuis la fin d'un combat", () => {
   });
 
   it("n'est pas proposé après une défaite", async () => {
-    enregistrerAventure([]);
+    enregistrerAventure({ armes, combats: [] });
     const lecteurQuiJoue = ouvrirLApp(desFixes(1, 1, 6));
     await lecteurQuiJoue.click(bouton("Combattre"));
     await lecteurQuiJoue.type(screen.getByLabelText("Dextérité"), "7");
@@ -349,7 +350,7 @@ describe("depuis la fin d'un combat", () => {
 
 describe("rien ne se perd", () => {
   it("retrouve l'historique, dans l'ordre, après avoir fermé et rouvert l'app", async () => {
-    enregistrerAventure([gagne]);
+    enregistrerAventure({ armes, combats: [gagne] });
     const premiere = render(App, { props: { de: desFixes(2, 3, 3) } });
     const lecteurQuiJoue = userEvent.setup();
     await lecteurQuiJoue.click(bouton("Combattre"));

@@ -4,11 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { desFixes } from "./des";
 import { CLE_STOCKAGE } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
-
-function enregistrerAventure(chance = 4) {
-  enregistrer({ personnage: { chance } });
-}
+import { enregistrerAventure } from "./test/uneAventure";
 
 const chanceEnregistree = () =>
   JSON.parse(localStorage.getItem(CLE_STOCKAGE)!).aventure.personnage.chance;
@@ -245,7 +241,7 @@ describe("panneau de dés : 1 dé ou 2 dés", () => {
 });
 
 describe("panneau de dés : ajuster avec la CHANCE", () => {
-  beforeEach(() => enregistrerAventure(4));
+  beforeEach(() => enregistrerAventure({ personnage: { chance: 4 } }));
 
   it("dit combien de points de CHANCE il reste, avant tout ajustement", async () => {
     render(App, { de: desFixes(4, 5) });
@@ -354,7 +350,7 @@ describe("panneau de dés : ajuster avec la CHANCE", () => {
 });
 
 describe("panneau de dés : sans CHANCE", () => {
-  beforeEach(() => enregistrerAventure(0));
+  beforeEach(() => enregistrerAventure({ personnage: { chance: 0 } }));
 
   it("le pas à pas est éteint et le panneau le dit", async () => {
     render(App, { de: desFixes(4, 5) });
@@ -369,7 +365,7 @@ describe("panneau de dés : sans CHANCE", () => {
 });
 
 describe("panneau de dés : valider ou fermer", () => {
-  beforeEach(() => enregistrerAventure(4));
+  beforeEach(() => enregistrerAventure({ personnage: { chance: 4 } }));
 
   it("retire de la CHANCE exactement les points dépensés, en baissant", async () => {
     render(App, { de: desFixes(4, 5) });

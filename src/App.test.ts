@@ -3,21 +3,19 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App.svelte";
 
-import { enregistrerAventure as enregistrer } from "./lib/test/uneAventure";
+import { enregistrerAventure, type Surcharges } from "./lib/test/uneAventure";
 
 /** Une aventure déjà commencée : l'app ouvre directement la feuille. */
-function enregistrerAventure() {
-  enregistrer({
-    chapitre: 1,
-    mode: "narratif",
-    personnage: {
-      talent: "Instinct",
-      pointsDeVieMax: 24,
-      pointsDeVie: 24,
-      chance: 3,
-    },
-  });
-}
+const dejaCommencee: Surcharges = {
+  chapitre: 1,
+  mode: "narratif",
+  personnage: {
+    talent: "Instinct",
+    pointsDeVieMax: 24,
+    pointsDeVie: 24,
+    chance: 3,
+  },
+};
 
 const boutonChapitre = () =>
   screen.getByRole("button", { name: /dernier chapitre lu/i });
@@ -31,7 +29,7 @@ async function changerChapitre(valeur: string, valider = true) {
 }
 
 describe("en-tête de la feuille", () => {
-  beforeEach(enregistrerAventure);
+  beforeEach(() => enregistrerAventure(dejaCommencee));
 
   it("affiche le chapitre 1 au début de l'aventure", () => {
     render(App);
@@ -90,7 +88,7 @@ describe("écran allumé pendant la lecture", () => {
     document.dispatchEvent(new Event("visibilitychange"));
   }
 
-  beforeEach(enregistrerAventure);
+  beforeEach(() => enregistrerAventure(dejaCommencee));
   afterEach(() => {
     delete navigateur.wakeLock;
     delete (document as { visibilityState?: unknown }).visibilityState;

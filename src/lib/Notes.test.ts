@@ -3,11 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { CLE_STOCKAGE } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
-
-function enregistrerAventure(notes = "") {
-  enregistrer({ notes });
-}
+import { enregistrerAventure } from "./test/uneAventure";
 
 const zone = () => screen.getByRole("textbox", { name: "Notes" });
 const notesEnregistrees = () =>
@@ -57,7 +53,7 @@ describe("notes libres", () => {
   });
 
   it("affiche les notes déjà enregistrées", () => {
-    enregistrerAventure("Ne pas reprendre le chemin du marais");
+    enregistrerAventure({ notes: "Ne pas reprendre le chemin du marais" });
     render(App);
     expect(zone()).toHaveValue("Ne pas reprendre le chemin du marais");
   });

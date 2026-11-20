@@ -2,13 +2,8 @@ import { render, screen, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
-import { besaceVide, type Besace } from "./aventure";
 import { CLE_STOCKAGE } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
-
-function enregistrerAventure(partiel: Partial<Besace> = {}) {
-  enregistrer({ besace: { ...besaceVide(), ...partiel } });
-}
+import { enregistrerAventure } from "./test/uneAventure";
 
 const objets = (n: number) => Array.from({ length: n }, (_, i) => `Objet ${i}`);
 
@@ -109,7 +104,7 @@ describe("section Besace", () => {
 
 describe("renommer et retirer un objet", () => {
   beforeEach(() =>
-    enregistrerAventure({ objets: ["Pain rassis", "Fiole vide"] }),
+    enregistrerAventure({ besace: { objets: ["Pain rassis", "Fiole vide"] } }),
   );
 
   it("renomme d'un appui, enregistré à la frappe", async () => {
@@ -146,7 +141,7 @@ describe("renommer et retirer un objet", () => {
 
 describe("les 24 traits de comptage", () => {
   it("noircissent à la craie autant de traits que d'emplacements pris", () => {
-    enregistrerAventure({ objets: objets(7) });
+    enregistrerAventure({ besace: { objets: objets(7) } });
     render(App);
     expect(section()).toHaveTextContent("7 / 24");
     expect(dansSection().getByRole("img")).toHaveAccessibleName(
@@ -158,7 +153,7 @@ describe("les 24 traits de comptage", () => {
   });
 
   it("à 24 objets, tout est à la craie, sans rouge ni indice", () => {
-    enregistrerAventure({ objets: objets(24) });
+    enregistrerAventure({ besace: { objets: objets(24) } });
     render(App);
     expect(traitsDeCraie()).toHaveLength(24);
     expect(traitsRouges()).toHaveLength(0);
@@ -170,7 +165,7 @@ describe("les 24 traits de comptage", () => {
   });
 
   it("chaque objet en trop ajoute un trait rouge au-delà des 24", () => {
-    enregistrerAventure({ objets: objets(26) });
+    enregistrerAventure({ besace: { objets: objets(26) } });
     render(App);
     expect(traits()).toHaveLength(26);
     expect(traitsDeCraie()).toHaveLength(24);
@@ -183,7 +178,7 @@ describe("les 24 traits de comptage", () => {
 });
 
 describe("au-delà de 24 objets", () => {
-  beforeEach(() => enregistrerAventure({ objets: objets(24) }));
+  beforeEach(() => enregistrerAventure({ besace: { objets: objets(24) } }));
 
   it("un indice rouge prévient, sans empêcher l'ajout", async () => {
     render(App);
@@ -201,7 +196,7 @@ describe("au-delà de 24 objets", () => {
   });
 
   it("retirer l'objet en trop fait disparaître le rouge et l'indice", async () => {
-    enregistrerAventure({ objets: objets(25) });
+    enregistrerAventure({ besace: { objets: objets(25) } });
     render(App);
     const lecteur = userEvent.setup();
     expect(dansSection().getByRole("note")).toBeInTheDocument();
@@ -213,7 +208,7 @@ describe("au-delà de 24 objets", () => {
 
 describe("la bourse et les boulons", () => {
   it("avec une bourse : un emplacement, et le compteur de boulons actif", () => {
-    enregistrerAventure({ bourse: true, boulons: 12 });
+    enregistrerAventure({ besace: { bourse: true, boulons: 12 } });
     render(App);
     expect(section()).toHaveTextContent("1 / 24");
     expect(traitsDeCraie()).toHaveLength(1);
@@ -223,7 +218,9 @@ describe("la bourse et les boulons", () => {
   });
 
   it("les boulons n'occupent aucun emplacement, même par centaines", async () => {
-    enregistrerAventure({ bourse: true, boulons: 0, objets: objets(2) });
+    enregistrerAventure({
+      besace: { bourse: true, boulons: 0, objets: objets(2) },
+    });
     render(App);
     const lecteur = userEvent.setup();
     expect(section()).toHaveTextContent("3 / 24");
@@ -234,7 +231,7 @@ describe("la bourse et les boulons", () => {
   });
 
   it("« + » et « − » comptent un boulon, enregistré aussitôt, sans descendre sous 0", async () => {
-    enregistrerAventure({ bourse: true, boulons: 1 });
+    enregistrerAventure({ besace: { bourse: true, boulons: 1 } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Ajouter un boulon"));
@@ -248,7 +245,7 @@ describe("la bourse et les boulons", () => {
   });
 
   it("corrige le nombre de boulons d'un appui, enregistré à la frappe", async () => {
-    enregistrerAventure({ bourse: true, boulons: 12 });
+    enregistrerAventure({ besace: { bourse: true, boulons: 12 } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Boulons, modifier : 12"));
@@ -261,7 +258,7 @@ describe("la bourse et les boulons", () => {
   });
 
   it("retirer la bourse libère l'emplacement, désactive le compteur et garde les boulons", async () => {
-    enregistrerAventure({ bourse: true, boulons: 12 });
+    enregistrerAventure({ besace: { bourse: true, boulons: 12 } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Retirer la bourse"));
@@ -273,7 +270,7 @@ describe("la bourse et les boulons", () => {
   });
 
   it("la bourse peut faire dépasser les 24 emplacements, sans rien bloquer", async () => {
-    enregistrerAventure({ objets: objets(24) });
+    enregistrerAventure({ besace: { objets: objets(24) } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Ajouter une bourse"));
@@ -283,7 +280,7 @@ describe("la bourse et les boulons", () => {
 });
 
 describe("sans bourse", () => {
-  beforeEach(() => enregistrerAventure({ boulons: 0 }));
+  beforeEach(() => enregistrerAventure({ besace: { boulons: 0 } }));
 
   it("la ligne dit « Boulons · pas de bourse » avec la seule valeur, sans boutons ± ni compteur", () => {
     render(App);
@@ -309,7 +306,7 @@ describe("sans bourse", () => {
   });
 
   it("garde la valeur des boulons quand on retire la bourse", async () => {
-    enregistrerAventure({ bourse: true, boulons: 12 });
+    enregistrerAventure({ besace: { bourse: true, boulons: 12 } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Retirer la bourse"));
@@ -329,7 +326,7 @@ describe("sans bourse", () => {
   });
 
   it("le lecteur peut ne plus compter après avoir forcé", async () => {
-    enregistrerAventure({ boulonsForces: true, boulons: 3 });
+    enregistrerAventure({ besace: { boulonsForces: true, boulons: 3 } });
     render(App);
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Ne plus compter"));

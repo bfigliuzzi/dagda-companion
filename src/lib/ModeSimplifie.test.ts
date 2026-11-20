@@ -2,14 +2,11 @@ import { cleanup, render, screen, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
-import { besaceVide, type Mode } from "./aventure";
+import type { Mode } from "./aventure";
 import { combatNarratif } from "./combat";
 import { desFixes, type De } from "./des";
 import { lireAventure } from "./stockage";
-import {
-  enregistrerAventure as enregistrer,
-  type Surcharges,
-} from "./test/uneAventure";
+import { enregistrerAventure, type Surcharges } from "./test/uneAventure";
 
 type Lecteur = ReturnType<typeof userEvent.setup>;
 
@@ -17,17 +14,14 @@ type Lecteur = ReturnType<typeof userEvent.setup>;
  * Une aventure au § 112 : PV 28 / 32, CHANCE 4, DEX 7, l'épée courte, une
  * corde dans la besace, la potion d'agilité (DEX +1).
  */
-function enregistrerAventure(changement: Surcharges = {}) {
-  enregistrer({
-    sauvegardesUtilisees: 1,
-    armes: [{ nom: "Épée courte", bonus: 1 }],
-    besace: { ...besaceVide(), objets: ["Corde de chanvre"] },
-    effets: [
-      { nom: "Potion d'agilité", duree: "24 h", cible: "dexterite", valeur: 1 },
-    ],
-    ...changement,
-  });
-}
+const enCours: Surcharges = {
+  sauvegardesUtilisees: 1,
+  armes: [{ nom: "Épée courte", bonus: 1 }],
+  besace: { objets: ["Corde de chanvre"] },
+  effets: [
+    { nom: "Potion d'agilité", duree: "24 h", cible: "dexterite", valeur: 1 },
+  ],
+};
 
 function ouvrirLApp(de: De = desFixes(6, 6)) {
   render(App, { props: { de } });
@@ -62,7 +56,7 @@ async function poserPuisChanger(lecteur: Lecteur) {
 
 describe("les sauvegardes selon le mode de jeu", () => {
   it("en mode simplifié : trois traits dans le bloc vital et la section « Aventure »", () => {
-    enregistrerAventure();
+    enregistrerAventure(enCours);
     ouvrirLApp();
 
     expect(
@@ -78,7 +72,7 @@ describe("les sauvegardes selon le mode de jeu", () => {
   it.each<Mode>(["narratif", "mortel"])(
     "en mode %s : ni traits, ni « Sauvegarder ici », ni reprise",
     (mode) => {
-      enregistrerAventure({ mode, sauvegardesUtilisees: 0 });
+      enregistrerAventure({ ...enCours, mode, sauvegardesUtilisees: 0 });
       ouvrirLApp();
 
       expect(screen.queryByText("Sauvegardes")).not.toBeInTheDocument();
@@ -92,7 +86,7 @@ describe("les sauvegardes selon le mode de jeu", () => {
 });
 
 describe("poser une sauvegarde", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enCours));
 
   it("consomme un trait et propose de reprendre au chapitre en cours", async () => {
     const lecteur = ouvrirLApp();
@@ -110,6 +104,7 @@ describe("poser une sauvegarde", () => {
 
   it("garde le chapitre et tout l'état du personnage, mais ni les notes ni les combats", async () => {
     enregistrerAventure({
+      ...enCours,
       notes: "Piège au 74.",
       combats: [combatNarratif(98, 1, "gagne")],
     });
@@ -162,7 +157,7 @@ describe("poser une sauvegarde", () => {
   });
 
   it("une fois les 3 utilisées, le bouton est désactivé et son libellé le dit", async () => {
-    enregistrerAventure({ sauvegardesUtilisees: 2 });
+    enregistrerAventure({ ...enCours, sauvegardesUtilisees: 2 });
     const lecteur = ouvrirLApp();
     await lecteur.click(sauvegarder());
 
@@ -180,7 +175,7 @@ describe("poser une sauvegarde", () => {
 });
 
 describe("reprendre la sauvegarde", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enCours));
 
   it("demande une confirmation, et « Annuler » ne change rien", async () => {
     const lecteur = ouvrirLApp();
@@ -287,7 +282,7 @@ describe("reprendre la sauvegarde", () => {
 
 describe("rien ne se perd", () => {
   it("la sauvegarde posée se retrouve après avoir fermé puis rouvert l'app", async () => {
-    enregistrerAventure();
+    enregistrerAventure(enCours);
     const lecteur = ouvrirLApp();
     await poserPuisChanger(lecteur);
 
@@ -305,7 +300,7 @@ describe("rien ne se perd", () => {
 });
 
 describe("corriger le nombre de sauvegardes utilisées à la main", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enCours));
 
   it("un appui sur les traits ouvre un panneau avec les valeurs de 0 à 3", async () => {
     const lecteur = ouvrirLApp();
@@ -374,6 +369,7 @@ describe("l'écran « Perdu » en mode simplifié", () => {
 
   it("propose « Reprendre la sauvegarde » en premier, avec l'indice de la maquette", async () => {
     enregistrerAventure({
+      ...enCours,
       sauvegardesUtilisees: 1,
       personnage: {
         talent: "Herbologie",
@@ -411,6 +407,7 @@ describe("l'écran « Perdu » en mode simplifié", () => {
 
   it("confirmée, la reprise revient au chapitre sauvegardé et note « repris au § 87 » sur le combat perdu", async () => {
     enregistrerAventure({
+      ...enCours,
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -468,6 +465,7 @@ describe("l'écran « Perdu » en mode simplifié", () => {
 
   it("sans sauvegarde posée, l'indice le dit et il n'y a rien à reprendre", async () => {
     enregistrerAventure({
+      ...enCours,
       personnage: {
         talent: "Herbologie",
         pointsDeVieMax: 32,
@@ -487,6 +485,7 @@ describe("l'écran « Perdu » en mode simplifié", () => {
 
   it("en mode mortel, l'écran « Perdu » ne parle pas de sauvegarde", async () => {
     enregistrerAventure({
+      ...enCours,
       mode: "mortel",
       sauvegardesUtilisees: 0,
       personnage: {

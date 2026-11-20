@@ -3,18 +3,17 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import type { Mode } from "./aventure";
-import { combatNarratif, type CombatDeLHistorique } from "./combat";
+import { combatNarratif } from "./combat";
 import { desFixes, type De } from "./des";
 import { lireAventure } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
+import { enregistrerAventure, type Surcharges } from "./test/uneAventure";
 
 /** Une aventure au § 112 : PV 28 / 32, CHANCE 4, DEX 7, l'épée courte (+1). */
-function enregistrerAventure(
-  mode: Mode = "narratif",
-  combats: CombatDeLHistorique[] = [],
-) {
-  enregistrer({ mode, armes: [{ nom: "Épée courte", bonus: 1 }], combats });
-}
+/** Une aventure en mode narratif ; l'apprenti porte l'épée courte (+1). */
+const enNarratif: Surcharges = {
+  mode: "narratif",
+  armes: [{ nom: "Épée courte", bonus: 1 }],
+};
 
 function ouvrirLApp(de: De = desFixes(6, 6)) {
   render(App, { props: { de } });
@@ -40,7 +39,7 @@ async function ouvrirLaFiche(
 }
 
 describe("le formulaire « Nouveau combat » en mode narratif", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enNarratif));
 
   it("demande le chapitre et le nombre d'adversaires, sans les statistiques de l'ennemi", async () => {
     const lecteur = ouvrirLApp();
@@ -100,7 +99,7 @@ describe("le formulaire « Nouveau combat » en mode narratif", () => {
 });
 
 describe("l'écran « Gagné » / « Perdu » du mode narratif", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enNarratif));
 
   async function ouvrirLesChoix(
     lecteur: ReturnType<typeof userEvent.setup>,
@@ -233,7 +232,7 @@ describe("l'écran « Gagné » / « Perdu » du mode narratif", () => {
 });
 
 describe("au-delà de 5 adversaires, en mode narratif", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure(enNarratif));
 
   it("saute l'écran « Gagné » / « Perdu » : le combat automatique se lance après la fiche de l'ennemi", async () => {
     const lecteur = ouvrirLApp(desFixes(2, 3, 3, 6, 6));
@@ -259,7 +258,7 @@ describe("dans les autres modes, rien ne change", () => {
   it.each<Mode>(["simplifie", "mortel"])(
     "en mode %s, la fiche complète est demandée dès 1 adversaire, sans écran « Gagné » / « Perdu »",
     async (mode) => {
-      enregistrerAventure(mode);
+      enregistrerAventure({ ...enNarratif, mode });
       const lecteur = ouvrirLApp();
       await lecteur.click(bouton("Combattre"));
 
@@ -281,7 +280,7 @@ describe("dans les autres modes, rien ne change", () => {
   );
 
   it("en mode simplifié, 3 adversaires se jouent aux dés", async () => {
-    enregistrerAventure("simplifie");
+    enregistrerAventure({ ...enNarratif, mode: "simplifie" });
     const lecteur = ouvrirLApp();
     await ouvrirLaFiche(lecteur, "3");
     await lecteur.type(champ("Dextérité"), "7");
@@ -294,10 +293,10 @@ describe("dans les autres modes, rien ne change", () => {
 
 describe("un combat narratif dans l'historique", () => {
   beforeEach(() =>
-    enregistrerAventure("narratif", [
-      combatNarratif(98, 1, "gagne"),
-      combatNarratif(61, 3, "perdu"),
-    ]),
+    enregistrerAventure({
+      ...enNarratif,
+      combats: [combatNarratif(98, 1, "gagne"), combatNarratif(61, 3, "perdu")],
+    }),
   );
 
   async function ouvrirLHistorique() {

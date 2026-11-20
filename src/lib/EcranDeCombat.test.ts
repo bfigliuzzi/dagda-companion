@@ -2,11 +2,11 @@ import { render, screen, within } from "@testing-library/svelte";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App.svelte";
-import type { Arme, Personnage } from "./aventure";
+import type { Arme } from "./aventure";
 import type { Combat } from "./combat";
 import { desFixes, type De } from "./des";
 import { lireAventure } from "./stockage";
-import { enregistrerAventure as enregistrer } from "./test/uneAventure";
+import { enregistrerAventure } from "./test/uneAventure";
 import type { Effet } from "./valeursEffectives";
 
 const epeeCourte: Arme = { nom: "Épée courte", bonus: 1 };
@@ -17,18 +17,8 @@ const potion: Effet = {
   valeur: 1,
 };
 
-/** Une aventure au § 112 : PV 28 / 32, CHANCE 4, DEX 7, l'épée courte (+1). */
-function enregistrerAventure({
-  armes = [epeeCourte],
-  effets = [],
-  personnage = {},
-}: {
-  armes?: Arme[];
-  effets?: Effet[];
-  personnage?: Partial<Personnage>;
-} = {}) {
-  enregistrer({ armes, effets, personnage });
-}
+/** L'apprenti porte l'épée courte (+1) ; l'aventure par défaut : § 112, PV 28 / 32, CHANCE 4, DEX 7. */
+const armes = [epeeCourte];
 
 const bouton = (nom: string | RegExp) =>
   screen.getByRole("button", { name: nom });
@@ -76,7 +66,7 @@ async function mener(
 }
 
 describe("« Nouveau combat »", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure({ armes }));
 
   it("s'ouvre depuis « Combattre » : chapitre prérempli, bonus 0, un adversaire, le lecteur frappe en premier", async () => {
     const lecteur = ouvrirLApp();
@@ -121,6 +111,7 @@ describe("« Nouveau combat »", () => {
 
   it("rappelle les chiffres du lecteur : DEX et dégâts effectifs, armes et effets compris", async () => {
     enregistrerAventure({
+      armes,
       effets: [potion, { nom: "Rage", duree: "", cible: "degats", valeur: 2 }],
     });
     const lecteur = ouvrirLApp();
@@ -144,7 +135,7 @@ describe("« Nouveau combat »", () => {
 });
 
 describe("le combat, tour par tour", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure({ armes }));
 
   it("met les deux camps face à face : PV en gros chiffres sur leur maximum, l'ennemi repéré par son chapitre", async () => {
     const lecteur = ouvrirLApp();
@@ -211,6 +202,7 @@ describe("le combat, tour par tour", () => {
 
   it("se bat avec la DEX et le bonus de dommage effectifs : potion (DEX 8) et rage (+2)", async () => {
     enregistrerAventure({
+      armes,
       effets: [potion, { nom: "Rage", duree: "", cible: "degats", valeur: 2 }],
     });
     // 4 + 4 = 8 : touché grâce à la potion ; d6 = 3 → 1 + 3 + 3.
@@ -249,7 +241,7 @@ describe("le combat, tour par tour", () => {
   });
 
   it("affiche le bandeau rouge encadré en état critique (moins de 7 PV)", async () => {
-    enregistrerAventure({ personnage: { pointsDeVie: 9 } });
+    enregistrerAventure({ armes, personnage: { pointsDeVie: 9 } });
     const lecteur = ouvrirLApp(desFixes(6, 6, 1, 1, 2));
     await mener(lecteur);
     expect(screen.queryByText(/État critique/)).not.toBeInTheDocument();
@@ -264,7 +256,7 @@ describe("le combat, tour par tour", () => {
 });
 
 describe("la fin du combat", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure({ armes }));
 
   it("ennemi à 0 PV : « Gagné », avec le bilan des PV", async () => {
     // Tour 1 : lecteur 5 dégâts, ennemi 5 dégâts. Tour 2 : lecteur 5 dégâts, l'ennemi tombe.
@@ -290,7 +282,7 @@ describe("la fin du combat", () => {
   });
 
   it("lecteur à 0 PV : « Perdu », et rappel que le livre indique la suite, sans rien décider", async () => {
-    enregistrerAventure({ personnage: { pointsDeVie: 3 } });
+    enregistrerAventure({ armes, personnage: { pointsDeVie: 3 } });
     const lecteur = ouvrirLApp(desFixes(6, 6, 1, 1, 6));
     await mener(lecteur);
     await lecteur.click(bouton("Tour suivant"));
@@ -340,7 +332,7 @@ describe("la fin du combat", () => {
 
 describe("les PV de la feuille suivent le combat", () => {
   beforeEach(() => {
-    enregistrerAventure();
+    enregistrerAventure({ armes });
   });
   afterEach(() => vi.useRealTimers());
 
@@ -354,6 +346,7 @@ describe("les PV de la feuille suivent le combat", () => {
 
   it("enregistrent la perte dans la base quand un effet soutient les PV", async () => {
     enregistrerAventure({
+      armes,
       effets: [{ nom: "Bague", duree: "", cible: "pointsDeVie", valeur: 2 }],
     });
     const lecteur = ouvrirLApp(desFixes(6, 6, 1, 1, 4));
@@ -384,7 +377,7 @@ describe("les PV de la feuille suivent le combat", () => {
 });
 
 describe("quitter un combat en cours", () => {
-  beforeEach(() => enregistrerAventure());
+  beforeEach(() => enregistrerAventure({ armes }));
 
   it("ramène à la feuille avec les PV déjà perdus, et note le combat comme interrompu", async () => {
     const lecteur = ouvrirLApp(desFixes(6, 6, 1, 1, 4));
@@ -427,7 +420,9 @@ describe("quitter un combat en cours", () => {
 
 describe("la CHANCE automatique en combat", () => {
   /** L'apprenti en état critique : 6 PV, CHANCE 4, DEX 7, épée courte (+1). */
-  beforeEach(() => enregistrerAventure({ personnage: { pointsDeVie: 6 } }));
+  beforeEach(() =>
+    enregistrerAventure({ armes, personnage: { pointsDeVie: 6 } }),
+  );
   afterEach(() => vi.useRealTimers());
 
   it("annonce dans le bandeau critique que la CHANCE sera dépensée seule", async () => {
@@ -495,6 +490,7 @@ describe("la CHANCE automatique en combat", () => {
 
   it("retire la dépense de la base quand un effet soutient la CHANCE (4 + 2, dépenser 2 : base 2)", async () => {
     enregistrerAventure({
+      armes,
       personnage: { pointsDeVie: 6 },
       effets: [{ nom: "Trèfle", duree: "", cible: "chance", valeur: 2 }],
     });
