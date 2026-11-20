@@ -10,8 +10,12 @@
 
   interface Props {
     icone: "info" | "alerte";
-    /** `note` quand un lecteur d'écran doit l'annoncer comme une remarque. */
-    role?: "note";
+    /**
+     * `note` quand un lecteur d'écran doit l'annoncer comme une remarque ;
+     * `status` quand l'indice apparaît ou change en cours de saisie et doit
+     * être annoncé sans couper le lecteur.
+     */
+    role?: "note" | "status";
     /** Marge autour de l'indice (écriture raccourcie de `margin`), 14 px au-dessus par défaut. */
     marge?: string;
     /** Indice posé juste sous une liste : la ligne de la liste fait déjà le trait. */

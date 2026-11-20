@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icone from "./Icone.svelte";
+  import Indice from "./Indice.svelte";
   import {
     DEXTERITE_DE_DEPART,
     MODES,
@@ -215,21 +215,15 @@
         </div>
       {/if}
       {#if pvAuDessusDuMax}
-        <div class="indice avertit" role="status">
-          <Icone nom="alerte" />
-          <span>
-            Les PV actuels dépassent le maximum. Vérifiez votre feuille papier :
-            vous pouvez continuer quand même.
-          </span>
-        </div>
+        <Indice icone="alerte" role="status">
+          Les PV actuels dépassent le maximum. Vérifiez votre feuille papier :
+          vous pouvez continuer quand même.
+        </Indice>
       {/if}
-      <div class="indice">
-        <Icone nom="info" />
-        <span>
-          Armes, effets, besace et notes se remplissent ensuite
-          <b>directement sur la feuille</b>.
-        </span>
-      </div>
+      <Indice icone="info">
+        Armes, effets, besace et notes se remplissent ensuite
+        <b>directement sur la feuille</b>.
+      </Indice>
     {:else}
       <LigneDeJet
         nom="Points de vie"
@@ -343,32 +337,6 @@
 
   .champ-puces .puces {
     margin-top: var(--esp-sm);
-  }
-
-  .indice {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  .indice :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-
-  .indice.avertit :global(svg) {
-    color: var(--rouge);
-  }
-
-  .indice b {
-    color: var(--craie);
   }
 
   .intro {

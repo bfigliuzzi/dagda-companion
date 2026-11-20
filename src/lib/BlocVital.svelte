@@ -27,6 +27,7 @@
    * Il n'empêche rien et ne décide rien ; les autres modes n'en ont pas.
    */
   import Icone from "./Icone.svelte";
+  import Indice from "./Indice.svelte";
   import {
     ajouterUnPointDeVie,
     depasseLeMaximum,
@@ -250,12 +251,11 @@
     {/if}
   </div>
   {#if depasseLeMaximum({ pointsDeVie: pv, pointsDeVieMax: plafond })}
-    <div class="indice" role="status">
-      <Icone nom="alerte" />
-      <span>
+    <div class="indice-pleine-largeur">
+      <Indice icone="alerte" role="status" marge="-2px 0 0">
         Vos PV dépassent le maximum de <b>{max}</b>. Gardez-les si le livre
         l'autorise, sinon revenez au maximum.
-      </span>
+      </Indice>
     </div>
   {/if}
   {#if propose && !propositionIgnoree}
@@ -492,7 +492,15 @@
     text-align: right;
   }
 
-  /* Indice non bloquant : voir DESIGN.md, « Hints ». */
+  .indice-pleine-largeur {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * Indice mortel : un indice (DESIGN.md, « Hints ») qui porte aussi un
+   * bouton et dont seul le texte est annoncé (role="status"). Le composant
+   * Indice enferme son contenu dans un <span> : on garde donc ce balisage-ci.
+   */
   .indice {
     grid-column: 1 / -1;
     display: flex;

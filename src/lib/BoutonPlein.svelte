@@ -45,5 +45,6 @@
     background: none;
     border-color: var(--craie-3);
     color: var(--craie-3);
+    cursor: default;
   }
 </style>

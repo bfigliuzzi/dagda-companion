@@ -23,11 +23,7 @@
   import FormulaireDAjout from "./FormulaireDAjout.svelte";
   import NomModifiable from "./NomModifiable.svelte";
   import { formaterUnBonus } from "./signes";
-  import {
-    explication,
-    valeurEffective,
-    type Effet,
-  } from "./valeursEffectives";
+  import { detailler, type Effet } from "./valeursEffectives";
   import TraceDeCraie from "./TraceDeCraie.svelte";
   import ValeurEditable from "./ValeurEditable.svelte";
 
@@ -43,10 +39,9 @@
 
   const depasse = $derived(portePlusDArmesQueLesRegles(armes));
   const bonusDesArmes = $derived(bonusDeDegatsDesArmes(armes));
-  const degats = $derived(
-    formaterUnBonus(valeurEffective("degats", bonusDesArmes, effets)),
-  );
-  const ligne = $derived(explication("degats", bonusDesArmes, effets));
+  const detail = $derived(detailler("degats", bonusDesArmes, effets));
+  const degats = $derived(formaterUnBonus(detail.valeur));
+  const ligne = $derived(detail.explication);
 
   // Ajout : le formulaire remplace le bouton « Ajouter une arme ».
   let enAjout = $state(false);
