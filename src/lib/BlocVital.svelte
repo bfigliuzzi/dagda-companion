@@ -42,6 +42,7 @@
     type Personnage,
   } from "./aventure";
   import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
+  import type { AvantLeCombat } from "./ecrans";
   import { sauvegardesRestantes } from "./sauvegardes";
   import SauvegardesUtilisees from "./SauvegardesUtilisees.svelte";
   import {
@@ -67,7 +68,7 @@
      * PV et CHANCE affichés avant un combat, au retour sur la feuille : la
      * trace de craie montre ce que le combat a changé.
      */
-    avant?: { pointsDeVie?: number; chance?: number };
+    avant?: AvantLeCombat;
     /** Le lecteur a ignoré la proposition de recommencer : on ne la remontre pas. */
     propositionIgnoree?: boolean;
     onignorer?: () => void;
