@@ -19,6 +19,8 @@
     retirerUnBoulon,
     type Besace,
   } from "./aventure";
+  import FormulaireDAjout from "./FormulaireDAjout.svelte";
+  import NomModifiable from "./NomModifiable.svelte";
   import ValeurEditable from "./ValeurEditable.svelte";
 
   interface Props {
@@ -36,40 +38,11 @@
 
   // Ajout : le formulaire remplace le bouton « Ajouter un objet ».
   let enAjout = $state(false);
-  let nouveauNom = $state("");
-  const nomVide = $derived(nouveauNom.trim() === "");
 
-  function ouvrirLAjout() {
-    nouveauNom = "";
-    enAjout = true;
-  }
-
-  function ajouter(event: SubmitEvent) {
-    event.preventDefault();
-    if (nomVide) return;
-    besace.objets.push(nouveauNom.trim());
+  function ajouter(nom: string) {
+    besace.objets.push(nom);
     enAjout = false;
   }
-
-  // Correction du nom : un appui sur le nom ouvre un champ, repris à la frappe.
-  let nomEnSaisie = $state<number | null>(null);
-
-  function saisirLeNom(
-    index: number,
-    event: Event & { currentTarget: HTMLInputElement },
-  ) {
-    const texte = event.currentTarget.value.trim();
-    if (texte !== "") besace.objets[index] = texte;
-  }
-
-  function toucheDuNom(event: KeyboardEvent) {
-    if (event.key === "Enter" || event.key === "Escape") nomEnSaisie = null;
-  }
-
-  const focaliser = (champ: HTMLInputElement) => {
-    champ.focus();
-    champ.select();
-  };
 </script>
 
 {#snippet croix(nom: string, retirer: () => void)}
@@ -144,22 +117,10 @@
     </li>
     {#each besace.objets as objet, index (index)}
       <li class="row">
-        {#if nomEnSaisie === index}
-          <input
-            class="saisie"
-            aria-label="Nom de {objet}"
-            type="text"
-            value={objet}
-            oninput={(event) => saisirLeNom(index, event)}
-            onkeydown={toucheDuNom}
-            onblur={() => (nomEnSaisie = null)}
-            {@attach focaliser}
-          />
-        {:else}
-          <button class="n" type="button" onclick={() => (nomEnSaisie = index)}>
-            {objet}
-          </button>
-        {/if}
+        <NomModifiable
+          nom={objet}
+          onrenommer={(nom) => (besace.objets[index] = nom)}
+        />
         {@render croix(`Retirer ${objet}`, () =>
           besace.objets.splice(index, 1),
         )}
@@ -194,29 +155,17 @@
   {/if}
 
   {#if enAjout}
-    <form aria-label="Nouvel objet" onsubmit={ajouter}>
-      <label class="champ">
-        <span>Nom de l'objet</span>
-        <input
-          class="texte"
-          type="text"
-          autocomplete="off"
-          bind:value={nouveauNom}
-          {@attach focaliser}
-        />
-      </label>
-      <div class="btns">
-        <button class="valider" type="submit" aria-disabled={nomVide}>
-          {nomVide ? "Nommez d'abord l'objet" : "Ajouter l'objet"}
-        </button>
-        <button class="annuler" type="button" onclick={() => (enAjout = false)}>
-          Annuler
-        </button>
-      </div>
-    </form>
+    <FormulaireDAjout
+      titre="Nouvel objet"
+      etiquette="Nom de l'objet"
+      manque="Nommez d'abord l'objet"
+      valider="Ajouter l'objet"
+      onajouter={ajouter}
+      onannuler={() => (enAjout = false)}
+    />
   {:else}
     <div class="actions">
-      <button class="add" type="button" onclick={ouvrirLAjout}>
+      <button class="add" type="button" onclick={() => (enAjout = true)}>
         <Icone nom="plus" />
         Ajouter un objet
       </button>
@@ -292,10 +241,6 @@
   }
   .n {
     flex: 1;
-    padding: 0;
-    text-align: left;
-    font: inherit;
-    color: inherit;
   }
   .n.eteint {
     color: var(--craie-3);
@@ -337,20 +282,6 @@
     width: 18px;
     height: 18px;
   }
-  .saisie {
-    flex: 1;
-    min-width: 0;
-    height: 52px;
-    padding: 0 14px;
-    background: var(--ardoise-2);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    outline: none;
-    font: inherit;
-    font-size: 17px;
-    color: var(--craie);
-  }
-
   .hint {
     display: flex;
     gap: 10px;
@@ -406,63 +337,5 @@
     content: "";
     position: absolute;
     inset: -14px -8px;
-  }
-
-  form {
-    margin-top: var(--esp-xs);
-  }
-  .champ {
-    display: block;
-    margin-top: 14px;
-  }
-  .champ > span {
-    display: block;
-    margin-bottom: var(--esp-xs);
-    font-size: 13px;
-    color: var(--craie-2);
-  }
-  .texte {
-    display: flex;
-    width: 100%;
-    min-height: 52px;
-    padding: var(--esp-md) 14px;
-    background: var(--ardoise-2);
-    border: 2px solid transparent;
-    border-radius: var(--r);
-    outline: none;
-    font-size: 17px;
-  }
-  .texte:focus {
-    border-color: var(--jaune);
-  }
-  .btns {
-    display: grid;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  .valider {
-    width: 100%;
-    min-height: 58px;
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    background: var(--jaune);
-    color: var(--noir);
-    font-size: 20px;
-    font-weight: 800;
-  }
-  .valider[aria-disabled="true"] {
-    background: none;
-    border-color: var(--craie-3);
-    color: var(--craie-3);
-  }
-  .annuler {
-    min-height: 52px;
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-  }
-  button:focus-visible {
-    outline: 2px solid var(--jaune);
-    outline-offset: 3px;
   }
 </style>
