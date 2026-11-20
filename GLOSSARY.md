@@ -4,6 +4,10 @@ Le vocabulaire propre à l'app, en plus de celui du livre. Les termes de jeu (CH
 
 ## Langage
 
+**Accueil** :
+L'écran qui présente l'app à qui ouvre l'app sans aventure enregistrée : ce qu'elle fait, comment l'installer, et l'entrée vers « Nouvel apprenti ». Le lecteur qui recommence une aventure ne le revoit pas.
+_À éviter_ : landing, page d'accueil (l'« écran d'accueil » est celui du téléphone)
+
 **Aventure** :
 La lecture du livre que le lecteur mène avec son personnage, telle que l'app la tient : le personnage, le dernier chapitre lu et tout ce que porte la feuille. Il n'en existe qu'une à la fois ; on peut la recommencer.
 _À éviter_ : partie
