@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icone from "./Icone.svelte";
   import {
     DEXTERITE_DE_DEPART,
     MODES,
@@ -215,9 +216,7 @@
       {/if}
       {#if pvAuDessusDuMax}
         <div class="indice avertit" role="status">
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-          </svg>
+          <Icone nom="alerte" />
           <span>
             Les PV actuels dépassent le maximum. Vérifiez votre feuille papier :
             vous pouvez continuer quand même.
@@ -225,9 +224,7 @@
         </div>
       {/if}
       <div class="indice">
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-        </svg>
+        <Icone nom="info" />
         <span>
           Armes, effets, besace et notes se remplissent ensuite
           <b>directement sur la feuille</b>.
@@ -358,7 +355,7 @@
     color: var(--craie-2);
   }
 
-  .indice svg {
+  .indice :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
@@ -366,7 +363,7 @@
     color: var(--jaune);
   }
 
-  .indice.avertit svg {
+  .indice.avertit :global(svg) {
     color: var(--rouge);
   }
 

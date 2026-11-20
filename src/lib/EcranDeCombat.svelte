@@ -9,6 +9,7 @@
    * L'écran ne joue rien lui-même : il montre le combat que lui passe App et
    * remonte les appuis. Les règles sont dans combat.ts.
    */
+  import Icone from "./Icone.svelte";
   import { estCritique } from "./aventure";
   import { ennemiAchevable, toursJoues, type Combat, type Jet } from "./combat";
   import Dock from "./Dock.svelte";
@@ -106,9 +107,7 @@
 
   {#if critique}
     <div class="crit-banner" role="alert">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      </svg>
+      <Icone nom="alerte" />
       <span>
         État critique. La CHANCE sera dépensée seule si un coup peut achever
         l'ennemi.
@@ -150,11 +149,7 @@
           </div>
           {#if auto}
             <span class="auto">
-              <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-                <path
-                  d="M12 12c-3-1-5-3-5-5a2.5 2.5 0 0 1 5-.5 2.5 2.5 0 0 1 5 .5c0 2-2 4-5 5zm0 0c1 3 3 5 5 5a2.5 2.5 0 0 0 .5-5M12 12c-1 3-3 5-5 5a2.5 2.5 0 0 1-.5-5M12 12v9"
-                />
-              </svg>{auto}
+              <Icone nom="chance" />{auto}
             </span>
           {/if}
         {:else}
@@ -174,9 +169,7 @@
 
   <Dock variante="combat">
     <button class="ghost" type="button" onclick={onfinir}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M5 6l7 6-7 6M13 6l7 6-7 6" />
-      </svg>
+      <Icone nom="finir" />
       Finir
     </button>
     <button class="cta" type="button" onclick={ontour}>Tour suivant</button>
@@ -268,7 +261,7 @@
     font-size: 14px;
   }
 
-  .crit-banner svg {
+  .crit-banner :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
@@ -353,7 +346,7 @@
     color: var(--jaune);
   }
 
-  .auto svg {
+  .auto :global(svg) {
     width: 14px;
     height: 14px;
   }

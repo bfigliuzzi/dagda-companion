@@ -26,6 +26,7 @@
    * Maj+Tab, et revient à l'élément qui l'avait à la fermeture. La feuille ne
    * défile plus derrière le voile tant que le panneau est ouvert.
    */
+  import Icone from "./Icone.svelte";
   import { onMount, type Snippet } from "svelte";
 
   interface Props {
@@ -101,9 +102,7 @@
   <div class="entete">
     <h2 id="{id}-titre">{titre}</h2>
     <button class="fermer" type="button" aria-label="Fermer" onclick={onfermer}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M6 6l12 12M18 6 6 18" />
-      </svg>
+      <Icone nom="croix" />
     </button>
   </div>
   {@render children()}

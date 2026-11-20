@@ -10,6 +10,7 @@
    * valeursEffectives.ts), en vert avec la ligne « base +1 · rage +2 » quand un effet le
    * change, et la trace de craie quand il change.
    */
+  import Icone from "./Icone.svelte";
   import {
     ARMES_MAX,
     bonusDeDegatsDesArmes,
@@ -140,9 +141,7 @@
             aria-label="Retirer {arme.nom}"
             onclick={() => armes.splice(index, 1)}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
+            <Icone nom="croix" />
           </button>
         </li>
       {/each}
@@ -151,9 +150,7 @@
 
   {#if depasse}
     <div class="hint" role="note">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      </svg>
+      <Icone nom="alerte" />
       <span>
         Les règles permettent <b>{ARMES_MAX} armes</b>. Gardez-la si le livre
         l'autorise, sinon retirez-en une.
@@ -190,17 +187,11 @@
   {:else}
     <div class="actions">
       <button class="add" type="button" onclick={ouvrirLAjout}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
+        <Icone nom="plus" />
         Ajouter une arme
       </button>
       <button class="inline-act" type="button" onclick={oncombattre}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path
-            d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"
-          />
-        </svg>
+        <Icone nom="epees" />
         Combattre
       </button>
     </div>
@@ -275,7 +266,7 @@
     margin-right: -10px;
     color: var(--craie-3);
   }
-  .x svg {
+  .x :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -306,7 +297,7 @@
     border-top: 0;
     padding-top: var(--esp-xs);
   }
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
@@ -331,7 +322,7 @@
     color: var(--craie-2);
     font-weight: 700;
   }
-  .add svg {
+  .add :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -347,7 +338,7 @@
     font-size: 15px;
     font-weight: 700;
   }
-  .inline-act svg {
+  .inline-act :global(svg) {
     width: 18px;
     height: 18px;
   }

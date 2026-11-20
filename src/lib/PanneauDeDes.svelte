@@ -10,6 +10,7 @@
    *
    * Les dés sont injectés (`de`) pour jouer le panneau avec des dés fixés.
    */
+  import Icone from "./Icone.svelte";
   import { ajusterLeTotal, changerLAjustement } from "./chance";
   import { lancerDes, totalDesDes, type De } from "./des";
   import DeDessine from "./DeDessine.svelte";
@@ -145,9 +146,7 @@
             disabled={des[rang] <= 1}
             onclick={() => changerUnDe(rang, -1)}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M5 12h14" />
-            </svg>
+            <Icone nom="moins" />
           </button>
           <button
             type="button"
@@ -155,9 +154,7 @@
             disabled={des[rang] >= 6}
             onclick={() => changerUnDe(rang, 1)}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
+            <Icone nom="plus" />
           </button>
         </div>
       {/each}
@@ -189,9 +186,7 @@
           onclick={() =>
             (ajustement = changerLAjustement(ajuste.ajustement, -1, chance))}
         >
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M5 12h14" />
-          </svg>
+          <Icone nom="moins" />
         </button>
         <b>{formaterUnAjustement(ajuste.ajustement)}</b>
         <button
@@ -201,9 +196,7 @@
           onclick={() =>
             (ajustement = changerLAjustement(ajuste.ajustement, 1, chance))}
         >
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <Icone nom="plus" />
         </button>
       </span>
     </div>
@@ -212,25 +205,16 @@
   <div class="boutons">
     {#if ajuste}
       <button class="valider" type="button" onclick={garder}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M5 12.5l4.5 4.5L19 7" />
-        </svg>
+        <Icone nom="valider" />
         Garder {ajuste.total}
       </button>
       <button class="secondaire" type="button" onclick={lancer}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-        </svg>
+        <Icone nom="relancer" />
         Relancer
       </button>
     {:else}
       <button class="valider" type="button" onclick={lancer}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="18" height="18" rx="4" />
-          <circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" />
-          <circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" />
-          <circle cx="12" cy="12" r="1.3" fill="currentColor" />
-        </svg>
+        <Icone nom="de" />
         Lancer
       </button>
     {/if}
@@ -312,8 +296,8 @@
     cursor: default;
   }
 
-  .pas button svg,
-  .pas-chance button svg {
+  .pas button :global(svg),
+  .pas-chance button :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -403,7 +387,7 @@
     font-weight: 800;
   }
 
-  .valider svg {
+  .valider :global(svg) {
     width: 26px;
     height: 26px;
   }

@@ -7,6 +7,7 @@
    * `retirerUnEffet`) : la feuille montre alors la trace de craie sur chaque
    * valeur qui change.
    */
+  import Icone from "./Icone.svelte";
   import type { Arme, Personnage } from "./aventure";
   import {
     decrireUnEffet,
@@ -73,9 +74,7 @@
               : "Retirer l'effet"} {effet.nom}"
             onclick={() => retirer(index)}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
+            <Icone nom="croix" />
           </button>
         </li>
       {/each}
@@ -83,9 +82,7 @@
   {/if}
 
   <button class="add" type="button" onclick={() => (ajout = true)}>
-    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M12 5v14M5 12h14" />
-    </svg>
+    <Icone nom="plus" />
     Ajouter un effet
   </button>
 </section>
@@ -159,7 +156,7 @@
     margin-right: -10px;
     color: var(--craie-3);
   }
-  .x svg {
+  .x :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -172,7 +169,7 @@
     color: var(--craie-2);
     font-weight: 700;
   }
-  .add svg {
+  .add :global(svg) {
     width: 18px;
     height: 18px;
   }

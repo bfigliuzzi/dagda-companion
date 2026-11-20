@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icone from "./Icone.svelte";
   import { estUnChapitre } from "./aventure";
 
   interface Props {
@@ -43,9 +44,7 @@
     <button class="chap" onclick={() => (enSaisie = true)}>
       <span class="sr">Dernier chapitre lu, modifier :</span>
       § {chapitre}
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" />
-      </svg>
+      <Icone nom="crayon" />
     </button>
   {/if}
 </header>
@@ -75,7 +74,7 @@
     font-size: 18px;
   }
 
-  .chap svg {
+  .chap :global(svg) {
     width: 18px;
     height: 18px;
     color: var(--craie-3);

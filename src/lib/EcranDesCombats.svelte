@@ -5,6 +5,7 @@
    * d'un combat (un seul à la fois). Le bouton retour, à gauche du titre,
    * ramène à la feuille.
    */
+  import Icone from "./Icone.svelte";
   import type { CombatDeLHistorique } from "./combat";
   import { resumeDeLHistorique } from "./historique";
   import LigneDeCombat from "./LigneDeCombat.svelte";
@@ -37,9 +38,7 @@
       aria-label="Retour à la feuille"
       onclick={onretour}
     >
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M15 6l-6 6 6 6" />
-      </svg>
+      <Icone nom="retour" />
     </button>
     <h1>Combats</h1>
   </div>

@@ -6,6 +6,7 @@
    * l'histoire. L'indice annonce ce qui va changer sur la feuille, calculé
    * par valeursEffectives.ts. Rien n'est ajouté avant l'appui sur le bouton jaune.
    */
+  import Icone from "./Icone.svelte";
   import type { Arme, Personnage } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
   import {
@@ -165,9 +166,7 @@
     {/if}
 
     <div class="hint">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-      </svg>
+      <Icone nom="info" />
       <span>
         {#if rappel}
           Un simple rappel ne change aucune valeur. Vous le retirerez quand le
@@ -305,7 +304,7 @@
     font-size: 14px;
     color: var(--craie-2);
   }
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;

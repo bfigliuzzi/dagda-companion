@@ -6,6 +6,7 @@
    * de la feuille (« Rien ne se perd ») : il n'y a pas de bouton de validation.
    * Il ne touche pas à la sauvegarde déjà posée.
    */
+  import Icone from "./Icone.svelte";
   import { SAUVEGARDES_DU_LIVRE } from "./aventure";
   import Panneau from "./Panneau.svelte";
 
@@ -39,9 +40,7 @@
     </div>
   </div>
   <div class="hint">
-    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-    </svg>
+    <Icone nom="info" />
     <span>
       Le livre en donne <b>{SAUVEGARDES_DU_LIVRE} pour toute l'aventure</b>.
       Corrigez ici celles que vous avez déjà utilisées en dehors de l'app.
@@ -96,7 +95,7 @@
     font-size: 14px;
     color: var(--craie-2);
   }
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;

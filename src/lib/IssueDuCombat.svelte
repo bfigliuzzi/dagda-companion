@@ -7,6 +7,7 @@
    * place du lecteur. Le lien « Jouer le combat aux dés » laisse jouer le combat
    * normalement.
    */
+  import Icone from "./Icone.svelte";
   import { ADVERSAIRES_MAX_EN_NARRATIF, type CombatNarratif } from "./combat";
 
   interface Props {
@@ -28,9 +29,7 @@
       aria-label="Annuler"
       onclick={onannuler}
     >
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M15 6l-6 6 6 6" />
-      </svg>
+      <Icone nom="retour" />
     </button>
     <h1>Combat</h1>
   </div>
@@ -45,17 +44,11 @@
 
   <div class="big-choice">
     <button type="button" onclick={() => onissue("gagne")}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M5 21V4h12l-2.5 4L17 12H5" />
-      </svg>
+      <Icone nom="drapeau" />
       Gagné
     </button>
     <button class="l" type="button" onclick={() => onissue("perdu")}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path
-          d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3zM9 11h.01M15 11h.01M10 20v-2M14 20v-2"
-        />
-      </svg>
+      <Icone nom="crane" />
       Perdu
     </button>
   </div>
@@ -67,9 +60,7 @@
   </div>
 
   <div class="hint">
-    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-    </svg>
+    <Icone nom="info" />
     <span>
       Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue aux
       dés, même en mode narratif.
@@ -151,7 +142,7 @@
     color: var(--rouge);
   }
 
-  .big-choice svg {
+  .big-choice :global(svg) {
     width: 30px;
     height: 30px;
   }
@@ -184,7 +175,7 @@
     color: var(--craie-2);
   }
 
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;

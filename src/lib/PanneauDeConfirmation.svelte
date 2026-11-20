@@ -8,6 +8,7 @@
    * ConfirmerLeRecommencement lui donnent les mots de chaque cas.
    */
   import type { Snippet } from "svelte";
+  import Icone from "./Icone.svelte";
   import Panneau from "./Panneau.svelte";
 
   interface Props {
@@ -27,13 +28,7 @@
 
 <Panneau {titre} {onfermer}>
   <div class="hint" class:alerte={icone === "alerte"}>
-    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-      {#if icone === "alerte"}
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      {:else}
-        <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-      {/if}
-    </svg>
+    <Icone nom={icone} />
     <span>{@render children()}</span>
   </div>
   <div class="btns">
@@ -55,14 +50,14 @@
     font-size: 14px;
     color: var(--craie-2);
   }
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
     margin-top: 1px;
     color: var(--jaune);
   }
-  .hint.alerte svg {
+  .hint.alerte :global(svg) {
     color: var(--rouge);
   }
   .hint :global(b) {

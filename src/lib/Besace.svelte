@@ -7,6 +7,7 @@
    * lecteur peut le forcer. Chaque changement remonte aussitôt, donc
    * s'enregistre aussitôt.
    */
+  import Icone from "./Icone.svelte";
   import {
     EMPLACEMENTS_MAX,
     ajouterUnBoulon,
@@ -73,9 +74,7 @@
 
 {#snippet croix(nom: string, retirer: () => void)}
   <button class="x" type="button" aria-label={nom} onclick={retirer}>
-    <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
+    <Icone nom="croix" />
   </button>
 {/snippet}
 
@@ -115,9 +114,7 @@
             aria-label="Retirer un boulon"
             onclick={() => (besace.boulons = retirerUnBoulon(besace.boulons))}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M5 12h14" />
-            </svg>
+            <Icone nom="moins" />
           </button>
           <span class="v">
             <ValeurEditable
@@ -135,9 +132,7 @@
             aria-label="Ajouter un boulon"
             onclick={() => (besace.boulons = ajouterUnBoulon(besace.boulons))}
           >
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
+            <Icone nom="plus" />
           </button>
         </span>
       {:else}
@@ -174,10 +169,7 @@
 
   {#if !besace.bourse}
     <div class="hint">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 11v6M12 7.5h.01" />
-      </svg>
+      <Icone nom="info" />
       <span>
         Il faut une bourse pour garder des boulons.
         <button
@@ -193,9 +185,7 @@
 
   {#if depasse}
     <div class="hint" role="note">
-      <svg class="i warn" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      </svg>
+      <Icone nom="alerte" class="warn" />
       <span>
         La besace est pleine. L'objet est ajouté quand même&nbsp;: retirez-en un
         si le livre le demande.
@@ -227,9 +217,7 @@
   {:else}
     <div class="actions">
       <button class="add" type="button" onclick={ouvrirLAjout}>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
+        <Icone nom="plus" />
         Ajouter un objet
       </button>
       {#if !besace.bourse}
@@ -238,9 +226,7 @@
           type="button"
           onclick={() => (besace.bourse = true)}
         >
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <Icone nom="plus" />
           Ajouter une bourse
         </button>
       {/if}
@@ -328,7 +314,7 @@
     border-radius: 50%;
     color: var(--craie-2);
   }
-  .mini svg {
+  .mini :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -347,7 +333,7 @@
     margin-right: -10px;
     color: var(--craie-3);
   }
-  .x svg {
+  .x :global(svg) {
     width: 18px;
     height: 18px;
   }
@@ -378,14 +364,14 @@
     border-top: 0;
     padding-top: var(--esp-xs);
   }
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
     margin-top: 1px;
     color: var(--jaune);
   }
-  .hint svg.warn {
+  .hint :global(svg.warn) {
     color: var(--rouge);
   }
 
@@ -403,7 +389,7 @@
     color: var(--craie-2);
     font-weight: 700;
   }
-  .add svg {
+  .add :global(svg) {
     width: 18px;
     height: 18px;
   }

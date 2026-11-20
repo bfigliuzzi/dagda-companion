@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icone from "./Icone.svelte";
   /**
    * Champ numérique à pas à pas : « − », la valeur et « + » dans un creux.
    * Le lecteur saisit au clavier ou compte par pas de 1. Un champ vide
@@ -36,9 +37,7 @@
   <span class="etiquette" id="{id}-nom">{nom}</span>
   <div class="creux">
     <button type="button" aria-label="Diminuer {nom}" onclick={diminuer}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M5 12h14" />
-      </svg>
+      <Icone nom="moins" />
     </button>
     <span class="valeur">
       {#if prefixe}<span class="prefixe" aria-hidden="true">
@@ -55,9 +54,7 @@
       />
     </span>
     <button type="button" aria-label="Augmenter {nom}" onclick={augmenter}>
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
+      <Icone nom="plus" />
     </button>
   </div>
 </div>
@@ -95,7 +92,7 @@
     color: var(--craie-2);
   }
 
-  button svg {
+  button :global(svg) {
     width: 18px;
     height: 18px;
   }

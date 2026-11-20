@@ -26,6 +26,7 @@
    * confirmation (ConfirmerLeRecommencement.svelte), « Ignorer » le cache.
    * Il n'empêche rien et ne décide rien ; les autres modes n'en ont pas.
    */
+  import Icone from "./Icone.svelte";
   import {
     ajouterUnPointDeVie,
     depasseLeMaximum,
@@ -191,9 +192,7 @@
         aria-label="Retirer un point de vie"
         onclick={() => changer("pointsDeVie", retirerUnPointDeVie(pv))}
       >
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M5 12h14" />
-        </svg>
+        <Icone nom="moins" />
       </button>
       <button
         class="step"
@@ -201,9 +200,7 @@
         aria-label="Ajouter un point de vie"
         onclick={() => changer("pointsDeVie", ajouterUnPointDeVie(pv, plafond))}
       >
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
+        <Icone nom="plus" />
       </button>
     </div>
   </div>
@@ -254,9 +251,7 @@
   </div>
   {#if depasseLeMaximum({ pointsDeVie: pv, pointsDeVieMax: plafond })}
     <div class="indice" role="status">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      </svg>
+      <Icone nom="alerte" />
       <span>
         Vos PV dépassent le maximum de <b>{max}</b>. Gardez-les si le livre
         l'autorise, sinon revenez au maximum.
@@ -265,9 +260,7 @@
   {/if}
   {#if propose && !propositionIgnoree}
     <div class="indice">
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
-      </svg>
+      <Icone nom="alerte" />
       <div class="suite">
         <span role="status">
           <b>Vos PV sont à 0.</b> En mode mortel, mourir, c'est recommencer au chapitre&nbsp;1
@@ -280,9 +273,7 @@
           onclick={() => (confirmation = true)}
         >
           <span>Recommencer au chapitre 1</span>
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-          </svg>
+          <Icone nom="relancer" />
         </button>
         <button class="link" type="button" onclick={onignorer}>Ignorer</button>
       </div>
@@ -438,7 +429,7 @@
     border-color: var(--rouge);
   }
 
-  .step svg {
+  .step :global(svg) {
     width: 26px;
     height: 26px;
   }
@@ -513,7 +504,7 @@
     color: var(--craie-2);
   }
 
-  .indice svg {
+  .indice :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
@@ -551,7 +542,7 @@
     border-color: var(--rouge-trait);
   }
 
-  .ghost svg {
+  .ghost :global(svg) {
     flex: none;
     width: 24px;
     height: 24px;

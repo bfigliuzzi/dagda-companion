@@ -9,6 +9,7 @@
    * ligne n'existe pas. Dans tous les modes, en dernière ligne : « Recommencer
    * une aventure », en rouge, qui demande confirmation puis efface l'aventure.
    */
+  import Icone from "./Icone.svelte";
   import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
   import ConfirmerLeRecommencement from "./ConfirmerLeRecommencement.svelte";
@@ -62,16 +63,12 @@
               {restantes}
               {restantes > 1 ? "restantes" : "restante"}
             </span>
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6" />
-            </svg>
+            <Icone nom="disquette" />
           </button>
         {:else}
           <button class="row eteint" type="button" aria-disabled="true">
             <span class="n">Plus aucune sauvegarde</span>
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6" />
-            </svg>
+            <Icone nom="disquette" />
           </button>
         {/if}
       </li>
@@ -85,9 +82,7 @@
             <span class="n">
               Reprendre la sauvegarde · § {sauvegarde.chapitre}
             </span>
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-            </svg>
+            <Icone nom="relancer" />
           </button>
         </li>
       {/if}
@@ -170,12 +165,12 @@
     color: var(--rouge);
     font-weight: 700;
   }
-  .row svg {
+  .row :global(svg) {
     color: var(--craie-2);
   }
   /* Désactivé : craie pâle, le libellé dit pourquoi (DESIGN.md, « Buttons »). */
   .row.eteint,
-  .row.eteint svg {
+  .row.eteint :global(svg) {
     color: var(--craie-3);
     cursor: default;
   }

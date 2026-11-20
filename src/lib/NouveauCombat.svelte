@@ -12,6 +12,7 @@
    * demandées que si le combat se joue, soit au-delà de 5 adversaires, soit
    * parce que le lecteur choisit « Jouer le combat aux dés ».
    */
+  import Icone from "./Icone.svelte";
   import { untrack } from "svelte";
   import { MODES, type Mode } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
@@ -107,9 +108,7 @@
         aria-label="Annuler le combat"
         onclick={onannuler}
       >
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M15 6l-6 6 6 6" />
-        </svg>
+        <Icone nom="retour" />
       </button>
       <h1>Nouveau combat</h1>
     </div>
@@ -165,9 +164,7 @@
       {/if}
       {#if MODES[mode].issueAuChoix}
         <div class="hint">
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-          </svg>
+          <Icone nom="info" />
           <span>
             Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue
             aux dés, même en mode narratif.
@@ -176,9 +173,7 @@
       {/if}
       {#if sejoue}
         <div class="hint">
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-          </svg>
+          <Icone nom="info" />
           <span>
             Vous&nbsp;: <b>DEX {lecteur.dexterite}</b>, dégâts <b>{degats}</b>.
             Plusieurs adversaires comptent comme un seul.
@@ -189,11 +184,7 @@
       <Dock>
         <button class="cta" type="submit" aria-disabled={manque !== null}>
           {#if sejoue}
-            <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-              <path
-                d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"
-              />
-            </svg>
+            <Icone nom="epees" />
           {/if}
           {manque ?? (sejoue ? "Commencer le combat" : "Continuer")}
         </button>
@@ -309,7 +300,7 @@
     color: var(--craie-2);
   }
 
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
@@ -336,7 +327,7 @@
     font-weight: 800;
   }
 
-  .cta svg {
+  .cta :global(svg) {
     width: 26px;
     height: 26px;
   }

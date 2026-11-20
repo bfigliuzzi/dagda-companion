@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icone from "./Icone.svelte";
   /**
    * Ligne de jet de la création : le nom, la valeur tirée en 32 px et le
    * bouton « Lancer ». La valeur reste un champ : on la corrige à la main.
@@ -49,16 +50,9 @@
     onclick={onlancer}
   >
     {#if tiree}
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-      </svg>
+      <Icone nom="relancer" />
     {:else}
-      <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-        <rect x="3" y="3" width="18" height="18" rx="4" />
-        <circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" />
-        <circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" />
-        <circle cx="12" cy="12" r="1.3" fill="currentColor" />
-      </svg>
+      <Icone nom="de" />
       Lancer
     {/if}
   </button>
@@ -128,7 +122,7 @@
     font-weight: 700;
   }
 
-  .lancer svg {
+  .lancer :global(svg) {
     width: 18px;
     height: 18px;
   }

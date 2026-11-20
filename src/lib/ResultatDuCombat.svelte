@@ -15,6 +15,7 @@
    * laisse continuer », en rouge : le lecteur accepte (après confirmation) ou
    * ignore, l'app ne décide pas de la mort.
    */
+  import Icone from "./Icone.svelte";
   import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
@@ -69,15 +70,7 @@
 <main class="ecran">
   <div class="result">
     <div class="ico-xl" class:perdu={!gagne} aria-hidden="true">
-      <svg class="i" viewBox="0 0 24 24">
-        {#if gagne}
-          <path d="M5 21V4h12l-2.5 4L17 12H5" />
-        {:else}
-          <path
-            d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3zM9 11h.01M15 11h.01M10 20v-2M14 20v-2"
-          />
-        {/if}
-      </svg>
+      <Icone nom={gagne ? "drapeau" : "crane"} />
     </div>
     <h1 class="big" class:perdu={!gagne}>{gagne ? "Gagné" : "Perdu"}</h1>
     {#if gagne}
@@ -143,16 +136,12 @@
           onclick={() => (confirmation = true)}
         >
           <span>Reprendre la sauvegarde · § {sauvegarde.chapitre}</span>
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-          </svg>
+          <Icone nom="relancer" />
         </button>
       {/if}
       <button class="ghost" type="button" onclick={onretour}>
         <span>Le livre me laisse continuer</span>
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <path d="M5 6l7 6-7 6M13 6l7 6-7 6" />
-        </svg>
+        <Icone nom="finir" />
       </button>
       {#if recommencerALaMort}
         <button
@@ -161,17 +150,13 @@
           onclick={() => (recommencement = true)}
         >
           <span>Recommencer au chapitre 1</span>
-          <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
-          </svg>
+          <Icone nom="relancer" />
         </button>
       {/if}
     </div>
     {#if avecSauvegardes}
       <div class="hint">
-        <svg class="i" aria-hidden="true" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
-        </svg>
+        <Icone nom="info" />
         <span>
           {#if sauvegarde}
             Mode simplifié&nbsp;: on reprend toujours la <b>
@@ -235,7 +220,7 @@
     border-radius: var(--rayon-round);
   }
 
-  .ico-xl svg {
+  .ico-xl :global(svg) {
     width: 30px;
     height: 30px;
   }
@@ -336,7 +321,7 @@
     color: var(--craie-2);
   }
 
-  .hint svg {
+  .hint :global(svg) {
     flex: none;
     width: 20px;
     height: 20px;
