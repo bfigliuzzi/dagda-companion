@@ -1,8 +1,30 @@
 {
   "name": "dagda-compagnon",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "Feuille d’aventure mobile pour les livres-jeux « La Saga de Dagda » : personnage, combats, dés, inventaire et plans, hors ligne. Projet de fan non officiel.",
+  "keywords": [
+    "dagda",
+    "livre-jeu",
+    "gamebook",
+    "feuille-de-personnage",
+    "pwa",
+    "svelte"
+  ],
+  "homepage": "https://bfigliuzzi.github.io/dagda-companion/",
+  "bugs": {
+    "url": "https://github.com/bfigliuzzi/dagda-companion/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bfigliuzzi/dagda-companion.git"
+  },
+  "license": "MIT",
+  "author": "Benoît Figliuzzi",
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,6 +34,9 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "icones": "pwa-assets-generator"
+  },
+  "dependencies": {
+    "@fontsource/atkinson-hyperlegible-next": "5.3.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -36,8 +61,5 @@
     "vite-plugin-pwa": "2.0.0",
     "vitest": "5.1.1",
     "workbox-window": "7.4.1"
-  },
-  "dependencies": {
-    "@fontsource/atkinson-hyperlegible-next": "5.3.0"
   }
 }
