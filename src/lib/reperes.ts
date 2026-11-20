@@ -89,7 +89,7 @@ export function numeroDuRepere(
 }
 
 /**
- * Faut-il l'indice « Le § N n'est pas sur ce plan » ? Oui quand le repère est
+ * Faut-il l'indice « § N n'est pas sur ce plan » ? Oui quand le repère est
  * pâle. Sans repère, seulement si une case est numérotée : sur un plan encore
  * vierge, il n'y a rien à comparer.
  */

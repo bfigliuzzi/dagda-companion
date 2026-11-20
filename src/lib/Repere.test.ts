@@ -222,7 +222,7 @@ describe("le chapitre n'est pas sur le plan", () => {
     expect(disque()).toHaveAttribute("data-etat", "pale");
     expect(
       screen.getByText(
-        (_, el) => el?.textContent === "Le § 205 n'est pas sur ce plan.",
+        (_, el) => el?.textContent === "§ 205 n'est pas sur ce plan.",
       ),
     ).toBeInTheDocument();
   });
@@ -285,7 +285,7 @@ describe("le chapitre n'est pas sur le plan", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        (_, el) => el?.textContent === "Le § 203 n'est pas sur ce plan.",
+        (_, el) => el?.textContent === "§ 203 n'est pas sur ce plan.",
       ),
     ).toBeInTheDocument();
   });

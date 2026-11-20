@@ -17,7 +17,7 @@
    *
    * Le repère « vous êtes ici » (reperes.ts) est déjà à jour quand l'écran
    * s'ouvre : l'écran le montre, et la grille s'ouvre sur lui. Plein ou pâle,
-   * et l'indice « Le § N n'est pas sur ce plan », viennent de reperes.ts
+   * et l'indice « § N n'est pas sur ce plan », viennent de reperes.ts
    * (`repereAffiche`, `chapitreAbsentAAnnoncer`).
    */
   import ControleSegmente from "./ControleSegmente.svelte";
@@ -133,7 +133,7 @@
     {/if}
     {#if annoncerLeChapitreAbsent}
       <Indice icone="info" role="status" marge="0">
-        Le <b>§ {chapitre}</b> n'est pas sur ce plan.
+        <b>§ {chapitre}</b> n'est pas sur ce plan.
       </Indice>
     {/if}
     <BoutonContour danger onclick={() => (confirmation = true)}>
