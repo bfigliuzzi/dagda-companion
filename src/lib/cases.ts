@@ -38,6 +38,15 @@ export interface Contenu {
   note: string;
 }
 
+/** Un numéro de chapitre qu'une case peut porter : un entier de 1 à 9999 (la seule borne des cases). */
+export function estUnNumeroDeCase(valeur: unknown): valeur is number {
+  return (
+    Number.isInteger(valeur) &&
+    (valeur as number) >= 1 &&
+    (valeur as number) <= CHAPITRE_MAX
+  );
+}
+
 export function laCase(
   cases: readonly Case[],
   colonne: number,
@@ -145,10 +154,7 @@ export function estUneCase(valeur: unknown): valeur is Case {
   return (
     Number.isInteger(colonne) &&
     Number.isInteger(ligne) &&
-    (chapitre === null ||
-      (Number.isInteger(chapitre) &&
-        chapitre >= 1 &&
-        chapitre <= CHAPITRE_MAX)) &&
+    (chapitre === null || estUnNumeroDeCase(chapitre)) &&
     typeof note === "string" &&
     Number.isInteger(ordre)
   );

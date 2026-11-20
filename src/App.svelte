@@ -68,7 +68,7 @@
   /*
    * LE REPÈRE. Chaque plan garde son repère à jour du dernier chapitre lu
    * (reperes.ts) : un changement de chapitre (en-tête, reprise d'une
-   * sauvegarde, nouvelle partie) ou de cases le déplace. La règle ne
+   * sauvegarde, nouvelle aventure) ou de cases le déplace. La règle ne
    * réécrit que ce qui change, donc l'effet s'arrête de lui-même.
    */
   $effect(() => {
@@ -301,6 +301,7 @@
     <Notes bind:notes={aventure.notes} />
     <Plans
       bind:plans={aventure.plans}
+      chapitre={aventure.chapitre}
       onouvrir={(id) => aller({ nom: "plan", id })}
     />
     <SectionAventure

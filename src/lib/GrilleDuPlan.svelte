@@ -58,10 +58,10 @@
    * sous le numéro de la case : le numéro passe en noir 13 px 700 par-dessus,
    * comme le segment actif du contrôle « Murs / Cases » (aplat craie, texte
    * noir), et reste lu en entier même à quatre chiffres. Pâle (`pale`, le
-   * dernier chapitre lu n'est sur aucune case) : le même disque en craie pâle
+   * lecteur n'y est plus, voir reperes.ts) : le même disque en craie pâle
    * `craie-3`, noir sur craie-3 reste à plus de 5:1. Le repère est annoncé :
    * dans le nom de la grille, et dans celui de sa case en mode Cases. À
-   * l'ouverture, la vue se centre sur lui s'il existe.
+   * l'ouverture, la vue le montre (`vueDOuvertureSur`).
    */
   import { untrack } from "svelte";
   import {
@@ -79,8 +79,9 @@
   import { DUREE_TRACE_MS } from "./TraceDeCraie.svelte";
   import {
     deplacerLaVue,
-    vueCentreeSur,
     vueDOuverture,
+    vueDOuvertureSur,
+    vueQuiDegageLaCase,
     type Vue,
   } from "./vueDuPlan";
 
@@ -125,19 +126,35 @@
   let vue = $state<Vue>({ x: 0, y: 0 });
 
   /**
-   * À l'ouverture, une fois le cadre mesuré : centrée sur le repère s'il y en
-   * a un, sinon la grille en haut, si elle y tient.
+   * À l'ouverture, une fois le cadre mesuré : sur chaque axe, la grille
+   * centrée en largeur et en haut du cadre si elle y tient ; sinon, avec un
+   * repère, la vue centrée sur lui sans passer une case au-delà du bord
+   * (vueDuPlan.ts).
    */
   $effect(() => {
     untrack(() => {
       vue = repere
-        ? vueCentreeSur(
+        ? vueDOuvertureSur(
             { x: repere.colonne + 0.5, y: repere.ligne + 0.5 },
+            grille,
             tailleDuCadre(),
           )
         : vueDOuverture(grille, tailleDuCadre());
     });
   });
+
+  /**
+   * Le panneau d'une case s'est ouvert, son haut à `hautDuPanneau` px de
+   * l'écran : si la case de la ligne `ligne` passe dessous, la vue la remonte
+   * au milieu de ce qui reste visible du cadre (vueDuPlan.ts).
+   */
+  export function degagerLaCase(ligne: number, hautDuPanneau: number) {
+    const { top, height } = cadre.getBoundingClientRect();
+    vue = vueQuiDegageLaCase(vue, ligne, {
+      haut: Math.max(0, -top),
+      bas: Math.min(height, hautDuPanneau - top),
+    });
+  }
 
   const tailleDuCadre = () => ({
     largeur: cadre.clientWidth,
@@ -443,12 +460,14 @@
           </text>
         {/if}
         {#if c.note !== ""}
-          <!-- Le trait en coin : en haut à droite de la case, à 5 px des bords. -->
+          <!-- Le trait en coin : une diagonale de 8 px en haut à droite de la
+               case, à 3 px des bords. Elle passe à 21 px du milieu de la case :
+               elle longe le disque du repère (rayon 18) sans le toucher. -->
           <line
-            x1={(c.colonne + 1) * COTE_D_UNE_CASE - 15}
-            y1={c.ligne * COTE_D_UNE_CASE + 5}
-            x2={(c.colonne + 1) * COTE_D_UNE_CASE - 5}
-            y2={c.ligne * COTE_D_UNE_CASE + 15}
+            x1={(c.colonne + 1) * COTE_D_UNE_CASE - 11}
+            y1={c.ligne * COTE_D_UNE_CASE + 3}
+            x2={(c.colonne + 1) * COTE_D_UNE_CASE - 3}
+            y2={c.ligne * COTE_D_UNE_CASE + 11}
             data-etat="note"
           />
         {/if}
@@ -494,9 +513,11 @@
 
 <style>
   /* Le cadre : il prend la place libre de l'écran et coupe la grille à ses
-     bords, sans barre de défilement. */
+     bords, sans barre de défilement. Un écart de 12 px sous le titre : les
+     murs coupés au défilement ne collent pas à l'en-tête. */
   .vue {
     position: relative;
+    margin-top: var(--esp-md);
     flex: 1 1 0;
     min-height: calc(6 * 44px);
     overflow: hidden;

@@ -6,33 +6,28 @@
    * « Nouveau plan » s'affiche. Chaque plan créé s'enregistre aussitôt, avec
    * le reste de l'aventure.
    *
-   * À droite de la ligne : « ici § 203 » quand le repère est sur une case
-   * numérotée (le numéro de cette case, même si le repère est pâle), sinon le
-   * nombre de cases notées (« 3 cases notées », « 1 case notée », rien pour 0).
+   * À droite de la ligne : « ici § 203 » quand le repère est plein sur une
+   * case numérotée (reperes.ts, `numeroDuRepere`), sinon le nombre de cases
+   * notées (« 3 cases notées », « 1 case notée », rien pour 0) : un repère
+   * pâle ne dit pas « ici », le lecteur n'y est plus.
    */
   import FormulaireDAjout from "./FormulaireDAjout.svelte";
   import Icone from "./Icone.svelte";
-  import { laCase } from "./cases";
   import { unNouveauPlan, type Plan } from "./plans";
+  import { numeroDuRepere } from "./reperes";
 
   interface Props {
     plans: Plan[];
+    /** Le dernier chapitre lu, pour savoir si le repère d'un plan est plein. */
+    chapitre: number;
     /** Un appui sur la ligne d'un plan. */
     onouvrir: (id: number) => void;
   }
 
-  let { plans = $bindable(), onouvrir }: Props = $props();
+  let { plans = $bindable(), chapitre, onouvrir }: Props = $props();
   const id = $props.id();
 
   let enAjout = $state(false);
-
-  /** Le chapitre de la case du repère, ou `null`. */
-  function ici(plan: Plan): number | null {
-    const { repere } = plan;
-    return repere
-      ? (laCase(plan.cases, repere.colonne, repere.ligne)?.chapitre ?? null)
-      : null;
-  }
 
   function ajouter(nom: string) {
     plans.push(unNouveauPlan(nom, plans));
@@ -46,11 +41,12 @@
   {#if plans.length > 0}
     <ul>
       {#each plans as plan (plan.id)}
+        {@const numero = numeroDuRepere(plan.repere, plan.cases, chapitre)}
         <li>
           <button class="row" type="button" onclick={() => onouvrir(plan.id)}>
             <span class="nom">{plan.nom}</span>
-            {#if ici(plan) !== null}
-              <span class="val">ici § {ici(plan)}</span>
+            {#if numero !== null}
+              <span class="val"><span class="ici">ici</span> § {numero}</span>
             {:else if plan.cases.length > 0}
               <span class="detail">
                 {plan.cases.length}
@@ -118,6 +114,13 @@
     font-size: 18px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
+  }
+  /* « ici » se lit avec le numéro sans en être la valeur : 14 px graisse 400
+     craie grise, comme « / 32 » après les PV. */
+  .ici {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--craie-2);
   }
   /* Le nombre de cases notées décrit le plan, il n'en est pas une valeur : 14 px craie grise. */
   .detail {

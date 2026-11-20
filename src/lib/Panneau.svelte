@@ -19,6 +19,9 @@
    * - `onfermer` : appelé par le bouton de fermeture, un appui sur le voile
    *   ou la touche Échap. Fermer ne valide rien : c'est au contenu de
    *   n'agir que sur son propre bouton de validation.
+   * - `onouvert` (facultatif) : appelé une fois le panneau posé, avec la
+   *   position de son haut à l'écran, en px, une fois qu'il aura fini de
+   *   glisser (le plan s'en sert pour garder la case visible au-dessus).
    * - le contenu est passé entre les balises.
    *
    * Accessibilité : rôle `dialog` modal, nommé par le titre. Le focus entre
@@ -32,10 +35,11 @@
   interface Props {
     titre: string;
     onfermer: () => void;
+    onouvert?: (haut: number) => void;
     children: Snippet;
   }
 
-  let { titre, onfermer, children }: Props = $props();
+  let { titre, onfermer, onouvert, children }: Props = $props();
   const id = $props.id();
 
   let panneau: HTMLDivElement;
@@ -48,6 +52,8 @@
     const defilement = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     panneau.focus();
+    // Posé en bas de l'écran : son haut s'y lit sans le décalage du glissé.
+    onouvert?.(window.innerHeight - panneau.offsetHeight);
     return () => {
       document.body.style.overflow = defilement;
       if (avant instanceof HTMLElement) avant.focus();

@@ -4,16 +4,16 @@
  *
  * On enregistre peu : la case où il est (coordonnées du plan, comme les murs
  * et les cases notées), le chapitre pour lequel il y a été posé, et si c'est à
- * la main. Le reste se déduit du dernier chapitre lu : il est « pâle » quand
- * son chapitre n'est plus le chapitre lu (`repere.chapitre !== chapitre`).
- * La position « où il était » d'un chapitre absent du plan est justement ce
- * qu'on enregistre : sans elle, rien ne dirait où il était.
+ * la main. La position « où il était » d'un chapitre absent du plan est
+ * justement ce qu'on enregistre : sans elle, rien ne dirait où il était.
  *
- * `repereApres` est la seule règle : on l'appelle quand le chapitre change,
- * quand les cases du plan changent, et on s'en sert aussi pour dessiner.
+ * `repereApres` dit où il va : on l'appelle quand le chapitre change et quand
+ * les cases du plan changent. `repereAffiche` dit s'il est plein ou pâle, et
+ * tout ce qui montre le repère (grille, noms lus, indice, ligne de la feuille)
+ * en découle.
  */
 
-import { derniereCaseNumerotee, type Case } from "./cases";
+import { derniereCaseNumerotee, laCase, type Case } from "./cases";
 
 export interface Repere {
   colonne: number;
@@ -28,7 +28,8 @@ export interface Repere {
  * Le repère d'un plan quand le dernier chapitre lu est `chapitre` :
  * 1. posé à la main pour ce même chapitre : il ne bouge pas ;
  * 2. une case porte ce numéro : il va sur la dernière numérotée ;
- * 3. sinon il reste où il était (pâle), ou il n'y en a pas (`null`).
+ * 3. sinon il reste où il était (pâle, voir `repereAffiche`), ou il n'y en a
+ *    pas (`null`).
  * Un repère posé à la main perd son « à la main » dès que le chapitre change :
  * revenir plus tard à ce chapitre ne le rend pas.
  */
@@ -44,6 +45,61 @@ export function repereApres(
   }
   if (!repere) return null;
   return repere.manuel ? { ...repere, manuel: false } : repere;
+}
+
+/** Le repère tel qu'on le montre : sa case, et s'il est pâle. */
+export interface RepereAffiche {
+  colonne: number;
+  ligne: number;
+  pale: boolean;
+}
+
+/**
+ * Le repère à montrer quand le dernier chapitre lu est `chapitre`. Il est
+ * plein quand le lecteur y est : posé à la main pour ce chapitre, ou sur une
+ * case qui porte ce numéro. Sinon il est pâle : le chapitre a changé, ou sa
+ * case a été vidée ou renumérotée.
+ */
+export function repereAffiche(
+  repere: Repere | null,
+  cases: readonly Case[],
+  chapitre: number,
+): RepereAffiche | null {
+  if (!repere) return null;
+  const { colonne, ligne } = repere;
+  const plein =
+    repere.chapitre === chapitre &&
+    (repere.manuel || laCase(cases, colonne, ligne)?.chapitre === chapitre);
+  return { colonne, ligne, pale: !plein };
+}
+
+/**
+ * Le numéro à écrire après « ici § » sur la ligne du plan : celui de la case
+ * du repère quand il est plein. Pâle, il n'y en a pas : « ici » laisserait
+ * croire que le lecteur y est.
+ */
+export function numeroDuRepere(
+  repere: Repere | null,
+  cases: readonly Case[],
+  chapitre: number,
+): number | null {
+  const affiche = repereAffiche(repere, cases, chapitre);
+  if (!affiche || affiche.pale) return null;
+  return laCase(cases, affiche.colonne, affiche.ligne)?.chapitre ?? null;
+}
+
+/**
+ * Faut-il l'indice « Le § N n'est pas sur ce plan » ? Oui quand le repère est
+ * pâle. Sans repère, seulement si une case est numérotée : sur un plan encore
+ * vierge, il n'y a rien à comparer.
+ */
+export function chapitreAbsentAAnnoncer(
+  repere: Repere | null,
+  cases: readonly Case[],
+  chapitre: number,
+): boolean {
+  const affiche = repereAffiche(repere, cases, chapitre);
+  return affiche ? affiche.pale : cases.some((c) => c.chapitre !== null);
 }
 
 /** « Je suis ici » : le repère sur cette case, pour le chapitre lu. */

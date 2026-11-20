@@ -60,6 +60,84 @@ export function vueDOuverture(grille: Grille, taille: Taille): Vue {
 }
 
 /**
+ * La vue à l'ouverture d'un plan qui a un repère (`repere`, le milieu de sa
+ * case, en cases). Chaque axe a sa règle : là où la grille tient dans le cadre
+ * avec ses marges d'une case, elle s'ouvre comme sans repère (`vueDOuverture`),
+ * et le repère y est forcément visible ; là où elle ne tient pas, la vue se
+ * centre sur le repère, puis s'arrête une case au-delà du bord de la grille,
+ * aux mêmes limites que quand on la fait défiler (`deplacerLaVue`).
+ */
+export function vueDOuvertureSur(
+  repere: Position,
+  grille: Grille,
+  taille: Taille,
+): Vue {
+  const sansRepere = vueDOuverture(grille, taille);
+  const centree = vueCentreeSur(repere, taille);
+  return {
+    x: aLOuverture(
+      sansRepere.x,
+      centree.x,
+      grille.colonne,
+      grille.colonnes,
+      taille.largeur,
+    ),
+    y: aLOuverture(
+      sansRepere.y,
+      centree.y,
+      grille.ligne,
+      grille.lignes,
+      taille.hauteur,
+    ),
+  };
+}
+
+function aLOuverture(
+  sansRepere: number,
+  centree: number,
+  debut: number,
+  nombre: number,
+  cadre: number,
+): number {
+  const [a, b] = limites(debut, nombre);
+  if (b - a <= cadre) return sansRepere;
+  return Math.min(b - cadre, Math.max(a, centree));
+}
+
+/** Le début et la fin de la grille sur un axe, marges comprises, en px du plan. */
+function limites(debut: number, nombre: number): [number, number] {
+  return [
+    debut * COTE_D_UNE_CASE - MARGE,
+    (debut + nombre) * COTE_D_UNE_CASE + MARGE,
+  ];
+}
+
+/** Écart minimal, en px, entre le bas d'une case ouverte et le haut du panneau. */
+const ECART_AU_PANNEAU = 12;
+
+/**
+ * Le panneau d'une case s'ouvre et couvre le bas du cadre. `bande` est ce qui
+ * reste visible du cadre au-dessus de lui, en px depuis le haut du cadre. Si
+ * le bas de la case de la ligne `ligne` est à moins de 12 px du haut du
+ * panneau, la vue se déplace d'un coup pour mettre la case au milieu de la
+ * bande ; sinon elle ne bouge pas. La vue peut alors sortir de ses limites,
+ * comme quand la grille grandit : le lecteur doit voir la case qu'il note.
+ */
+export function vueQuiDegageLaCase(
+  vue: Vue,
+  ligne: number,
+  bande: { haut: number; bas: number },
+): Vue {
+  if (bande.bas <= bande.haut) return vue;
+  const basDeLaCase = (ligne + 1) * COTE_D_UNE_CASE - vue.y;
+  if (basDeLaCase <= bande.bas - ECART_AU_PANNEAU) return vue;
+  return {
+    x: vue.x,
+    y: (ligne + 0.5) * COTE_D_UNE_CASE - (bande.haut + bande.bas) / 2,
+  };
+}
+
+/**
  * Les doigts ont glissé de `glisse` px : le plan les suit. La vue reste dans
  * ses limites : une grille plus petite que le cadre y reste en entier ; une
  * plus grande défile jusqu'à une case au-delà de son bord. Une vue déjà hors
@@ -97,8 +175,7 @@ function surUnAxe(
   nombre: number,
   cadre: number,
 ): number {
-  const a = debut * COTE_D_UNE_CASE - MARGE;
-  const b = (debut + nombre) * COTE_D_UNE_CASE + MARGE;
+  const [a, b] = limites(debut, nombre);
   // Plus petite que le cadre : elle y reste en entier ; plus grande : le
   // cadre reste sur elle.
   const [min, max] = b - a <= cadre ? [b - cadre, a] : [a, b - cadre];

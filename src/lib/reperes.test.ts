@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Case } from "./cases";
 import {
+  chapitreAbsentAAnnoncer,
   estUnRepere,
+  numeroDuRepere,
   poserLeRepere,
+  repereAffiche,
   repereApres,
   type Repere,
 } from "./reperes";
@@ -104,6 +107,81 @@ describe("poser le repère à la main", () => {
     expect(r).toEqual(repere(4, 1, 203));
     // De retour au 203 : la case du 203 reprend le repère.
     expect(repereApres(r, cases, 203)).toEqual(repere(3, 2, 203));
+  });
+});
+
+describe("plein ou pâle", () => {
+  it("plein sur la case qui porte le chapitre lu", () => {
+    const cases = [uneCase(3, 2, 47)];
+    expect(repereAffiche(repere(3, 2, 47), cases, 47)).toEqual({
+      colonne: 3,
+      ligne: 2,
+      pale: false,
+    });
+  });
+
+  it("pâle quand le chapitre lu a changé et n'est sur aucune case", () => {
+    const cases = [uneCase(3, 2, 47)];
+    expect(repereAffiche(repere(3, 2, 47), cases, 48)?.pale).toBe(true);
+  });
+
+  it("pâle quand sa case a été vidée, même si le chapitre lu n'a pas changé", () => {
+    expect(repereAffiche(repere(3, 2, 47), [], 47)?.pale).toBe(true);
+  });
+
+  it("pâle quand le numéro de sa case a été remplacé", () => {
+    const cases = [uneCase(3, 2, 48)];
+    expect(repereAffiche(repere(3, 2, 47), cases, 47)?.pale).toBe(true);
+  });
+
+  it("posé à la main pour le chapitre lu : plein, même sur une case vide", () => {
+    expect(repereAffiche(repere(3, 2, 47, true), [], 47)?.pale).toBe(false);
+  });
+
+  it("posé à la main pour un autre chapitre : pâle", () => {
+    expect(repereAffiche(repere(3, 2, 47, true), [], 48)?.pale).toBe(true);
+  });
+
+  it("pas de repère : rien à montrer", () => {
+    expect(repereAffiche(null, [uneCase(3, 2, 47)], 47)).toBeNull();
+  });
+});
+
+describe("le numéro de la ligne du plan (« ici § N »)", () => {
+  it("le numéro de la case du repère plein", () => {
+    expect(numeroDuRepere(repere(3, 2, 47), [uneCase(3, 2, 47)], 47)).toBe(47);
+  });
+
+  it("rien quand le repère est pâle, même sur une case numérotée", () => {
+    expect(
+      numeroDuRepere(repere(3, 2, 47), [uneCase(3, 2, 47)], 48),
+    ).toBeNull();
+  });
+
+  it("rien quand le repère plein est sur une case sans numéro", () => {
+    expect(numeroDuRepere(repere(3, 2, 47, true), [], 47)).toBeNull();
+  });
+
+  it("rien sans repère", () => {
+    expect(numeroDuRepere(null, [uneCase(3, 2, 47)], 47)).toBeNull();
+  });
+});
+
+describe("l'indice « § N n'est pas sur ce plan »", () => {
+  it("quand le repère est pâle", () => {
+    expect(chapitreAbsentAAnnoncer(repere(3, 2, 47), [], 47)).toBe(true);
+  });
+
+  it("pas quand le repère est plein", () => {
+    const cases = [uneCase(3, 2, 47)];
+    expect(chapitreAbsentAAnnoncer(repere(3, 2, 47), cases, 47)).toBe(false);
+  });
+
+  it("sans repère : seulement si une case est numérotée", () => {
+    expect(chapitreAbsentAAnnoncer(null, [uneCase(1, 1, 12)], 47)).toBe(true);
+    const note = { ...uneCase(1, 1, null), note: "clé" };
+    expect(chapitreAbsentAAnnoncer(null, [note], 47)).toBe(false);
+    expect(chapitreAbsentAAnnoncer(null, [], 47)).toBe(false);
   });
 });
 

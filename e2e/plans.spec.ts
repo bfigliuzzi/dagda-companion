@@ -248,7 +248,47 @@ test("en mode Cases, un vrai appui tactile ouvre le panneau qui glisse, un gliss
   ).toBeVisible();
 });
 
-test("à l'ouverture, la vue se centre sur le repère ; le disque est plein de craie, pâle quand le chapitre est absent", async ({
+test("en mode Cases, une case du bas reste visible au-dessus du panneau qu'un vrai appui ouvre", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Nouveau plan" }).click();
+  await page.getByLabel("Nom du plan").fill("Cave");
+  await page.getByRole("button", { name: "Créer le plan" }).click();
+  await page.getByRole("button", { name: "Cave" }).click();
+  await page.getByRole("radio", { name: "Cases" }).check({ force: true });
+
+  // La dernière ligne de la grille : le panneau, haut de plus de 400 px, la couvrirait.
+  const bouton = page.getByRole("button", { name: "Case 4-8", exact: true });
+  const { x, y } = (await bouton.boundingBox())!;
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x: x + 22, y: y + 22, id: 1 }],
+  });
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchEnd",
+    touchPoints: [],
+  });
+
+  const panneau = page.getByRole("dialog", { name: "Case 4-8" });
+  await expect(panneau).toBeVisible();
+  // Le panneau a fini de glisser quand son bas touche celui de l'écran.
+  const hauteurDeLEcran = page.viewportSize()!.height;
+  await expect
+    .poll(async () => {
+      const b = (await panneau.boundingBox())!;
+      return Math.round(b.y + b.height);
+    })
+    .toBe(hauteurDeLEcran);
+  const hautDuPanneau = (await panneau.boundingBox())!.y;
+  const laCase = (await bouton.boundingBox())!;
+  const cadre = (await page.getByTestId("vue-du-plan").boundingBox())!;
+  expect(laCase.y + laCase.height).toBeLessThanOrEqual(hautDuPanneau - 12);
+  expect(laCase.y).toBeGreaterThanOrEqual(cadre.y);
+});
+
+test("à l'ouverture, la vue montre le repère, au milieu du cadre sur un grand plan ; le disque est plein de craie, pâle quand le chapitre est absent", async ({
   page,
 }) => {
   const plan = {

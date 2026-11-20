@@ -10,6 +10,7 @@
   import BoutonPlein from "./BoutonPlein.svelte";
   import type { Arme, Personnage } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
+  import ChampTexte from "./ChampTexte.svelte";
   import {
     CIBLES,
     NOMS_DES_CIBLES,
@@ -73,8 +74,6 @@
     });
     onfermer();
   }
-
-  const focaliser = (champ: HTMLInputElement) => champ.focus();
 </script>
 
 {#snippet passage(de: number | string, a: number | string)}
@@ -83,16 +82,7 @@
 
 <Panneau titre="Nouvel effet" {onfermer}>
   <form onsubmit={ajouter}>
-    <label class="field">
-      <span>Nom</span>
-      <input
-        class="input"
-        type="text"
-        autocomplete="off"
-        bind:value={nom}
-        {@attach focaliser}
-      />
-    </label>
+    <ChampTexte nom="Nom" bind:valeur={nom} focus />
 
     <div class="seg" role="radiogroup" aria-label="Type d'effet">
       <label class="segment">
@@ -142,28 +132,18 @@
           prefixe={valeur !== null && valeur >= 0 ? "+" : undefined}
           bind:valeur
         />
-        <label class="field">
-          <span>Durée (facultatif)</span>
-          <input
-            class="input"
-            type="text"
-            autocomplete="off"
-            placeholder="ex. 24 h"
-            bind:value={duree}
-          />
-        </label>
+        <ChampTexte
+          nom="Durée (facultatif)"
+          placeholder="ex. 24 h"
+          bind:valeur={duree}
+        />
       </div>
     {:else}
-      <label class="field">
-        <span>Durée (facultatif)</span>
-        <input
-          class="input"
-          type="text"
-          autocomplete="off"
-          placeholder="ex. 24 h"
-          bind:value={duree}
-        />
-      </label>
+      <ChampTexte
+        nom="Durée (facultatif)"
+        placeholder="ex. 24 h"
+        bind:valeur={duree}
+      />
     {/if}
 
     <Indice icone="info" marge="var(--esp-md) 0 0">
@@ -207,7 +187,7 @@
 </Panneau>
 
 <style>
-  /* Champs : voir la maquette, « Formulaires ». */
+  /* « Valeur modifiée » : étiquette comme celle d'un champ (ChampTexte). */
   .field {
     display: block;
     margin-top: 14px;
@@ -217,23 +197,6 @@
     margin-bottom: var(--esp-xs);
     font-size: 13px;
     color: var(--craie-2);
-  }
-  .input {
-    display: flex;
-    width: 100%;
-    min-height: 52px;
-    padding: var(--esp-md) 14px;
-    background: var(--ardoise-2);
-    border: 2px solid transparent;
-    border-radius: var(--r);
-    outline: none;
-    font-size: 17px;
-  }
-  .input:focus {
-    border-color: var(--jaune);
-  }
-  .input::placeholder {
-    color: var(--craie-3);
   }
 
   /* Contrôle segmenté : les vrais boutons radio sont masqués. */

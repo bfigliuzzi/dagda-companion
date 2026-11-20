@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { Grille } from "./plans";
-import { deplacerLaVue, vueCentreeSur, vueDOuverture } from "./vueDuPlan";
+import {
+  deplacerLaVue,
+  vueCentreeSur,
+  vueDOuverture,
+  vueDOuvertureSur,
+  vueQuiDegageLaCase,
+} from "./vueDuPlan";
 
 /** Un plan neuf : 8 × 8 cases de 44 px, points de 0 à 352 px. */
 const neuf: Grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
@@ -33,6 +39,100 @@ describe("la vue à l'ouverture d'un plan", () => {
     expect(
       vueDOuverture({ colonne: -2, ligne: -1, colonnes: 10, lignes: 9 }, cadre),
     ).toEqual({ x: 132 - 200, y: -44 - 44 });
+  });
+});
+
+describe("la vue à l'ouverture d'un plan qui a un repère", () => {
+  /** Un téléphone de 412 px de large : 8 cases et leurs marges (440 px) n'y tiennent pas. */
+  const telephone = { largeur: 412, hauteur: 600 };
+
+  it("un repère au coin d'un plan neuf : la grille entière reste visible, bord gauche à une case du cadre, en haut", () => {
+    // Centrer sur la case (0, 0) couperait la grille à gauche ; bornée, la vue
+    // garde la marge d'une case à gauche (-44) et la grille en haut.
+    expect(vueDOuvertureSur({ x: 0.5, y: 0.5 }, neuf, telephone)).toEqual({
+      x: -44,
+      y: -44,
+    });
+  });
+
+  it("un repère à l'autre coin d'un plan neuf : bornée de l'autre côté", () => {
+    // Bord droit de la grille + une case : 396 px au bord droit du cadre.
+    expect(vueDOuvertureSur({ x: 7.5, y: 7.5 }, neuf, telephone)).toEqual({
+      x: 396 - 412,
+      y: -44,
+    });
+  });
+
+  it("une petite grille qui tient sur les deux axes s'ouvre comme sans repère", () => {
+    const petite: Grille = { colonne: 0, ligne: 0, colonnes: 3, lignes: 3 };
+    expect(vueDOuvertureSur({ x: 2.5, y: 2.5 }, petite, telephone)).toEqual(
+      vueDOuverture(petite, telephone),
+    );
+  });
+
+  it("au milieu d'un grand plan : centrée sur le repère", () => {
+    expect(vueDOuvertureSur({ x: 10.5, y: 10.5 }, grand, cadre)).toEqual(
+      vueCentreeSur({ x: 10.5, y: 10.5 }, cadre),
+    );
+  });
+
+  it("près du bord d'un grand plan : centrée puis bornée à une case au-delà du bord", () => {
+    // Centrer sur (18,5 ; 1,5) donnerait (614, -184) : la vue s'arrête à
+    // 924 - 400 en largeur et à -44 en hauteur, comme quand on fait défiler.
+    expect(vueDOuvertureSur({ x: 18.5, y: 1.5 }, grand, cadre)).toEqual({
+      x: 924 - 400,
+      y: -44,
+    });
+  });
+
+  it("un axe tient, l'autre non : chacun suit sa règle", () => {
+    // 4 colonnes (264 px avec marges) tiennent en largeur : centrées ;
+    // 20 lignes ne tiennent pas en hauteur : centrées sur le repère, bornées.
+    const haute: Grille = { colonne: 0, ligne: 0, colonnes: 4, lignes: 20 };
+    expect(vueDOuvertureSur({ x: 0.5, y: 10.5 }, haute, cadre)).toEqual({
+      x: 88 - 200,
+      y: 462 - 250,
+    });
+  });
+});
+
+describe("le panneau d'une case s'ouvre par-dessus la grille", () => {
+  // Le cadre montre 500 px ; le panneau en couvre le bas à partir de 300 px.
+  const bande = { haut: 0, bas: 300 };
+
+  it("une case bien au-dessus du panneau : la vue ne bouge pas", () => {
+    // Case de la ligne 4 : de 176 à 220 px, 80 px au-dessus du panneau.
+    const vue = { x: -30, y: 0 };
+    expect(vueQuiDegageLaCase(vue, 4, bande)).toBe(vue);
+  });
+
+  it("une case à moins de 12 px du haut du panneau : elle vient au milieu de la bande visible", () => {
+    // Case de la ligne 6 : de 264 à 308 px, sous le haut du panneau.
+    // Son milieu (286 px du plan) va à 150 px du haut du cadre.
+    expect(vueQuiDegageLaCase({ x: -30, y: 0 }, 6, bande)).toEqual({
+      x: -30,
+      y: 286 - 150,
+    });
+  });
+
+  it("la vue peut alors sortir de ses limites", () => {
+    // Ligne 7 d'un plan neuf, sous le panneau : la vue descend au-delà du bas de la grille.
+    const vue = vueQuiDegageLaCase({ x: -30, y: -44 }, 7, bande);
+    expect(vue.y).toBe(330 - 150);
+  });
+
+  it("le haut de la bande peut être sous le haut du cadre", () => {
+    expect(
+      vueQuiDegageLaCase({ x: 0, y: 0 }, 6, { haut: 100, bas: 300 }),
+    ).toEqual({
+      x: 0,
+      y: 286 - 200,
+    });
+  });
+
+  it("sans bande visible (rien de mesuré) : la vue ne bouge pas", () => {
+    const vue = { x: 0, y: 0 };
+    expect(vueQuiDegageLaCase(vue, 6, { haut: 0, bas: 0 })).toBe(vue);
   });
 });
 

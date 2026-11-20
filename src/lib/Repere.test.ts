@@ -268,6 +268,61 @@ describe("le chapitre n'est pas sur le plan", () => {
     expect(screen.getByText(/n'est pas sur ce plan/)).toBeInTheDocument();
   });
 
+  it("vider la case du repère le laisse en place, en craie pâle, avec l'indice", async () => {
+    avecLeRepereSur203();
+    render(App);
+    const lecteur = userEvent.setup();
+    await ouvrirLePlan(lecteur);
+    await ouvrirLaCase(lecteur, /^Case 4-3/);
+    await lecteur.click(screen.getByRole("button", { name: "Vider la case" }));
+    expect(caseDuDisque()).toEqual([3, 2]);
+    expect(disque()).toHaveAttribute("data-etat", "pale");
+    expect(grille()).toHaveAccessibleName(/repère pâle en case 4-3/);
+    expect(
+      screen.getByRole("button", {
+        name: "Case 4-3, vous étiez ici (repère pâle)",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        (_, el) => el?.textContent === "Le § 203 n'est pas sur ce plan.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("remplacer le numéro de la case du repère par un autre le rend pâle", async () => {
+    avecLeRepereSur203();
+    render(App);
+    const lecteur = userEvent.setup();
+    await ouvrirLePlan(lecteur);
+    await ouvrirLaCase(lecteur, /^Case 4-3/);
+    const champ = screen.getByRole("spinbutton", { name: "Chapitre" });
+    await lecteur.clear(champ);
+    await lecteur.type(champ, "204");
+    await lecteur.keyboard("{Escape}");
+    expect(caseDuDisque()).toEqual([3, 2]);
+    expect(disque()).toHaveAttribute("data-etat", "pale");
+    expect(screen.getByText(/n'est pas sur ce plan/)).toBeInTheDocument();
+    await revenirALaFeuille(lecteur);
+    expect(
+      section().getByRole("button", { name: /^Souterrains/ }),
+    ).toHaveTextContent("Souterrains 1 case notée");
+  });
+
+  it("posé à la main pour ce chapitre, il reste plein quand on vide sa case", async () => {
+    avecLeRepereSur203();
+    render(App);
+    const lecteur = userEvent.setup();
+    await ouvrirLePlan(lecteur);
+    await ouvrirLaCase(lecteur, /^Case 4-3/);
+    await lecteur.click(screen.getByRole("button", { name: "Je suis ici" }));
+    await ouvrirLaCase(lecteur, /^Case 4-3/);
+    await lecteur.click(screen.getByRole("button", { name: "Vider la case" }));
+    expect(caseDuDisque()).toEqual([3, 2]);
+    expect(disque()).toHaveAttribute("data-etat", "repere");
+    expect(screen.queryByText(/n'est pas sur ce plan/)).not.toBeInTheDocument();
+  });
+
   it("quand le chapitre revient sur une case, le repère redevient plein", async () => {
     avecLeRepereSur203();
     render(App);
@@ -343,7 +398,7 @@ describe("la ligne du plan sur la feuille", () => {
     expect(ligne("Cave")).toHaveTextContent(/^Cave$/);
   });
 
-  it("repère pâle sur une case numérotée : la ligne montre le numéro de cette case", async () => {
+  it("repère pâle sur une case numérotée : la ligne montre le nombre de cases notées, pas « ici »", async () => {
     enregistrerAventure({
       chapitre: 203,
       plans: [unPlan("Souterrains", [uneCase(3, 2, 203)])],
@@ -351,7 +406,8 @@ describe("la ligne du plan sur la feuille", () => {
     render(App);
     const lecteur = userEvent.setup();
     await changerLeChapitre(lecteur, 205);
-    expect(ligne("Souterrains")).toHaveTextContent("ici § 203");
+    expect(ligne("Souterrains")).toHaveTextContent("Souterrains 1 case notée");
+    expect(ligne("Souterrains")).not.toHaveTextContent("ici");
   });
 
   it("repère posé à la main sur une case sans numéro : le nombre de cases notées", async () => {

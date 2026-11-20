@@ -8,17 +8,17 @@
    * libre de l'écran ; le plan y défile à deux doigts (GrilleDuPlan). « Supprimer ce plan », sous la
    * grille, demande une confirmation avant d'effacer.
    *
-   * La barre fixe du bas porte le contrôle « Murs / Cases » (seul Murs agit
-   * pour l'instant ; les cases arrivent avec leur ticket) et « Annuler », qui
-   * défait le dernier trait entier, sans rétrécir la grille. L'historique des traits tient à l'écran
-   * ouvert : il repart à zéro quand on revient à la feuille.
+   * La barre fixe du bas porte le contrôle « Murs / Cases » et « Annuler ».
+   * En mode Murs, un doigt trace ; en mode Cases, un appui sur une case ouvre
+   * son panneau (PanneauDeCase), et si la case passe sous le panneau, la vue la
+   * remonte au-dessus de lui (GrilleDuPlan, `degagerLaCase`). « Annuler » défait le dernier trait entier,
+   * sans rétrécir la grille. L'historique des traits tient à l'écran ouvert :
+   * il repart à zéro quand on revient à la feuille.
    *
    * Le repère « vous êtes ici » (reperes.ts) est déjà à jour quand l'écran
-   * s'ouvre : l'écran le montre, et la grille s'y centre. Quand le dernier
-   * chapitre lu n'est sur aucune case, le repère est pâle (son chapitre n'est
-   * plus le chapitre lu) et un indice le dit ; sans repère, l'indice ne vient
-   * que si le plan a au moins une case numérotée : sur un plan encore vierge,
-   * il n'y a rien à comparer et il ne ferait que gêner.
+   * s'ouvre : l'écran le montre, et la grille s'ouvre sur lui. Plein ou pâle,
+   * et l'indice « Le § N n'est pas sur ce plan », viennent de reperes.ts
+   * (`repereAffiche`, `chapitreAbsentAAnnoncer`).
    */
   import ControleSegmente from "./ControleSegmente.svelte";
   import Dock from "./Dock.svelte";
@@ -36,6 +36,7 @@
   } from "./murs";
   import { definirLaCase, type Case, type Contenu } from "./cases";
   import type { Grille, Plan } from "./plans";
+  import { chapitreAbsentAAnnoncer, repereAffiche } from "./reperes";
 
   interface Props {
     plan: Plan;
@@ -67,6 +68,7 @@
     onsupprimer,
   }: Props = $props();
 
+  let grilleDuPlan: GrilleDuPlan;
   let confirmation = $state(false);
   /** La case dont le panneau est ouvert, en coordonnées du plan. */
   let selection = $state<{ colonne: number; ligne: number } | null>(null);
@@ -92,18 +94,9 @@
     if (cases !== plan.cases) oncases(cases);
   }
 
-  /** Le repère à montrer : où il est, et s'il est pâle. */
-  const repere = $derived(
-    plan.repere
-      ? {
-          colonne: plan.repere.colonne,
-          ligne: plan.repere.ligne,
-          pale: plan.repere.chapitre !== chapitre,
-        }
-      : null,
-  );
-  const chapitreAbsent = $derived(
-    repere?.pale ?? plan.cases.some((c) => c.chapitre !== null),
+  const repere = $derived(repereAffiche(plan.repere, plan.cases, chapitre));
+  const annoncerLeChapitreAbsent = $derived(
+    chapitreAbsentAAnnoncer(plan.repere, plan.cases, chapitre),
   );
 
   function annuler() {
@@ -122,6 +115,7 @@
     {onrenommer}
   />
   <GrilleDuPlan
+    bind:this={grilleDuPlan}
     grille={plan.grille}
     murs={plan.murs}
     cases={plan.cases}
@@ -136,7 +130,7 @@
         Glissez le doigt le long des points pour tracer un mur.
       </Indice>
     {/if}
-    {#if chapitreAbsent}
+    {#if annoncerLeChapitreAbsent}
       <Indice icone="info" role="status" marge="0">
         Le <b>§ {chapitre}</b> n'est pas sur ce plan.
       </Indice>
@@ -180,6 +174,7 @@
     onvider={() => ecrireLaCase({ chapitre: null, note: "" })}
     onici={() => onrepere(selection!.colonne, selection!.ligne)}
     onfermer={() => (selection = null)}
+    onouvert={(haut) => grilleDuPlan.degagerLaCase(selection!.ligne, haut)}
   />
 {/if}
 

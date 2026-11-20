@@ -308,7 +308,7 @@ export function proposeDeRecommencer(mode: Mode, pointsDeVie: number): boolean {
  *
  * Choix par défaut (docs/regles-livre-1.md) : le livre ne fait perdre que les
  * armes et l'équipement ; les notes et les plans sont ce que le lecteur a
- * appris du livre (le lieu ne change pas d'une partie à l'autre), ils lui
+ * appris du livre (le lieu ne change pas d'une aventure à l'autre), ils lui
  * servent encore au nouveau départ, on les garde.
  */
 export function apresLaMort(

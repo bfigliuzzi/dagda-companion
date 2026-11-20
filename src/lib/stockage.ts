@@ -20,6 +20,26 @@ interface Enregistrement {
 }
 
 /**
+ * Ajoute à chaque plan d'une aventure relue les champs que donne `champs`,
+ * appelée pour chaque plan : deux plans ne partagent pas la même liste. Ce
+ * qui n'a pas la forme attendue (pas de liste de plans, un plan qui n'est pas
+ * un objet) est laissé tel quel : la vérification de l'aventure, après les
+ * migrations, le refusera.
+ */
+function ajouterAChaquePlan(aventure: unknown, champs: () => object): unknown {
+  const { plans } = aventure as { plans?: unknown };
+  if (!Array.isArray(plans)) return aventure;
+  return {
+    ...(aventure as object),
+    plans: plans.map((plan) =>
+      typeof plan === "object" && plan !== null
+        ? { ...plan, ...champs() }
+        : plan,
+    ),
+  };
+}
+
+/**
  * MIGRATIONS[n] transforme une aventure de la version n en version n + 1.
  *
  * Pas de migration depuis la version 1 : elle ne tenait que le chapitre, sans
@@ -52,44 +72,11 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   // Version 11 : les plans (voir plans.ts). Une aventure de la version 10 n'en a dessiné aucun.
   10: (aventure) => ({ ...(aventure as object), plans: [] }),
   // Version 12 : les murs des plans (voir murs.ts). Un plan de la version 11 n'en a aucun.
-  11: (aventure) => {
-    const { plans } = aventure as { plans?: unknown };
-    if (!Array.isArray(plans)) return aventure;
-    return {
-      ...(aventure as object),
-      plans: plans.map((plan) =>
-        typeof plan === "object" && plan !== null
-          ? { ...plan, murs: [] }
-          : plan,
-      ),
-    };
-  },
+  11: (aventure) => ajouterAChaquePlan(aventure, () => ({ murs: [] })),
   // Version 13 : les cases notées des plans (voir cases.ts). Un plan de la version 12 n'en a aucune.
-  12: (aventure) => {
-    const { plans } = aventure as { plans?: unknown };
-    if (!Array.isArray(plans)) return aventure;
-    return {
-      ...(aventure as object),
-      plans: plans.map((plan) =>
-        typeof plan === "object" && plan !== null
-          ? { ...plan, cases: [] }
-          : plan,
-      ),
-    };
-  },
+  12: (aventure) => ajouterAChaquePlan(aventure, () => ({ cases: [] })),
   // Version 14 : le repère « vous êtes ici » des plans (voir reperes.ts). Un plan de la version 13 n'en a jamais placé.
-  13: (aventure) => {
-    const { plans } = aventure as { plans?: unknown };
-    if (!Array.isArray(plans)) return aventure;
-    return {
-      ...(aventure as object),
-      plans: plans.map((plan) =>
-        typeof plan === "object" && plan !== null
-          ? { ...plan, repere: null }
-          : plan,
-      ),
-    };
-  },
+  13: (aventure) => ajouterAChaquePlan(aventure, () => ({ repere: null })),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

@@ -17,12 +17,13 @@
    */
   import { untrack } from "svelte";
   import ChampNumerique from "./ChampNumerique.svelte";
+  import ChampTexte from "./ChampTexte.svelte";
   import Indice from "./Indice.svelte";
   import LienDiscret from "./LienDiscret.svelte";
   import Panneau from "./Panneau.svelte";
   import {
     autresCasesDuChapitre,
-    CHAPITRE_MAX,
+    estUnNumeroDeCase,
     laCase,
     LONGUEUR_MAX_DE_LA_NOTE,
     nomDeLaCase,
@@ -44,6 +45,8 @@
     /** « Je suis ici » : le plan place le repère sur cette case. */
     onici: () => void;
     onfermer: () => void;
+    /** Le panneau est posé : le haut du panneau à l'écran, en px. */
+    onouvert?: (haut: number) => void;
   }
 
   let {
@@ -55,14 +58,12 @@
     onvider,
     onici,
     onfermer,
+    onouvert,
   }: Props = $props();
 
   const depart = untrack(() => laCase(cases, colonne, ligne));
   let chapitre = $state<number | null>(depart?.chapitre ?? null);
   let note = $state(depart?.note ?? "");
-
-  const estUnChapitre = (valeur: number | null): valeur is number =>
-    Number.isInteger(valeur) && valeur! >= 1 && valeur! <= CHAPITRE_MAX;
 
   /** À chaque modification, le plan enregistre. */
   $effect(() => {
@@ -71,13 +72,13 @@
     untrack(() => {
       // Un numéro invalide est ignoré : la case garde celui qu'elle avait.
       const garde = laCase(cases, colonne, ligne)?.chapitre ?? null;
-      const valable = saisi === null || estUnChapitre(saisi);
+      const valable = saisi === null || estUnNumeroDeCase(saisi);
       onmodifier({ chapitre: valable ? saisi : garde, note: texte });
     });
   });
 
   const doublons = $derived(
-    estUnChapitre(chapitre)
+    estUnNumeroDeCase(chapitre)
       ? autresCasesDuChapitre(cases, chapitre, colonne, ligne)
       : [],
   );
@@ -86,7 +87,11 @@
   );
 </script>
 
-<Panneau titre="Case {nomDeLaCase(grille, colonne, ligne)}" {onfermer}>
+<Panneau
+  titre="Case {nomDeLaCase(grille, colonne, ligne)}"
+  {onfermer}
+  {onouvert}
+>
   <ChampNumerique
     nom="Chapitre"
     min={1}
@@ -94,17 +99,12 @@
     bind:valeur={chapitre}
   />
 
-  <label class="field">
-    <span>Note</span>
-    <input
-      class="input"
-      type="text"
-      autocomplete="off"
-      maxlength={LONGUEUR_MAX_DE_LA_NOTE}
-      placeholder="ex. clé, porte fermée"
-      bind:value={note}
-    />
-  </label>
+  <ChampTexte
+    nom="Note"
+    maxlength={LONGUEUR_MAX_DE_LA_NOTE}
+    placeholder="ex. clé, porte fermée"
+    bind:valeur={note}
+  />
 
   {#if doublons.length > 0}
     <Indice icone="info" role="status" marge="var(--esp-md) 0 0">
@@ -138,35 +138,6 @@
 </Panneau>
 
 <style>
-  /* Champs : voir la maquette, « Formulaires » (comme « Nouvel effet »). */
-  .field {
-    display: block;
-    margin-top: 14px;
-  }
-  .field > span {
-    display: block;
-    margin-bottom: var(--esp-xs);
-    font-size: 13px;
-    color: var(--craie-2);
-  }
-  .input {
-    display: flex;
-    width: 100%;
-    min-height: 52px;
-    padding: var(--esp-md) 14px;
-    background: var(--ardoise-2);
-    border: 2px solid transparent;
-    border-radius: var(--r);
-    outline: none;
-    font-size: 17px;
-  }
-  .input:focus {
-    border-color: var(--jaune);
-  }
-  .input::placeholder {
-    color: var(--craie-3);
-  }
-
   .boutons {
     display: grid;
     gap: 10px;
