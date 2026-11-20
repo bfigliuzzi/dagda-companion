@@ -252,17 +252,10 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
   if (ceQuiManque(brouillon) !== null) {
     throw new Error("Le nouvel apprenti n'est pas complet.");
   }
-  return {
+  return uneNouvelleFeuille({
     chapitre: 1,
     mode: mode!,
     sauvegardesUtilisees: 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [],
-    besace: besaceVide(),
-    effets: [],
-    combat: null,
-    combats: [],
     personnage: {
       talent: talent!,
       pointsDeVieMax: pointsDeVieMax!,
@@ -270,6 +263,28 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
       chance: chance!,
       dexterite: DEXTERITE_DE_DEPART,
     },
+  });
+}
+
+/**
+ * Une feuille neuve : ni sauvegarde posée, ni notes, ni armes, ni objets, ni
+ * effets, ni combats.
+ */
+function uneNouvelleFeuille(
+  depart: Pick<
+    Aventure,
+    "chapitre" | "mode" | "sauvegardesUtilisees" | "personnage"
+  >,
+): Aventure {
+  return {
+    ...depart,
+    sauvegarde: null,
+    notes: "",
+    armes: [],
+    besace: besaceVide(),
+    effets: [],
+    combat: null,
+    combats: [],
   };
 }
 
@@ -363,17 +378,10 @@ export function recopierAventure(recopie: Recopie): Aventure {
     throw new Error("La feuille recopiée n'est pas complète.");
   }
   const { mode, chapitre, sauvegardesUtilisees } = recopie;
-  return {
+  return uneNouvelleFeuille({
     chapitre: chapitre!,
     mode: mode!,
     sauvegardesUtilisees: MODES[mode!].sauvegardes ? sauvegardesUtilisees : 0,
-    sauvegarde: null,
-    notes: "",
-    armes: [],
-    besace: besaceVide(),
-    effets: [],
-    combat: null,
-    combats: [],
     personnage: {
       talent: recopie.talent!,
       pointsDeVieMax: recopie.pointsDeVieMax!,
@@ -381,7 +389,7 @@ export function recopierAventure(recopie: Recopie): Aventure {
       chance: recopie.chance!,
       dexterite: recopie.dexterite!,
     },
-  };
+  });
 }
 
 /** Un bonus de dommage : entier, positif, nul ou négatif (un malus existe peut-être dans le livre). */
@@ -444,34 +452,19 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const {
-    chapitre,
-    mode,
-    personnage,
-    sauvegardesUtilisees,
-    sauvegarde,
-    notes,
-    armes,
-    besace,
-    effets,
-    combat,
-    combats,
-  } = valeur as Aventure;
+  const { mode, sauvegardesUtilisees, sauvegarde, notes, combat, combats } =
+    valeur as Aventure;
+  // Le chapitre, le personnage, les armes, la besace et les effets : ce que
+  // garde aussi une sauvegarde.
   return (
-    estUnChapitre(chapitre) &&
+    estUneSauvegarde(valeur) &&
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
     (sauvegarde === null || estUneSauvegarde(sauvegarde)) &&
     typeof notes === "string" &&
-    Array.isArray(armes) &&
-    armes.every(estUneArme) &&
-    estUneBesace(besace) &&
-    Array.isArray(effets) &&
-    effets.every(estUnEffet) &&
     (combat === null || estUnCombat(combat)) &&
     Array.isArray(combats) &&
     combats.every(estUnCombatDeLHistorique) &&
-    Object.hasOwn(MODES, mode) &&
-    estUnPersonnage(personnage)
+    Object.hasOwn(MODES, mode)
   );
 }
 
