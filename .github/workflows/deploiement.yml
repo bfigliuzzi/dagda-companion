@@ -1,5 +1,7 @@
-# Construit l'app et la publie sur GitHub Pages à chaque push sur main,
-# seulement si l'analyse statique et les tests passent.
+# À chaque push sur main : vérifie les messages de commit, l'analyse statique et
+# les tests ; publie une nouvelle version si un commit l'exige (semantic-release,
+# voir release.config.js) ; puis construit l'app avec ce numéro de version et la
+# publie sur GitHub Pages.
 name: Déploiement
 
 on:
@@ -9,25 +11,83 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Une seule exécution à la fois, sans en interrompre une en cours : couper
+# semantic-release au milieu laisserait un tag sans release.
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: deploiement
+  cancel-in-progress: false
 
 jobs:
-  construire:
+  verifier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Les messages des commits poussés suivent la convention de CLAUDE.md.
+      # Sans commit précédent connu (lancement manuel, nouvelle branche, ou
+      # force-push qui l'a fait disparaître), seul le dernier commit est vérifié.
+      - name: Messages de commit
+        env:
+          COMMIT_PRECEDENT: ${{ github.event.before }}
+        run: |
+          if [ -n "$COMMIT_PRECEDENT" ] && git cat-file -e "$COMMIT_PRECEDENT^{commit}" 2>/dev/null; then
+            npx commitlint --from "$COMMIT_PRECEDENT" --to "$GITHUB_SHA" --verbose
+          else
+            npx commitlint --last --verbose
+          fi
       - run: npm run check
       - run: npm test
+
+  version:
+    needs: verifier
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      commit-a-construire: ${{ steps.commit.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Le commit à construire : celui de la version (CHANGELOG à jour, tag
+      # posé), ou le commit poussé si aucune version n'a été publiée.
+      - id: commit
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  construire:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      # Tout l'historique, pour que le build lise le numéro dans le dernier tag.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.version.outputs.commit-a-construire }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # Le numéro de version vient du dernier tag (« v0.2.0 » → « 0.2.0 »).
+      - name: Numéro de version
+        run: |
+          TAG=$(git describe --tags --abbrev=0 --match 'v*')
+          echo "VITE_VERSION=${TAG#v}" >> "$GITHUB_ENV"
       # GitHub Pages sert l'app sous /<nom du dépôt>/ ; en local, elle reste à la racine.
       - run: npm run build -- --base /${{ github.event.repository.name }}/
       - uses: actions/upload-pages-artifact@v5
@@ -37,6 +97,9 @@ jobs:
   publier:
     needs: construire
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deploiement.outputs.page_url }}

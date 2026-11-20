@@ -8,10 +8,10 @@ Références : `.scratch/vitrine/spec.md` (Versions).
 
 **Status:** ready-for-agent
 
-- [ ] Le tag `v0.1.0` est posé sur le commit `801ff95` (dernier commit avant ce chantier) et poussé sur GitHub. L'historique n'est pas réécrit.
-- [ ] `commitlint` accepte exactement les types `ajout`, `correctif`, `dette`, `docs`, `tests`, `ci`, `outils`, avec une portée facultative et le `!` de changement cassant ; un message hors format fait échouer la CI.
-- [ ] `semantic-release` tourne en CI après les vérifications : `ajout` monte la version mineure, `correctif` le correctif, `!` la majeure, les autres types rien.
-- [ ] La release GitHub et le CHANGELOG sont en français, avec les seules sections « Ajouts » et « Corrections ».
-- [ ] Le déploiement sur GitHub Pages vient après la publication de la version, et le numéro de version est disponible dans l'app au moment du build (lu dans le tag).
-- [ ] La règle de commit (types, format, exemples) est écrite dans `CLAUDE.md` ; le README mentionne le CHANGELOG.
-- [ ] Le commit qui livre ce ticket suit lui-même la convention.
+- [x] Le tag `v0.1.0` est posé sur le commit `801ff95` (dernier commit avant ce chantier) et poussé sur GitHub. L'historique n'est pas réécrit.
+- [x] `commitlint` accepte exactement les types `ajout`, `correctif`, `dette`, `docs`, `tests`, `ci`, `outils`, avec une portée facultative et le `!` de changement cassant ; un message hors format fait échouer la CI.
+- [x] `semantic-release` tourne en CI après les vérifications : `ajout` monte la version mineure, `correctif` le correctif, `!` la majeure, les autres types rien.
+- [x] La release GitHub et le CHANGELOG sont en français, avec les seules sections « Ajouts » et « Corrections ».
+- [x] Le déploiement sur GitHub Pages vient après la publication de la version, et le numéro de version est disponible dans l'app au moment du build (lu dans le tag).
+- [x] La règle de commit (types, format, exemples) est écrite dans `CLAUDE.md` ; le README mentionne le CHANGELOG.
+- [x] Le commit qui livre ce ticket suit lui-même la convention.

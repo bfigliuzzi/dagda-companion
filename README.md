@@ -35,6 +35,7 @@ Elle s'installe comme une application (PWA), marche hors ligne et garde l'écran
 | [`GLOSSARY.md`](GLOSSARY.md) | Le vocabulaire propre à l'app (aventure, enregistrement, plan, case, repère…) |
 | [`DESIGN.md`](DESIGN.md) | L'identité visuelle : une feuille écrite à la craie sur une ardoise noire |
 | [`docs/tests.md`](docs/tests.md) | Quoi tester, à quel niveau, et quand un ticket est fini |
+| [`CHANGELOG.md`](CHANGELOG.md) | Ce qui a changé d'une version à l'autre, tenu à jour automatiquement |
 
 La maquette de référence est dans `design/maquette/`, les tickets dans `.scratch/`.
 
@@ -51,7 +52,7 @@ npm run e2e      # tests de bout en bout (Playwright)
 npm run build    # construit le site dans dist/
 ```
 
-Chaque push sur `main` lance l'analyse statique et les tests sur GitHub Actions, puis publie le site sur GitHub Pages s'ils passent.
+Chaque push sur `main` lance sur GitHub Actions la vérification des messages de commit, l'analyse statique et les tests. S'ils passent, `semantic-release` publie une nouvelle version quand un commit apporte un `ajout` ou un `correctif` (tag, release GitHub, [`CHANGELOG.md`](CHANGELOG.md)), puis le site est publié sur GitHub Pages avec ce numéro. Les messages de commit suivent la convention décrite dans [`CLAUDE.md`](CLAUDE.md).
 
 ## Licence
 
