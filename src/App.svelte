@@ -11,6 +11,7 @@
   import EcranDuPlan from "./lib/EcranDuPlan.svelte";
   import Notes from "./lib/Notes.svelte";
   import Plans from "./lib/Plans.svelte";
+  import { memeRepere, poserLeRepere, repereApres } from "./lib/reperes";
   import SectionAventure from "./lib/SectionAventure.svelte";
   import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
@@ -62,6 +63,27 @@
   // Rien ne se perd : chaque changement de l'aventure est enregistré aussitôt.
   $effect(() => {
     if (aventure) ecrireAventure(localStorage, $state.snapshot(aventure));
+  });
+
+  /*
+   * LE REPÈRE. Chaque plan garde son repère à jour du dernier chapitre lu
+   * (reperes.ts) : un changement de chapitre (en-tête, reprise d'une
+   * sauvegarde, nouvelle partie) ou de cases le déplace. La règle ne
+   * réécrit que ce qui change, donc l'effet s'arrête de lui-même.
+   */
+  $effect(() => {
+    if (!aventure) return;
+    const { chapitre } = aventure;
+    for (const plan of aventure.plans) {
+      const suivant = repereApres(
+        $state.snapshot(plan.repere),
+        $state.snapshot(plan.cases),
+        chapitre,
+      );
+      if (!memeRepere(suivant, $state.snapshot(plan.repere))) {
+        plan.repere = suivant;
+      }
+    }
   });
 
   $effect(garderEcranAllume);
@@ -218,6 +240,9 @@
     onmurs={(murs) => (plan.murs = murs)}
     ongrille={(grille) => (plan.grille = grille)}
     oncases={(cases) => (plan.cases = cases)}
+    chapitre={aventure.chapitre}
+    onrepere={(colonne, ligne) =>
+      (plan.repere = poserLeRepere(colonne, ligne, aventure!.chapitre))}
     onretour={() => aller(laFeuille())}
     onsupprimer={() => {
       aventure!.plans = aventure!.plans.filter((p) => p.id !== plan.id);

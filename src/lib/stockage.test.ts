@@ -57,10 +57,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 13", () => {
+  it("enregistre l'aventure avec le numéro de version 14", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 13,
+      version: 14,
       aventure: herboriste,
     });
   });
@@ -213,7 +213,7 @@ describe("stockage de l'aventure", () => {
       }),
     );
     expect(lireAventure(localStorage)?.plans).toEqual([
-      { id: 1, nom: "Tour", grille, murs: [], cases: [] },
+      { id: 1, nom: "Tour", grille, murs: [], cases: [], repere: null },
     ]);
   });
 
@@ -231,8 +231,47 @@ describe("stockage de l'aventure", () => {
       }),
     );
     expect(lireAventure(localStorage)?.plans).toEqual([
-      { id: 1, nom: "Tour", grille, murs, cases: [] },
+      { id: 1, nom: "Tour", grille, murs, cases: [], repere: null },
     ]);
+  });
+
+  it("migre un enregistrement de la version 13 : ses plans n'ont jamais placé de repère", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    const plan = { id: 1, nom: "Tour", grille, murs: [], cases: [] };
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 13,
+        aventure: { ...herboriste, plans: [plan] },
+      }),
+    );
+    expect(lireAventure(localStorage)?.plans).toEqual([
+      { ...plan, repere: null },
+    ]);
+  });
+
+  it("ne trouve aucune aventure si un repère est mal formé", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 14,
+        aventure: {
+          ...herboriste,
+          plans: [
+            {
+              id: 1,
+              nom: "Tour",
+              grille,
+              murs: [],
+              cases: [],
+              repere: { colonne: 1, ligne: 1 },
+            },
+          ],
+        },
+      }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
   });
 
   it("retrouve les plans enregistrés et leurs murs, y compris une grille étendue vers le haut et la gauche", () => {
@@ -252,6 +291,7 @@ describe("stockage de l'aventure", () => {
             { colonne: -2, ligne: -1, chapitre: 47, note: "clé", ordre: 2 },
             { colonne: 3, ligne: 0, chapitre: null, note: "porte", ordre: 0 },
           ],
+          repere: { colonne: -2, ligne: -1, chapitre: 47, manuel: false },
         },
       ],
     };
@@ -275,7 +315,7 @@ describe("stockage de l'aventure", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
       JSON.stringify({
-        version: 13,
+        version: 14,
         aventure: {
           ...herboriste,
           plans: [
@@ -285,6 +325,7 @@ describe("stockage de l'aventure", () => {
               grille,
               murs: [{ sens: "diagonal", colonne: 0, ligne: 0 }],
               cases: [],
+              repere: null,
             },
           ],
         },
@@ -298,7 +339,7 @@ describe("stockage de l'aventure", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
       JSON.stringify({
-        version: 13,
+        version: 14,
         aventure: {
           ...herboriste,
           plans: [
@@ -310,6 +351,7 @@ describe("stockage de l'aventure", () => {
               cases: [
                 { colonne: 0, ligne: 0, chapitre: 0, note: "", ordre: 1 },
               ],
+              repere: null,
             },
           ],
         },

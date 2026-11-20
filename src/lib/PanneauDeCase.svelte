@@ -9,8 +9,11 @@
    * ancien numéro. Un numéro déjà écrit dans une autre case ne bloque rien :
    * un indice le dit.
    *
-   * Ticket 05 : « Je suis ici » viendra se poser dans `.boutons`, au-dessus de
-   * « Vider la case ».
+   * « Je suis ici » place le repère sur cette case (le plan s'en charge,
+   * `onici`) et ferme le panneau ; il est au-dessus de « Vider la case ».
+   * C'est le bouton secondaire de la maquette (`.ghost` : contour `trait`,
+   * texte craie 700, 52 px), pas le jaune : tout s'enregistre déjà à chaque
+   * modification, le jaune n'a pas d'action principale à porter ici.
    */
   import { untrack } from "svelte";
   import ChampNumerique from "./ChampNumerique.svelte";
@@ -38,11 +41,21 @@
     onmodifier: (contenu: Contenu) => void;
     /** « Vider la case » : le plan retire la case. */
     onvider: () => void;
+    /** « Je suis ici » : le plan place le repère sur cette case. */
+    onici: () => void;
     onfermer: () => void;
   }
 
-  let { grille, cases, colonne, ligne, onmodifier, onvider, onfermer }: Props =
-    $props();
+  let {
+    grille,
+    cases,
+    colonne,
+    ligne,
+    onmodifier,
+    onvider,
+    onici,
+    onfermer,
+  }: Props = $props();
 
   const depart = untrack(() => laCase(cases, colonne, ligne));
   let chapitre = $state<number | null>(depart?.chapitre ?? null);
@@ -103,6 +116,16 @@
   {/if}
 
   <div class="boutons">
+    <button
+      class="ghost"
+      type="button"
+      onclick={() => {
+        onici();
+        onfermer();
+      }}
+    >
+      Je suis ici
+    </button>
     <LienDiscret
       onclick={() => {
         onvider();
@@ -148,5 +171,21 @@
     display: grid;
     gap: 10px;
     margin-top: 14px;
+  }
+  /* Bouton secondaire de la maquette (« .ghost »). */
+  .ghost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    border: 2px solid var(--trait);
+    border-radius: var(--r);
+    font-weight: 700;
+    color: var(--craie);
+  }
+  .ghost:focus-visible {
+    outline: 2px solid var(--jaune);
+    outline-offset: 3px;
   }
 </style>

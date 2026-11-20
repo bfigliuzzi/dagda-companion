@@ -11,7 +11,7 @@
  * `ordre` est le rang d'écriture du numéro : chaque fois qu'une case reçoit un
  * nouveau numéro, elle prend le rang suivant. Si deux cases portent le même
  * numéro, « la dernière numérotée » est celle dont l'`ordre` est le plus grand
- * (c'est là que le repère ira, ticket 05). Changer la note ne change pas l'ordre.
+ * (c'est là que le repère va, voir reperes.ts). Changer la note ne change pas l'ordre.
  */
 
 import type { Grille } from "./plans";
@@ -92,16 +92,23 @@ export function nomDeLaCase(
   return `${colonne - grille.colonne + 1}-${ligne - grille.ligne + 1}`;
 }
 
-/** Le nom lu par les lecteurs d'écran : « Case 3-5, chapitre 47, note : clé ». */
+/**
+ * Le nom lu par les lecteurs d'écran : « Case 3-5, chapitre 47, note : clé ».
+ * La case qui porte le repère le dit à la fin : « , vous êtes ici », ou
+ * « , vous étiez ici (repère pâle) » quand le dernier chapitre lu n'est pas sur le plan.
+ */
 export function nomAccessible(
   grille: Grille,
   colonne: number,
   ligne: number,
   contenu: Case | undefined,
+  repere?: "ici" | "pale",
 ): string {
   let nom = `Case ${nomDeLaCase(grille, colonne, ligne)}`;
   if (contenu?.chapitre != null) nom += `, chapitre ${contenu.chapitre}`;
   if (contenu?.note) nom += `, note : ${contenu.note}`;
+  if (repere === "ici") nom += ", vous êtes ici";
+  if (repere === "pale") nom += ", vous étiez ici (repère pâle)";
   return nom;
 }
 

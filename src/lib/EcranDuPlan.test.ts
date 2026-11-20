@@ -38,7 +38,7 @@ async function ouvrirLePlan() {
   const lecteur = userEvent.setup();
   await lecteur.click(
     within(screen.getByRole("region", { name: "Plans" })).getByRole("button", {
-      name: "Souterrains",
+      name: /^Souterrains/,
     }),
   );
   return lecteur;

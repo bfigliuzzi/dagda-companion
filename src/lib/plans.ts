@@ -10,11 +10,12 @@
  * enregistrées ne changent pas, seule `grille` s'étend. Les murs sont posés
  * sur les bords des cases, repérés dans ces mêmes coordonnées (voir murs.ts).
  * Les cases notées (numéro de chapitre, note : voir cases.ts) sont repérées
- * dans ces mêmes coordonnées ; le repère « vous êtes ici » viendra avec son ticket.
+ * dans ces mêmes coordonnées, comme le repère « vous êtes ici » (voir reperes.ts).
  */
 
 import { estUneCase, type Case } from "./cases";
 import { estUnBord, type Bord } from "./murs";
+import { estUnRepere, type Repere } from "./reperes";
 
 /** Un plan neuf compte 8 × 8 cases. */
 export const COLONNES_DE_DEPART = 8;
@@ -43,6 +44,8 @@ export interface Plan {
   murs: Bord[];
   /** Les cases qui portent un numéro ou une note (voir cases.ts). */
   cases: Case[];
+  /** Le repère « vous êtes ici », `null` tant qu'il n'a jamais été placé (voir reperes.ts). */
+  repere: Repere | null;
 }
 
 /** Un plan neuf : 8 × 8 cases, encore vide, avec le numéro qui suit les autres. */
@@ -58,13 +61,14 @@ export function unNouveauPlan(nom: string, existants: readonly Plan[]): Plan {
     },
     murs: [],
     cases: [],
+    repere: null,
   };
 }
 
 /** Vérifie un plan relu depuis l'appareil, dont on ne sait rien. */
 export function estUnPlan(valeur: unknown): valeur is Plan {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { id, nom, grille, murs, cases } = valeur as Plan;
+  const { id, nom, grille, murs, cases, repere } = valeur as Plan;
   return (
     Number.isInteger(id) &&
     typeof nom === "string" &&
@@ -72,7 +76,8 @@ export function estUnPlan(valeur: unknown): valeur is Plan {
     Array.isArray(murs) &&
     murs.every(estUnBord) &&
     Array.isArray(cases) &&
-    cases.every(estUneCase)
+    cases.every(estUneCase) &&
+    estUnRepere(repere)
   );
 }
 

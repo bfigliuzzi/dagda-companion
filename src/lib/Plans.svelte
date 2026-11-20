@@ -5,9 +5,14 @@
    * qui demande un nom (FormulaireDAjout, comme pour une arme). Sans plan, seul
    * « Nouveau plan » s'affiche. Chaque plan créé s'enregistre aussitôt, avec
    * le reste de l'aventure.
+   *
+   * À droite de la ligne : « ici § 203 » quand le repère est sur une case
+   * numérotée (le numéro de cette case, même si le repère est pâle), sinon le
+   * nombre de cases notées (« 3 cases notées », « 1 case notée », rien pour 0).
    */
   import FormulaireDAjout from "./FormulaireDAjout.svelte";
   import Icone from "./Icone.svelte";
+  import { laCase } from "./cases";
   import { unNouveauPlan, type Plan } from "./plans";
 
   interface Props {
@@ -20,6 +25,14 @@
   const id = $props.id();
 
   let enAjout = $state(false);
+
+  /** Le chapitre de la case du repère, ou `null`. */
+  function ici(plan: Plan): number | null {
+    const { repere } = plan;
+    return repere
+      ? (laCase(plan.cases, repere.colonne, repere.ligne)?.chapitre ?? null)
+      : null;
+  }
 
   function ajouter(nom: string) {
     plans.push(unNouveauPlan(nom, plans));
@@ -35,7 +48,15 @@
       {#each plans as plan (plan.id)}
         <li>
           <button class="row" type="button" onclick={() => onouvrir(plan.id)}>
-            {plan.nom}
+            <span class="nom">{plan.nom}</span>
+            {#if ici(plan) !== null}
+              <span class="val">ici § {ici(plan)}</span>
+            {:else if plan.cases.length > 0}
+              <span class="detail">
+                {plan.cases.length}
+                {plan.cases.length > 1 ? "cases notées" : "case notée"}
+              </span>
+            {/if}
           </button>
         </li>
       {/each}
@@ -88,6 +109,21 @@
     padding: var(--esp-sm) 0;
     border-bottom: 1px solid var(--trait);
     text-align: left;
+  }
+  .nom {
+    flex: 1;
+  }
+  /* Valeur de la ligne (DESIGN.md, « Rows ») : 18 px graisse 700, chiffres tabulaires. */
+  .val {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Le nombre de cases notées décrit le plan, il n'en est pas une valeur : 14 px craie grise. */
+  .detail {
+    font-size: 14px;
+    color: var(--craie-2);
+    font-variant-numeric: tabular-nums;
   }
   .add {
     display: flex;

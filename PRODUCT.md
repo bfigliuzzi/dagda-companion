@@ -46,7 +46,7 @@ Fonctions confirmées :
 - effets temporaires et bonus d'objets (« buffs »), retirés à la main ;
 - trois modes de jeu du livre (narratif, simplifié avec 3 sauvegardes, mortel) ;
 - zone de notes libres (texte) ;
-- plans des lieux (labyrinthe, souterrains, tour) : une grille pointée par lieu, nommée, que le lecteur trace au doigt à la place du papier quadrillé ;
+- plans des lieux (labyrinthe, souterrains, tour) : une grille pointée par lieu, nommée, que le lecteur trace au doigt à la place du papier quadrillé, avec un repère « vous êtes ici » qui suit le dernier chapitre lu ;
 - maintien de l'écran allumé.
 
 Contraintes :

@@ -29,5 +29,5 @@ Ce que fait le doigt sur la grille d'un plan, du moment où il se pose jusqu'à 
 _À éviter_ : geste, coup ; « trait » seul quand on parle d'un mur ou d'un compteur
 
 **Repère** :
-Le disque de craie « vous êtes ici » d'un plan. Il se place sur la case dont le numéro est le dernier chapitre lu. Chaque plan a le sien.
+Le disque de craie « vous êtes ici » d'un plan. Il se place sur la case dont le numéro est le dernier chapitre lu (la dernière numérotée si deux cases portent ce numéro). « Je suis ici » le déplace à la main, jusqu'au prochain changement de chapitre. Quand le dernier chapitre lu n'est sur aucune case, il reste où il était, en craie pâle. Chaque plan a le sien.
 _À éviter_ : marqueur, pion

@@ -12,6 +12,13 @@
    * pour l'instant ; les cases arrivent avec leur ticket) et « Annuler », qui
    * défait le dernier trait entier, sans rétrécir la grille. L'historique des traits tient à l'écran
    * ouvert : il repart à zéro quand on revient à la feuille.
+   *
+   * Le repère « vous êtes ici » (reperes.ts) est déjà à jour quand l'écran
+   * s'ouvre : l'écran le montre, et la grille s'y centre. Quand le dernier
+   * chapitre lu n'est sur aucune case, le repère est pâle (son chapitre n'est
+   * plus le chapitre lu) et un indice le dit ; sans repère, l'indice ne vient
+   * que si le plan a au moins une case numérotée : sur un plan encore vierge,
+   * il n'y a rien à comparer et il ne ferait que gêner.
    */
   import ControleSegmente from "./ControleSegmente.svelte";
   import Dock from "./Dock.svelte";
@@ -39,6 +46,10 @@
     ongrille: (grille: Grille) => void;
     /** Une case a été écrite ou vidée : le plan enregistre les cases. */
     oncases: (cases: Case[]) => void;
+    /** Le dernier chapitre lu, pour savoir si le repère est pâle. */
+    chapitre: number;
+    /** « Je suis ici » : le plan place le repère sur cette case. */
+    onrepere: (colonne: number, ligne: number) => void;
     onretour: () => void;
     /** Le lecteur a confirmé : le plan est effacé. */
     onsupprimer: () => void;
@@ -50,6 +61,8 @@
     onmurs,
     ongrille,
     oncases,
+    chapitre,
+    onrepere,
     onretour,
     onsupprimer,
   }: Props = $props();
@@ -79,6 +92,20 @@
     if (cases !== plan.cases) oncases(cases);
   }
 
+  /** Le repère à montrer : où il est, et s'il est pâle. */
+  const repere = $derived(
+    plan.repere
+      ? {
+          colonne: plan.repere.colonne,
+          ligne: plan.repere.ligne,
+          pale: plan.repere.chapitre !== chapitre,
+        }
+      : null,
+  );
+  const chapitreAbsent = $derived(
+    repere?.pale ?? plan.cases.some((c) => c.chapitre !== null),
+  );
+
   function annuler() {
     const dernier = traits.at(-1);
     if (!dernier) return;
@@ -98,6 +125,7 @@
     grille={plan.grille}
     murs={plan.murs}
     cases={plan.cases}
+    {repere}
     actif={outil === "murs"}
     ontrait={tracer}
     oncase={(colonne, ligne) => (selection = { colonne, ligne })}
@@ -106,6 +134,11 @@
     {#if plan.murs.length === 0}
       <Indice icone="info" role="note" marge="0">
         Glissez le doigt le long des points pour tracer un mur.
+      </Indice>
+    {/if}
+    {#if chapitreAbsent}
+      <Indice icone="info" role="status" marge="0">
+        Le <b>§ {chapitre}</b> n'est pas sur ce plan.
       </Indice>
     {/if}
     <button
@@ -145,6 +178,7 @@
     ligne={selection.ligne}
     onmodifier={ecrireLaCase}
     onvider={() => ecrireLaCase({ chapitre: null, note: "" })}
+    onici={() => onrepere(selection!.colonne, selection!.ligne)}
     onfermer={() => (selection = null)}
   />
 {/if}

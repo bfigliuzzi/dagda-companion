@@ -8,11 +8,11 @@ Références : `.scratch/plans/spec.md` (Direction, États et ordres de grandeur
 
 **Status:** ready-for-agent
 
-- [ ] Quand le dernier chapitre lu correspond à une case, le repère (disque plein en craie) s'y place ; changer le chapitre le déplace.
-- [ ] Si deux cases portent ce numéro, le repère va sur la dernière numérotée.
-- [ ] « Je suis ici » place le repère sur la case choisie ; il y reste jusqu'au prochain changement de chapitre.
-- [ ] Chapitre absent du plan : le repère reste en place en craie pâle, et l'indice « § 205 n'est pas sur ce plan » s'affiche.
-- [ ] Chaque plan garde son propre repère.
-- [ ] À l'ouverture d'un plan, la vue est centrée sur le repère.
-- [ ] Sur la feuille, la ligne du plan affiche « ici § N » quand le repère est sur une case numérotée, sinon le nombre de cases notées.
-- [ ] La position du repère est enregistrée et retrouvée après rechargement.
+- [x] Quand le dernier chapitre lu correspond à une case, le repère (disque plein en craie) s'y place ; changer le chapitre le déplace.
+- [x] Si deux cases portent ce numéro, le repère va sur la dernière numérotée.
+- [x] « Je suis ici » place le repère sur la case choisie ; il y reste jusqu'au prochain changement de chapitre.
+- [x] Chapitre absent du plan : le repère reste en place en craie pâle, et l'indice « § 205 n'est pas sur ce plan » s'affiche.
+- [x] Chaque plan garde son propre repère.
+- [x] À l'ouverture d'un plan, la vue est centrée sur le repère.
+- [x] Sur la feuille, la ligne du plan affiche « ici § N » quand le repère est sur une case numérotée, sinon le nombre de cases notées.
+- [x] La position du repère est enregistrée et retrouvée après rechargement.

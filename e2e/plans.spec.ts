@@ -247,3 +247,61 @@ test("en mode Cases, un vrai appui tactile ouvre le panneau qui glisse, un gliss
     page.getByRole("button", { name: "Case 3-2, chapitre 47, note : clé" }),
   ).toBeVisible();
 });
+
+test("à l'ouverture, la vue se centre sur le repère ; le disque est plein de craie, pâle quand le chapitre est absent", async ({
+  page,
+}) => {
+  const plan = {
+    id: 1,
+    nom: "Labyrinthe",
+    grille: { colonne: 0, ligne: 0, colonnes: 24, lignes: 24 },
+    murs: [],
+    cases: [
+      { colonne: 18, ligne: 17, chapitre: 112, note: "", ordre: 1 },
+      { colonne: 2, ligne: 3, chapitre: 9, note: "", ordre: 2 },
+    ],
+    repere: null,
+  };
+  // Posé avant tout chargement : la page ne garde que cet enregistrement.
+  await page.addInitScript(
+    (enregistrement) =>
+      localStorage.setItem("dagda-compagnon", JSON.stringify(enregistrement)),
+    enregistrementDeTest({ plans: [plan] }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Labyrinthe/ }).click();
+
+  const disque = page.locator("circle[data-repere]");
+  await expect(disque).toHaveCount(1);
+  const cadre = (await page.getByTestId("vue-du-plan").boundingBox())!;
+  const centre = async () => {
+    const d = (await disque.boundingBox())!;
+    return { x: d.x + d.width / 2, y: d.y + d.height / 2 };
+  };
+  const vers = await centre();
+  expect(vers.x).toBeCloseTo(cadre.x + cadre.width / 2, 0);
+  expect(vers.y).toBeCloseTo(cadre.y + cadre.height / 2, 0);
+
+  // Disque plein de craie, à 36 px, sans couleur nouvelle.
+  expect((await disque.boundingBox())!.width).toBeCloseTo(36, 0);
+  expect(await disque.evaluate((e) => getComputedStyle(e).fill)).toBe(
+    "rgb(236, 235, 228)",
+  );
+
+  // Chapitre absent du plan : même place, craie pâle.
+  await page.getByRole("button", { name: "Retour à la feuille" }).click();
+  await page.getByRole("button", { name: /Dernier chapitre lu/ }).click();
+  await page.getByLabel("Dernier chapitre lu").fill("205");
+  await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: /^Labyrinthe/ }).click();
+  await expect(page.locator("circle[data-repere]")).toHaveAttribute(
+    "data-etat",
+    "pale",
+  );
+  expect(
+    await page
+      .locator("circle[data-repere]")
+      .evaluate((e) => getComputedStyle(e).fill),
+  ).toBe("rgb(133, 131, 122)");
+  await expect(page.getByText("n'est pas sur ce plan")).toBeVisible();
+});

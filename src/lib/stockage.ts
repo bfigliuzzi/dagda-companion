@@ -12,7 +12,7 @@
 import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 13;
+export const VERSION = 14;
 
 interface Enregistrement {
   version: number;
@@ -73,6 +73,19 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
       plans: plans.map((plan) =>
         typeof plan === "object" && plan !== null
           ? { ...plan, cases: [] }
+          : plan,
+      ),
+    };
+  },
+  // Version 14 : le repère « vous êtes ici » des plans (voir reperes.ts). Un plan de la version 13 n'en a jamais placé.
+  13: (aventure) => {
+    const { plans } = aventure as { plans?: unknown };
+    if (!Array.isArray(plans)) return aventure;
+    return {
+      ...(aventure as object),
+      plans: plans.map((plan) =>
+        typeof plan === "object" && plan !== null
+          ? { ...plan, repere: null }
           : plan,
       ),
     };

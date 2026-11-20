@@ -75,6 +75,7 @@ test("un mur effacé reste en craie rouge et se fond en 1,2 s ; sans animation, 
       { sens: "horizontal", colonne: 3, ligne: 3 },
     ],
     cases: [],
+    repere: null,
   };
   await page.addInitScript(
     (enregistrement) => {

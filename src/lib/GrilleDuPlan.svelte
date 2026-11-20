@@ -53,6 +53,15 @@
    * seul n'est pas « capturé » en mode Cases, pour que le `click` arrive au
    * bouton touché. Le clavier et les lecteurs d'écran cliquent sans doigt
    * (`detail` à 0) : ils ouvrent toujours.
+   *
+   * LE REPÈRE. Un disque plein de craie de 36 px (rayon 18, `repere`), posé
+   * sous le numéro de la case : le numéro passe en noir 13 px 700 par-dessus,
+   * comme le segment actif du contrôle « Murs / Cases » (aplat craie, texte
+   * noir), et reste lu en entier même à quatre chiffres. Pâle (`pale`, le
+   * dernier chapitre lu n'est sur aucune case) : le même disque en craie pâle
+   * `craie-3`, noir sur craie-3 reste à plus de 5:1. Le repère est annoncé :
+   * dans le nom de la grille, et dans celui de sa case en mode Cases. À
+   * l'ouverture, la vue se centre sur lui s'il existe.
    */
   import { untrack } from "svelte";
   import {
@@ -65,15 +74,22 @@
     type Position,
     type Trait,
   } from "./murs";
-  import { nomAccessible, type Case } from "./cases";
+  import { nomAccessible, nomDeLaCase, type Case } from "./cases";
   import { COTE_D_UNE_CASE, type Grille } from "./plans";
   import { DUREE_TRACE_MS } from "./TraceDeCraie.svelte";
-  import { deplacerLaVue, vueDOuverture, type Vue } from "./vueDuPlan";
+  import {
+    deplacerLaVue,
+    vueCentreeSur,
+    vueDOuverture,
+    type Vue,
+  } from "./vueDuPlan";
 
   interface Props {
     grille: Grille;
     murs: Bord[];
     cases?: Case[];
+    /** Le repère « vous êtes ici » (case en coordonnées du plan), pâle ou non. */
+    repere?: { colonne: number; ligne: number; pale: boolean } | null;
     /** Faux en mode Cases : la grille ne trace pas, ses cases sont des boutons. */
     actif?: boolean;
     ontrait?: (changement: Changement) => void;
@@ -85,10 +101,14 @@
     grille,
     murs,
     cases = [],
+    repere = null,
     actif = true,
     ontrait,
     oncase,
   }: Props = $props();
+
+  /** Rayon du repère, en px : 36 px de disque dans une case de 44 px. */
+  const RAYON_DU_REPERE = 18;
 
   const uid = $props.id();
   const motif = `points-${uid}`;
@@ -104,10 +124,18 @@
   /** Le point du plan au coin en haut à gauche du cadre, en px du plan. */
   let vue = $state<Vue>({ x: 0, y: 0 });
 
-  /** À l'ouverture, une fois le cadre mesuré : la grille en haut, si elle y tient. */
+  /**
+   * À l'ouverture, une fois le cadre mesuré : centrée sur le repère s'il y en
+   * a un, sinon la grille en haut, si elle y tient.
+   */
   $effect(() => {
     untrack(() => {
-      vue = vueDOuverture(grille, tailleDuCadre());
+      vue = repere
+        ? vueCentreeSur(
+            { x: repere.colonne + 0.5, y: repere.ligne + 0.5 },
+            tailleDuCadre(),
+          )
+        : vueDOuverture(grille, tailleDuCadre());
     });
   });
 
@@ -308,6 +336,17 @@
     new Map(cases.map((c) => [`${c.colonne},${c.ligne}`, c])),
   );
 
+  const surLeRepere = (colonne: number, ligne: number) =>
+    repere?.colonne === colonne && repere.ligne === ligne;
+
+  /** Le nom de la grille : sa taille, le nord, et où est le repère. */
+  const nomDeLaGrille = $derived(
+    `Grille du plan : ${grille.colonnes} colonnes sur ${grille.lignes} lignes, nord en haut` +
+      (repere
+        ? `, ${repere.pale ? "repère pâle" : "vous êtes ici"} en case ${nomDeLaCase(grille, repere.colonne, repere.ligne)}`
+        : ""),
+  );
+
   /** Toutes les cases de la grille, ligne par ligne, pour les boutons du mode Cases. */
   const cellules = $derived(
     Array.from({ length: grille.colonnes * grille.lignes }, (_, i) => ({
@@ -351,7 +390,7 @@
     <svg
       bind:this={svg}
       role="img"
-      aria-label="Grille du plan : {grille.colonnes} colonnes sur {grille.lignes} lignes, nord en haut"
+      aria-label={nomDeLaGrille}
       width={largeur}
       height={hauteur}
       viewBox="{x0} {y0} {largeur} {hauteur}"
@@ -383,9 +422,20 @@
       {#each tracesVisibles as trace (trace.n)}
         <line {...bouts(trace.bord)} data-etat="efface" />
       {/each}
+      {#if repere}
+        <circle
+          class="repere"
+          cx={(repere.colonne + 0.5) * COTE_D_UNE_CASE}
+          cy={(repere.ligne + 0.5) * COTE_D_UNE_CASE}
+          r={RAYON_DU_REPERE}
+          data-repere
+          data-etat={repere.pale ? "pale" : "repere"}
+        />
+      {/if}
       {#each cases as c (`${c.colonne},${c.ligne}`)}
         {#if c.chapitre !== null}
           <text
+            data-sur-repere={surLeRepere(c.colonne, c.ligne) || undefined}
             x={(c.colonne + 0.5) * COTE_D_UNE_CASE}
             y={(c.ligne + 0.5) * COTE_D_UNE_CASE}
           >
@@ -422,6 +472,11 @@
               cellule.colonne,
               cellule.ligne,
               casesParPosition.get(`${cellule.colonne},${cellule.ligne}`),
+              surLeRepere(cellule.colonne, cellule.ligne)
+                ? repere?.pale
+                  ? "pale"
+                  : "ici"
+                : undefined,
             )}
             onclick={(evenement) => {
               // Un clic de doigt ou de souris compte s'il n'a pas glissé ; sans
@@ -474,6 +529,17 @@
   }
   circle {
     fill: var(--trait);
+  }
+  /* Le repère : disque plein de craie ; pâle, en craie pâle (craie-3). */
+  circle.repere {
+    fill: var(--craie);
+  }
+  circle.repere[data-etat="pale"] {
+    fill: var(--craie-3);
+  }
+  /* Le numéro de la case du repère : noir par-dessus le disque. */
+  text[data-sur-repere] {
+    fill: var(--noir);
   }
   /* Un mur : trait de craie de 3 px, bouts arrondis. */
   line {
