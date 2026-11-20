@@ -12,6 +12,10 @@
    * (1fr / 1.35fr, écart 10 px) sur fond noir plein avec un filet `trait` en
    * haut (DESIGN.md, « Éléments fixes »).
    *
+   * Variante `plan` : la barre de l'écran d'un plan, même fond noir plein et
+   * même filet que le dock de combat, mais le contrôle « Murs / Cases »
+   * d'abord, plus large (1.35fr), puis « Annuler » (1fr).
+   *
    * La page qui l'emploie garde de la place en bas pour ne rien cacher
    * (voir `.feuille` dans App.svelte).
    */
@@ -19,13 +23,18 @@
 
   interface Props {
     children: Snippet;
-    variante?: "degrade" | "combat";
+    variante?: "degrade" | "combat" | "plan";
   }
 
   let { children, variante = "degrade" }: Props = $props();
 </script>
 
-<div class="dock" data-testid="dock" class:combat={variante === "combat"}>
+<div
+  class="dock"
+  data-testid="dock"
+  class:combat={variante === "combat"}
+  class:plan={variante === "plan"}
+>
   <div class="contenu">{@render children()}</div>
 </div>
 
@@ -41,7 +50,8 @@
     background: linear-gradient(to top, var(--noir) 70%, rgb(0 0 0 / 0));
   }
 
-  .dock.combat {
+  .dock.combat,
+  .dock.plan {
     background: var(--noir);
     border-top: 1px solid var(--trait);
   }
@@ -54,8 +64,13 @@
     margin: 0 auto;
   }
 
-  .combat .contenu {
+  .combat .contenu,
+  .plan .contenu {
     grid-template-columns: 1fr 1.35fr;
     gap: 10px;
+  }
+
+  .plan .contenu {
+    grid-template-columns: 1.35fr 1fr;
   }
 </style>

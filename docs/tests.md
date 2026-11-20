@@ -48,10 +48,10 @@ Les scénarios actuels, un par sujet :
 
 - `pwa.spec.ts` : l'app construite s'installe comme PWA (manifeste, service worker), se recharge hors ligne, y crée un personnage, y retrouve une valeur modifiée, ne fait aucune requête externe, sert sa police et son ardoise noire ;
 - `parcours.spec.ts` : un parcours de lecteur, créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure et l'historique ;
-- `trace-de-craie.spec.ts` : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime ; les valeurs du bloc vital ont une zone d'appui d'au moins 44 px ;
+- `trace-de-craie.spec.ts` : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime, pour une valeur comme pour un mur effacé sur un plan ; les valeurs du bloc vital ont une zone d'appui d'au moins 44 px ;
 - `des.spec.ts` : le dock de dés est le seul élément fixe et reste en bas quand la feuille défile ; le panneau glisse par-dessus la feuille, sauf avec `prefers-reduced-motion` ;
 - `notes.spec.ts` : la zone de notes s'agrandit avec son texte, sans défilement interne ;
-- `plans.spec.ts` : un plan créé hors ligne se retrouve au rechargement, sa ligne fait 48 px et la grille de 8 cases mesure 8 × 44 px.
+- `plans.spec.ts` : un plan créé hors ligne se retrouve au rechargement, sa ligne fait 48 px et la grille de 8 cases mesure 8 × 44 px ; un vrai glissé tactile y trace des murs de 3 px à bouts arrondis sans faire défiler la page, et la barre du bas reste fixée sous « Supprimer ce plan ».
 
 Les aventures posées dans le `localStorage` avant le chargement viennent d'une seule fabrique, `enregistrementDeTest` dans `e2e/aventure.ts`, à la version courante de l'enregistrement.
 

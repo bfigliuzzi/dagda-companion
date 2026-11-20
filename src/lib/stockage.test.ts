@@ -57,10 +57,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 11", () => {
+  it("enregistre l'aventure avec le numéro de version 12", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 11,
+      version: 12,
       aventure: herboriste,
     });
   });
@@ -203,7 +203,21 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual({ ...herboriste, plans: [] });
   });
 
-  it("retrouve les plans enregistrés, y compris une grille étendue vers le haut et la gauche", () => {
+  it("migre un enregistrement de la version 11 : ses plans n'ont aucun mur", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 11,
+        aventure: { ...herboriste, plans: [{ id: 1, nom: "Tour", grille }] },
+      }),
+    );
+    expect(lireAventure(localStorage)?.plans).toEqual([
+      { id: 1, nom: "Tour", grille, murs: [] },
+    ]);
+  });
+
+  it("retrouve les plans enregistrés et leurs murs, y compris une grille étendue vers le haut et la gauche", () => {
     const avecPlans: Aventure = {
       ...herboriste,
       plans: [
@@ -212,6 +226,10 @@ describe("stockage de l'aventure", () => {
           id: 2,
           nom: "Tour",
           grille: { colonne: -2, ligne: -1, colonnes: 11, lignes: 9 },
+          murs: [
+            { sens: "horizontal", colonne: -2, ligne: -1 },
+            { sens: "vertical", colonne: 3, ligne: 0 },
+          ],
         },
       ],
     };
@@ -225,6 +243,28 @@ describe("stockage de l'aventure", () => {
       JSON.stringify({
         version: 11,
         aventure: { ...herboriste, plans: [{ id: 1, nom: "Tour" }] },
+      }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
+  });
+
+  it("ne trouve aucune aventure si un mur est mal formé", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 12,
+        aventure: {
+          ...herboriste,
+          plans: [
+            {
+              id: 1,
+              nom: "Tour",
+              grille,
+              murs: [{ sens: "diagonal", colonne: 0, ligne: 0 }],
+            },
+          ],
+        },
       }),
     );
     expect(lireAventure(localStorage)).toBeNull();

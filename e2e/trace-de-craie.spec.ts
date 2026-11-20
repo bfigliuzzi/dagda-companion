@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { Plan } from "../src/lib/plans";
 import { enregistrementDeTest } from "./aventure";
 
 const aventure = enregistrementDeTest();
@@ -60,4 +61,52 @@ test("les valeurs du bloc vital se touchent du pouce : zone d'appui d'au moins 4
     expect(zone[0]).toBeGreaterThanOrEqual(44);
     expect(zone[1]).toBeGreaterThanOrEqual(44);
   }
+});
+
+test("un mur effacé reste en craie rouge et se fond en 1,2 s ; sans animation, il disparaît tout de suite", async ({
+  page,
+}) => {
+  const plan: Plan = {
+    id: 1,
+    nom: "Souterrains",
+    grille: { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 },
+    murs: [
+      { sens: "horizontal", colonne: 0, ligne: 0 },
+      { sens: "horizontal", colonne: 3, ligne: 3 },
+    ],
+  };
+  await page.addInitScript(
+    (enregistrement) => {
+      localStorage.setItem("dagda-compagnon", JSON.stringify(enregistrement));
+    },
+    enregistrementDeTest({ plans: [plan] }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "Souterrains" }).click();
+
+  const grille = page.getByRole("img", { name: /Grille du plan/ });
+  const { x, y } = (await grille.boundingBox())!;
+  const efface = grille.locator('line[data-etat="efface"]');
+
+  // Un appui du doigt au milieu du mur du haut, à 6 px à côté : il s'efface.
+  await page.touchscreen.tap(x + 22, y + 6);
+  await expect(efface).toHaveCount(1);
+  const style = await efface.evaluate((ligne) => {
+    const css = getComputedStyle(ligne);
+    return {
+      animation: css.animationName,
+      duree: css.animationDuration,
+      couleur: css.stroke,
+    };
+  });
+  expect(style.animation).not.toBe("none");
+  expect(style.duree).toBe("1.2s");
+  expect(style.couleur).toBe("rgb(232, 106, 90)");
+  await expect(efface).toHaveCount(0, { timeout: 2_000 });
+
+  // Animations réduites : le mur effacé ne reste pas en rouge.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.touchscreen.tap(x + 3 * 44 + 22, y + 3 * 44);
+  await expect(grille.locator('line[data-etat="mur"]')).toHaveCount(0);
+  await expect(efface).toBeHidden();
 });

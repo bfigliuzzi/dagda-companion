@@ -7,11 +7,13 @@
  * Un plan est une grille de cases. Le nord est toujours en haut. Les cases
  * sont repérées par une colonne et une ligne, qui peuvent être négatives :
  * quand la grille grandit à gauche ou en haut, les coordonnées déjà
- * enregistrées ne changent pas, seule `grille` s'étend. Les murs (sur les
- * bords des cases), les cases numérotées et le repère « vous êtes ici »
- * viendront s'ajouter au plan avec leurs propres tickets, en s'appuyant sur
- * ces mêmes coordonnées.
+ * enregistrées ne changent pas, seule `grille` s'étend. Les murs sont posés
+ * sur les bords des cases, repérés dans ces mêmes coordonnées (voir murs.ts).
+ * Les cases numérotées et le repère « vous êtes ici » viendront s'ajouter au
+ * plan avec leurs propres tickets, sur ces mêmes coordonnées.
  */
+
+import { estUnBord, type Bord } from "./murs";
 
 /** Un plan neuf compte 8 × 8 cases. */
 export const COLONNES_DE_DEPART = 8;
@@ -36,6 +38,8 @@ export interface Plan {
   id: number;
   nom: string;
   grille: Grille;
+  /** Les murs, dans l'ordre où ils ont été posés (voir murs.ts). */
+  murs: Bord[];
 }
 
 /** Un plan neuf : 8 × 8 cases, encore vide, avec le numéro qui suit les autres. */
@@ -49,15 +53,20 @@ export function unNouveauPlan(nom: string, existants: readonly Plan[]): Plan {
       colonnes: COLONNES_DE_DEPART,
       lignes: LIGNES_DE_DEPART,
     },
+    murs: [],
   };
 }
 
 /** Vérifie un plan relu depuis l'appareil, dont on ne sait rien. */
 export function estUnPlan(valeur: unknown): valeur is Plan {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { id, nom, grille } = valeur as Plan;
+  const { id, nom, grille, murs } = valeur as Plan;
   return (
-    Number.isInteger(id) && typeof nom === "string" && estUneGrille(grille)
+    Number.isInteger(id) &&
+    typeof nom === "string" &&
+    estUneGrille(grille) &&
+    Array.isArray(murs) &&
+    murs.every(estUnBord)
   );
 }
 

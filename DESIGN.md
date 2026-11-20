@@ -197,6 +197,14 @@ components:
     textColor: "{colors.craie}"
     rounded: "{rounded.die}"
     size: "84px"
+  plan-cell:
+    size: "44px"
+  plan-dot:
+    backgroundColor: "{colors.trait}"
+    size: "5px"
+  plan-wall:
+    textColor: "{colors.craie}"
+    width: "3px"
 ---
 
 # Design System: Compagnon de La Saga de Dagda
@@ -281,7 +289,7 @@ Le bloc vital est une grille de deux colonnes (1.45fr / 1fr, écart 16px) : les 
 
 Rythme : sections espacées de 20px en haut ; lignes d'au moins 48px ; champs de 52px ; bouton de dés de 58px ; aucune cible tactile sous 44px. Les écarts internes suivent 4, 6, 8, 12 et 16px.
 
-Éléments fixes : sur la feuille, seul le dock de dés reste collé en bas (padding 12px 18px 22px), sur un dégradé du noir opaque (70 %) vers le transparent pour que la page passe dessous. Sur les écrans de combat, le dock porte deux boutons (1fr / 1.35fr), sur fond noir opaque avec un filet `trait` en haut. Les écrans de combat et l'historique s'ouvrent en plein écran avec un bouton retour à gauche du titre ; dés et ajout d'effet s'ouvrent en panneau par-dessus la feuille.
+Éléments fixes : sur la feuille, seul le dock de dés reste collé en bas (padding 12px 18px 22px), sur un dégradé du noir opaque (70 %) vers le transparent pour que la page passe dessous. Sur les écrans de combat, le dock porte deux boutons (1fr / 1.35fr), sur fond noir opaque avec un filet `trait` en haut. Sur l'écran d'un plan, la barre du bas a le même fond et le même filet, et porte le contrôle « Murs / Cases » (1.35fr) puis « Annuler » (1fr) ; l'écran garde sous son dernier bouton la hauteur de la barre plus 20px. Les écrans de combat et l'historique s'ouvrent en plein écran avec un bouton retour à gauche du titre ; dés et ajout d'effet s'ouvrent en panneau par-dessus la feuille.
 
 ## Elevation & Depth
 
@@ -320,7 +328,7 @@ Contour de craie, jamais d'aplat sauf pour valider dans un panneau.
 - **Bourse:** petits cercles de 44px à contour `trait`.
 
 ### Segmented control
-Creux `ardoise-2` à coins de 12px, padding 4px, deux segments. Le segment actif est un aplat craie à coins de 9px, texte noir 700 ; l'autre est en craie grise. Il change de mode à l'intérieur d'un formulaire ou d'un panneau (1 dé / 2 dés, nouvelle aventure / déjà en route), jamais de page.
+Creux `ardoise-2` à coins de 12px, padding 4px, deux segments. Le segment actif est un aplat craie à coins de 9px, texte noir 700 ; l'autre est en craie grise. Il change de mode à l'intérieur d'un formulaire ou d'un panneau (1 dé / 2 dés, nouvelle aventure / déjà en route), ou l'outil de l'écran d'un plan (« Murs / Cases », dans la barre du bas), jamais de page. Composant partagé : `ControleSegmente.svelte`.
 
 ### Chips
 - **Style:** pilule de 44px, contour `trait` de 2px, texte craie grise 700.
@@ -357,8 +365,18 @@ Panneau de dés : sélecteur 1 dé / 2 dés, dés dessinés de 84px (trait craie
 ### Fight rows
 Historique des combats : grille 64px / 1fr / auto, hauteur 56px. Chapitre 18px graisse 800, issue 16px (rouge si « Perdu ») avec un sous-texte 13px, PV perdus en rouge à droite. Un appui déplie le détail (14px craie grise, valeurs en craie, pertes en rouge).
 
+### Plan
+L'écran d'un plan s'ouvre en plein écran, comme celui des combats. Il n'a pas de maquette dédiée : il est fait des seuls motifs de ce document.
+- **Grille pointée:** aucune ligne ; un point de 5px (rayon 2,5px) couleur `trait` à chaque croisement, sur des cases de 44px. Une grille de 8 × 8 cases a 9 × 9 points ; les points du bord dépassent d'un rien dans la marge.
+- **Repère du nord:** un « N » 13px en craie pâle, centré au-dessus du bord haut. Le nord est toujours en haut.
+- **Mur:** trait de craie (`craie`) de 3px, bouts arrondis (`stroke-linecap: round`), d'un point au point voisin, sur le bord d'une case. Comme les dés dessinés, c'est un trait de 3px.
+- **Mur effacé:** il passe en craie rouge puis s'efface en 1,2s (voir « Signature : la trace de craie ») ; avec `prefers-reduced-motion`, il disparaît tout de suite. Un mur retiré par « Annuler » fait de même.
+- **Tracer:** un doigt sur la grille dessine (`touch-action: none`), il ne fait pas défiler la page. Le trait se cale sur les bords des cases : il n'y a pas à viser juste.
+- **Indice:** tant que le plan n'a aucun mur, « Glissez le doigt le long des points pour tracer un mur. » sous la grille ; il s'en va au premier mur.
+- **Barre du bas:** fixe, fond noir opaque et filet `trait` en haut, comme le dock de combat ; contrôle segmenté « Murs / Cases » puis « Annuler », bouton secondaire de 52px (contour `trait`, texte craie 700 ; désactivé : texte en craie pâle, quand il n'y a rien à défaire). « Supprimer ce plan » (bouton secondaire de danger) reste au-dessus de la barre.
+
 ### Signature : la trace de craie
-Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graisse 700, trait de barre de 3px, 2px dans les lignes) juste avant la nouvelle, puis s'efface en 1,2 s avec un fondu en sortie exponentielle. L'ancienne valeur précède toujours la nouvelle, dans le sens de lecture. C'est la seule animation d'une valeur. Le système n'a qu'un autre mouvement, le glissement du panneau (voir « Bottom sheet »), et aucun des deux ne se répète : chacun se joue une fois, et `prefers-reduced-motion` les supprime tous les deux.
+Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graisse 700, trait de barre de 3px, 2px dans les lignes) juste avant la nouvelle, puis s'efface en 1,2 s avec un fondu en sortie exponentielle. L'ancienne valeur précède toujours la nouvelle, dans le sens de lecture. C'est la seule animation d'une valeur. Le même geste vaut pour un mur effacé sur un plan : le trait passe en craie rouge, puis s'efface en 1,2 s. Le système n'a qu'un autre mouvement, le glissement du panneau (voir « Bottom sheet »), et aucun des deux ne se répète : chacun se joue une fois, et `prefers-reduced-motion` les supprime tous les deux.
 
 ## Do's and Don'ts
 
