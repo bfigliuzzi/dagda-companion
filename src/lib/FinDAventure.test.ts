@@ -5,6 +5,7 @@ import App from "../App.svelte";
 import type { Mode } from "./aventure";
 import { combatNarratif } from "./combat";
 import { desFixes, type De } from "./des";
+import { unNouveauPlan } from "./plans";
 import { CLE_STOCKAGE, lireAventure } from "./stockage";
 import { enregistrerAventure, type Surcharges } from "./test/uneAventure";
 
@@ -18,6 +19,7 @@ type Lecteur = ReturnType<typeof userEvent.setup>;
 const vecue: Surcharges = {
   mode: "mortel",
   notes: "Piège au 74.",
+  plans: [unNouveauPlan("Souterrains", [])],
   armes: [{ nom: "Épée courte", bonus: 1 }],
   besace: {
     objets: ["Corde de chanvre"],
@@ -96,6 +98,7 @@ describe("« Recommencer une aventure » (tous les modes)", () => {
       panneau.getByRole("heading", { name: "Recommencer une aventure" }),
     ).toBeInTheDocument();
     expect(panneau.getByText(/effacée de cet appareil/)).toBeInTheDocument();
+    expect(panneau.getByText(/notes, plans, historique/)).toBeInTheDocument();
     expect(panneau.getByText(/ne peut pas être annulé/)).toBeInTheDocument();
     expect(localStorage.getItem(CLE_STOCKAGE)).toBe(avant);
 
@@ -153,6 +156,7 @@ describe("« Recommencer une aventure » (tous les modes)", () => {
       chapitre: 1,
       mode: "simplifie",
       notes: "",
+      plans: [],
       armes: [],
       effets: [],
       combats: [],
@@ -258,7 +262,9 @@ describe("0 PV sur la feuille : la proposition du mode mortel", () => {
     expect(
       panneau.getByText(/vous perdez vos armes et votre équipement/i),
     ).toBeInTheDocument();
-    expect(panneau.getByText(/vos notes restent/i)).toBeInTheDocument();
+    expect(
+      panneau.getByText(/vos notes et vos plans restent/i),
+    ).toBeInTheDocument();
 
     // Annuler laisse la feuille et l'enregistrement tels quels.
     await lecteur.click(panneau.getByRole("button", { name: "Annuler" }));
@@ -309,6 +315,9 @@ describe("0 PV sur la feuille : la proposition du mode mortel", () => {
       screen.queryByRole("region", { name: "Combats" }),
     ).not.toBeInTheDocument();
     expect(screen.getByLabelText("Notes")).toHaveValue("Piège au 74.");
+    expect(
+      screen.getByRole("button", { name: "Souterrains" }),
+    ).toBeInTheDocument();
     expect(lireAventure(localStorage)).toMatchObject({
       chapitre: 1,
       mode: "mortel",
@@ -316,6 +325,7 @@ describe("0 PV sur la feuille : la proposition du mode mortel", () => {
       effets: [],
       combats: [],
       notes: "Piège au 74.",
+      plans: vecue.plans,
       besace: { objets: [], bourse: false, boulons: 0 },
       personnage: { talent: "Instinct", pointsDeVie: 32, pointsDeVieMax: 32 },
     });

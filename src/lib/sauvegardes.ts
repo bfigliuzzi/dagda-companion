@@ -9,7 +9,7 @@
  * livre appelle le personnage (caractéristiques, talents, inventaire).
  *
  * Ce qu'elle ne garde pas, et que la reprise laisse donc comme le lecteur
- * l'a laissé : les notes (ce qu'il a appris depuis reste utile), l'historique
+ * l'a laissé : les notes et les plans (ce qu'il a appris depuis reste utile), l'historique
  * des combats (ce qui a eu lieu a eu lieu), le mode, et le nombre de
  * sauvegardes utilisées (une sauvegarde consommée ne se rend pas). Il n'y a
  * pas de combat en cours à ce moment-là : la sauvegarde se pose et se reprend

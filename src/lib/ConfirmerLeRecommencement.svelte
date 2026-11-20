@@ -35,12 +35,12 @@
   {#if cas === "mort"}
     <b>Vous perdez vos armes et votre équipement</b>&nbsp;: armes, besace,
     bourse, boulons et effets. L'historique des combats repart de zéro ; vos
-    notes restent. Vous créez un nouveau personnage en mode mortel, et
-    l'aventure reprend au chapitre&nbsp;1.
+    notes et vos plans restent. Vous créez un nouveau personnage en mode mortel,
+    et l'aventure reprend au chapitre&nbsp;1.
   {:else}
     <b>Toute l'aventure sera effacée de cet appareil</b>&nbsp;: personnage,
-    armes, besace, effets, notes, historique des combats et sauvegardes. Vous
-    repartirez de l'écran «&nbsp;Nouvel apprenti&nbsp;». Cela ne peut pas être
-    annulé.
+    armes, besace, effets, notes, plans, historique des combats et sauvegardes.
+    Vous repartirez de l'écran «&nbsp;Nouvel apprenti&nbsp;». Cela ne peut pas
+    être annulé.
   {/if}
 </PanneauDeConfirmation>

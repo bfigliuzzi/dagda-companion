@@ -45,7 +45,8 @@ Fonctions confirmées :
 - armes (2 au maximum, liste à part) et inventaire de la besace (24 emplacements) ;
 - effets temporaires et bonus d'objets (« buffs »), retirés à la main ;
 - trois modes de jeu du livre (narratif, simplifié avec 3 sauvegardes, mortel) ;
-- zone de notes libres (texte, pas de dessin) ;
+- zone de notes libres (texte) ;
+- plans des lieux (labyrinthe, souterrains, tour) : une grille pointée par lieu, nommée, que le lecteur trace au doigt à la place du papier quadrillé ;
 - maintien de l'écran allumé.
 
 Contraintes :

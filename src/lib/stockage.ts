@@ -12,7 +12,7 @@
 import { besaceVide, estUneAventure, type Aventure } from "./aventure";
 
 export const CLE_STOCKAGE = "dagda-compagnon";
-export const VERSION = 10;
+export const VERSION = 11;
 
 interface Enregistrement {
   version: number;
@@ -49,6 +49,8 @@ const MIGRATIONS: Record<number, (aventure: unknown) => unknown> = {
   // utilisées, lui, existe depuis la version 3 et reste tel quel. Il n'y a donc
   // rien à reprendre pour elle, quelles que soient les sauvegardes consommées.
   9: (aventure) => ({ ...(aventure as object), sauvegarde: null }),
+  // Version 11 : les plans (voir plans.ts). Une aventure de la version 10 n'en a dessiné aucun.
+  10: (aventure) => ({ ...(aventure as object), plans: [] }),
 };
 
 /** L'aventure enregistrée, ou `null` s'il n'y en a pas encore. */

@@ -29,6 +29,7 @@ export function uneAventure({
     sauvegardesUtilisees: 0,
     sauvegarde: null,
     notes: "",
+    plans: [],
     armes: [],
     effets: [],
     combat: null,

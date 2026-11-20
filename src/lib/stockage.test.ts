@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Aventure } from "./aventure";
 import { combatNarratif, commencerUnCombat, jouerUnTour } from "./combat";
 import { desFixes } from "./des";
+import { unNouveauPlan } from "./plans";
 import {
   CLE_STOCKAGE,
   ecrireAventure,
@@ -15,6 +16,7 @@ const herboriste: Aventure = {
   sauvegardesUtilisees: 1,
   sauvegarde: null,
   notes: "",
+  plans: [],
   armes: [],
   besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
   effets: [],
@@ -55,10 +57,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 10", () => {
+  it("enregistre l'aventure avec le numéro de version 11", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 10,
+      version: 11,
       aventure: herboriste,
     });
   });
@@ -189,6 +191,43 @@ describe("stockage de l'aventure", () => {
       sauvegarde: null,
       sauvegardesUtilisees: 1,
     });
+  });
+
+  it("migre un enregistrement de la version 10 : aucun plan, le reste intact", () => {
+    const ancienne: Partial<Aventure> = { ...herboriste };
+    delete ancienne.plans;
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({ version: 10, aventure: ancienne }),
+    );
+    expect(lireAventure(localStorage)).toEqual({ ...herboriste, plans: [] });
+  });
+
+  it("retrouve les plans enregistrés, y compris une grille étendue vers le haut et la gauche", () => {
+    const avecPlans: Aventure = {
+      ...herboriste,
+      plans: [
+        unNouveauPlan("Souterrains", []),
+        {
+          id: 2,
+          nom: "Tour",
+          grille: { colonne: -2, ligne: -1, colonnes: 11, lignes: 9 },
+        },
+      ],
+    };
+    ecrireAventure(localStorage, avecPlans);
+    expect(lireAventure(localStorage)).toEqual(avecPlans);
+  });
+
+  it("ne trouve aucune aventure si un plan est incomplet", () => {
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 11,
+        aventure: { ...herboriste, plans: [{ id: 1, nom: "Tour" }] },
+      }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
   });
 
   it("retrouve la sauvegarde posée, avec l'état du personnage qu'elle garde", () => {

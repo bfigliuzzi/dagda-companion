@@ -10,12 +10,12 @@ Références : `.scratch/plans/spec.md`, `DESIGN.md` (Rows, Buttons, Hints, Layo
 
 **Status:** ready-for-agent
 
-- [ ] La section « Plans » suit « Notes » sur la feuille ; chaque plan est une ligne d'au moins 48 px avec son nom ; sans plan, seul « + Nouveau plan » s'affiche.
-- [ ] « + Nouveau plan » crée un plan avec le nom saisi ; un nom vide n'est pas accepté et le bouton dit ce qui manque.
-- [ ] Un appui sur une ligne ouvre l'écran du plan ; le bouton retour ramène à la feuille.
-- [ ] L'écran d'un plan neuf montre une grille pointée de 8 × 8 cases de 44 px, un « N » au bord haut, et l'indice « Glissez le doigt le long des points pour tracer un mur. »
-- [ ] Le nom du plan se modifie dans l'en-tête de l'écran.
-- [ ] « Supprimer ce plan » demande une confirmation ; après confirmation, le plan disparaît et la feuille s'ouvre.
-- [ ] Les plans sont retrouvés après rechargement, même hors ligne ; une aventure enregistrée sans plans s'ouvre sans erreur.
-- [ ] La confirmation de « Recommencer l'aventure » dit que les plans seront effacés, et ils le sont ; après une mort en mode mortel, les plans sont gardés.
-- [ ] `PRODUCT.md`, `docs/regles-livre-1.md` et `GLOSSARY.md` (Plan, Case, Mur, Repère) sont à jour ; « pas de dessin » n'y figure plus.
+- [x] La section « Plans » suit « Notes » sur la feuille ; chaque plan est une ligne d'au moins 48 px avec son nom ; sans plan, seul « + Nouveau plan » s'affiche.
+- [x] « + Nouveau plan » crée un plan avec le nom saisi ; un nom vide n'est pas accepté et le bouton dit ce qui manque.
+- [x] Un appui sur une ligne ouvre l'écran du plan ; le bouton retour ramène à la feuille.
+- [x] L'écran d'un plan neuf montre une grille pointée de 8 × 8 cases de 44 px, un « N » au bord haut, et l'indice « Glissez le doigt le long des points pour tracer un mur. »
+- [x] Le nom du plan se modifie dans l'en-tête de l'écran.
+- [x] « Supprimer ce plan » demande une confirmation ; après confirmation, le plan disparaît et la feuille s'ouvre.
+- [x] Les plans sont retrouvés après rechargement, même hors ligne ; une aventure enregistrée sans plans s'ouvre sans erreur.
+- [x] La confirmation de « Recommencer l'aventure » dit que les plans seront effacés, et ils le sont ; après une mort en mode mortel, les plans sont gardés.
+- [x] `PRODUCT.md`, `docs/regles-livre-1.md` et `GLOSSARY.md` (Plan, Case, Mur, Repère) sont à jour ; « pas de dessin » n'y figure plus.

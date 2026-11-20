@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Aventure } from "./aventure";
 import { combatNarratif, commencerUnCombat, type Combat } from "./combat";
+import { unNouveauPlan } from "./plans";
 import {
   peutReprendre,
   peutSauvegarder,
@@ -16,6 +17,7 @@ const herboriste: Aventure = {
   sauvegardesUtilisees: 1,
   sauvegarde: null,
   notes: "Piège au 74.",
+  plans: [],
   armes: [{ nom: "Épée courte", bonus: 1 }],
   besace: {
     objets: ["Corde de chanvre", "Pain rassis"],
@@ -62,6 +64,7 @@ function apresLaSauvegarde(): Aventure {
     ...posee,
     chapitre: 140,
     notes: "Piège au 74. La porte s'ouvre en hiver.",
+    plans: [unNouveauPlan("Souterrains", [])],
     armes: [],
     besace: { ...posee.besace, objets: ["Clé de bronze"], boulons: 3 },
     effets: [],
@@ -121,7 +124,7 @@ describe("poser une sauvegarde", () => {
     });
   });
 
-  it("ne garde ni les notes, ni l'historique des combats, ni le mode", () => {
+  it("ne garde ni les notes, ni les plans, ni l'historique des combats, ni le mode", () => {
     const { sauvegarde } = poserUneSauvegarde(herboriste);
     expect(Object.keys(sauvegarde!).sort()).toEqual([
       "armes",
@@ -184,10 +187,12 @@ describe("reprendre la sauvegarde", () => {
     ).toBe(2);
   });
 
-  it("garde les notes, l'historique des combats et le mode", () => {
+  it("garde les notes, les plans, l'historique des combats et le mode", () => {
     const avant = apresLaSauvegarde();
     const reprise = reprendreLaSauvegarde(avant);
     expect(reprise.notes).toBe("Piège au 74. La porte s'ouvre en hiver.");
+    expect(reprise.plans).toEqual(avant.plans);
+    expect(reprise.plans).toHaveLength(1);
     expect(reprise.combats).toEqual(avant.combats);
     expect(reprise.combats).toHaveLength(2);
     expect(reprise.mode).toBe("simplifie");

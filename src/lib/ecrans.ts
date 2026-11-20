@@ -22,7 +22,10 @@ export interface AvantLeCombat {
 
 export type Ecran =
   /** Créer un personnage ; après une mort en mode mortel, avec les notes gardées. */
-  | { nom: "nouvelApprenti"; apresLaMort: { notes: string } | null }
+  | {
+      nom: "nouvelApprenti";
+      apresLaMort: Pick<Aventure, "notes" | "plans"> | null;
+    }
   | { nom: "feuille"; avant: AvantLeCombat }
   /** Le formulaire « Nouveau combat » (ou l'issue d'un combat narratif). */
   | { nom: "nouveauCombat" }
@@ -34,7 +37,9 @@ export type Ecran =
    * L'écran « Combats » : `deplie` est le rang du combat déplié à
    * l'ouverture ; `avant` attend le retour sur la feuille.
    */
-  | { nom: "historique"; deplie: number | null; avant: AvantLeCombat };
+  | { nom: "historique"; deplie: number | null; avant: AvantLeCombat }
+  /** L'écran d'un plan, repéré par son `id` (plans.ts) ; le retour rend la feuille. */
+  | { nom: "plan"; id: number };
 
 export function laFeuille(avant: AvantLeCombat = {}): Ecran {
   return { nom: "feuille", avant };

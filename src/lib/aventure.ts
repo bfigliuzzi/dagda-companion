@@ -8,6 +8,7 @@ import {
   type Combat,
   type CombatDeLHistorique,
 } from "./combat";
+import { estUnPlan, type Plan } from "./plans";
 import { estUnEffet, type Effet } from "./valeursEffectives";
 
 export const TALENTS = [
@@ -182,6 +183,8 @@ export interface Aventure {
   sauvegarde: Sauvegarde | null;
   /** Notes libres du lecteur (texte brut, sauts de ligne compris). */
   notes: string;
+  /** Les plans des lieux, dans l'ordre où le lecteur les a créés (voir plans.ts). */
+  plans: Plan[];
   /** Les armes du lecteur, dans l'ordre où il les a ajoutées. */
   armes: Arme[];
   /** La besace, la bourse et les boulons. */
@@ -267,8 +270,8 @@ export function commencerAventure(brouillon: Brouillon): Aventure {
 }
 
 /**
- * Une feuille neuve : ni sauvegarde posée, ni notes, ni armes, ni objets, ni
- * effets, ni combats.
+ * Une feuille neuve : ni sauvegarde posée, ni notes, ni plans, ni armes, ni
+ * objets, ni effets, ni combats.
  */
 function uneNouvelleFeuille(
   depart: Pick<
@@ -280,6 +283,7 @@ function uneNouvelleFeuille(
     ...depart,
     sauvegarde: null,
     notes: "",
+    plans: [],
     armes: [],
     besace: besaceVide(),
     effets: [],
@@ -303,14 +307,15 @@ export function proposeDeRecommencer(mode: Mode, pointsDeVie: number): boolean {
  * 1, sans armes, besace, effets ni combats) remplace l'ancienne.
  *
  * Choix par défaut (docs/regles-livre-1.md) : le livre ne fait perdre que les
- * armes et l'équipement ; les notes sont ce que le lecteur a appris du livre,
- * elles lui servent encore au nouveau départ, on les garde.
+ * armes et l'équipement ; les notes et les plans sont ce que le lecteur a
+ * appris du livre (le lieu ne change pas d'une partie à l'autre), ils lui
+ * servent encore au nouveau départ, on les garde.
  */
 export function apresLaMort(
   nouvelle: Aventure,
-  morte: Pick<Aventure, "notes">,
+  morte: Pick<Aventure, "notes" | "plans">,
 ): Aventure {
-  return { ...nouvelle, notes: morte.notes };
+  return { ...nouvelle, notes: morte.notes, plans: morte.plans };
 }
 
 /** Ce que le lecteur recopie de sa feuille papier sur l'écran « Déjà en route ». */
@@ -452,8 +457,15 @@ export function resume({ mode, personnage }: Aventure): string {
 /** Vérifie une aventure relue depuis l'appareil, dont on ne sait rien. */
 export function estUneAventure(valeur: unknown): valeur is Aventure {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { mode, sauvegardesUtilisees, sauvegarde, notes, combat, combats } =
-    valeur as Aventure;
+  const {
+    mode,
+    sauvegardesUtilisees,
+    sauvegarde,
+    notes,
+    plans,
+    combat,
+    combats,
+  } = valeur as Aventure;
   // Le chapitre, le personnage, les armes, la besace et les effets : ce que
   // garde aussi une sauvegarde.
   return (
@@ -461,6 +473,8 @@ export function estUneAventure(valeur: unknown): valeur is Aventure {
     estUnNombreDeSauvegardes(sauvegardesUtilisees) &&
     (sauvegarde === null || estUneSauvegarde(sauvegarde)) &&
     typeof notes === "string" &&
+    Array.isArray(plans) &&
+    plans.every(estUnPlan) &&
     (combat === null || estUnCombat(combat)) &&
     Array.isArray(combats) &&
     combats.every(estUnCombatDeLHistorique) &&

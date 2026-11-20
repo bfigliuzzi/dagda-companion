@@ -13,6 +13,7 @@ export function enregistrementDeTest(surcharges: Partial<Aventure> = {}) {
     sauvegardesUtilisees: 0,
     sauvegarde: null,
     notes: "",
+    plans: [],
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
     effets: [],

@@ -8,7 +8,9 @@
   import EcranDesCombats from "./lib/EcranDesCombats.svelte";
   import Effets from "./lib/Effets.svelte";
   import EnTete from "./lib/EnTete.svelte";
+  import EcranDuPlan from "./lib/EcranDuPlan.svelte";
   import Notes from "./lib/Notes.svelte";
+  import Plans from "./lib/Plans.svelte";
   import SectionAventure from "./lib/SectionAventure.svelte";
   import NouveauCombat from "./lib/NouveauCombat.svelte";
   import NouvelApprenti from "./lib/NouvelApprenti.svelte";
@@ -69,6 +71,13 @@
    * rechargement, sauf le combat en cours, qui vit dans l'aventure.
    */
   let ecran = $state<Ecran>(ecranDeDepart(lue));
+
+  /** Le plan de l'écran ouvert, s'il existe encore. */
+  const planOuvert = $derived.by(() => {
+    const ouvert = ecran;
+    if (ouvert.nom !== "plan") return undefined;
+    return aventure?.plans.find((plan) => plan.id === ouvert.id);
+  });
 
   /** Ouvre un écran ; il s'ouvre en haut de la page. */
   function aller(suivant: Ecran) {
@@ -132,7 +141,7 @@
    * garde les notes ; l'ancienne aventure reste enregistrée jusqu'à ce que le
    * nouveau personnage soit créé (fermer l'app entre-temps la retrouve).
    */
-  function recommencer(apresLaMort: { notes: string } | null) {
+  function recommencer(apresLaMort: Pick<Aventure, "notes" | "plans"> | null) {
     aventure = null;
     propositionIgnoree = false;
     aller({ nom: "nouvelApprenti", apresLaMort });
@@ -144,7 +153,10 @@
   }
 
   function recommencerApresLaMort() {
-    recommencer({ notes: aventure!.notes });
+    recommencer({
+      notes: aventure!.notes,
+      plans: $state.snapshot(aventure!.plans),
+    });
   }
 
   function quitter(combat: Combat) {
@@ -198,6 +210,17 @@
     ouvertAuDepart={ecran.deplie}
     onretour={() => aller(fermerLHistorique(ecran))}
   />
+{:else if planOuvert}
+  {@const plan = planOuvert}
+  <EcranDuPlan
+    {plan}
+    onrenommer={(nom) => (plan.nom = nom)}
+    onretour={() => aller(laFeuille())}
+    onsupprimer={() => {
+      aventure!.plans = aventure!.plans.filter((p) => p.id !== plan.id);
+      aller(laFeuille());
+    }}
+  />
 {:else if ecran.nom === "nouveauCombat"}
   <NouveauCombat
     chapitre={aventure.chapitre}
@@ -239,7 +262,8 @@
     />
     <!--
       Ordre de la feuille (maquette) : les Derniers combats suivent la
-      Besace ; la section Aventure suit les Notes, tout en bas.
+      Besace ; les Plans suivent les Notes ; la section Aventure vient
+      ensuite, tout en bas.
     -->
     <Besace bind:besace={aventure.besace} />
     <DerniersCombats
@@ -247,6 +271,10 @@
       onhistorique={() => aller(ouvrirLHistorique(ecran))}
     />
     <Notes bind:notes={aventure.notes} />
+    <Plans
+      bind:plans={aventure.plans}
+      onouvrir={(id) => aller({ nom: "plan", id })}
+    />
     <SectionAventure
       mode={aventure.mode}
       sauvegardesUtilisees={aventure.sauvegardesUtilisees}

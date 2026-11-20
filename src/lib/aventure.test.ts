@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { unNouveauPlan } from "./plans";
 import {
   ajouterUnBoulon,
   ajouterUnPointDeVie,
@@ -46,6 +47,7 @@ describe("recopier un personnage déjà en route", () => {
       sauvegardesUtilisees: 1,
       sauvegarde: null,
       notes: "",
+      plans: [],
       armes: [],
       besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
       effets: [],
@@ -327,7 +329,7 @@ describe("fin d'aventure : recommencer au chapitre 1 en mode mortel", () => {
     expect(proposeDeRecommencer("narratif", 0)).toBe(false);
   });
 
-  it("choix par défaut : un nouveau personnage repart de zéro, sans armes ni équipement, mais garde les notes du lecteur", () => {
+  it("choix par défaut : un nouveau personnage repart de zéro, sans armes ni équipement, mais garde les notes et les plans du lecteur", () => {
     const morte = {
       ...commencerAventure({
         talent: "Herbologie",
@@ -336,6 +338,7 @@ describe("fin d'aventure : recommencer au chapitre 1 en mode mortel", () => {
         chance: 4,
       }),
       notes: "Piège au 74.",
+      plans: [unNouveauPlan("Souterrains", [])],
       armes: [{ nom: "Épée courte", bonus: 1 }],
       besace: {
         objets: ["Corde"],
@@ -362,7 +365,11 @@ describe("fin d'aventure : recommencer au chapitre 1 en mode mortel", () => {
 
     const reprise = apresLaMort(nouvelle, morte);
 
-    expect(reprise).toEqual({ ...nouvelle, notes: "Piège au 74." });
+    expect(reprise).toEqual({
+      ...nouvelle,
+      notes: "Piège au 74.",
+      plans: morte.plans,
+    });
     expect(reprise.chapitre).toBe(1);
     expect(reprise.armes).toEqual([]);
     expect(reprise.besace).toEqual(besaceVide());

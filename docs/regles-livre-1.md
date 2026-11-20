@@ -110,7 +110,9 @@ Toute autre dépense de CHANCE est faite à la main par le lecteur.
 ## Suivi de lecture et notes
 
 - Le repère principal est le **dernier chapitre lu**, mis à jour à la main avant une pause. Pas d'obligation de noter chaque chapitre.
-- Une zone de **notes libres** (texte) remplace les croquis ; pas de dessin.
+- Une zone de **notes libres** (texte) garde ce que le lecteur apprend du livre.
+- Les **plans** remplacent le papier quadrillé : un plan par lieu (labyrinthe, souterrains, tour), nommé par le lecteur, sur une grille de cases, le nord toujours en haut. Le lecteur y trace des **murs** sur les bords des cases et y note, dans une case, un numéro de chapitre et une courte note. Un **repère** « vous êtes ici » suit le dernier chapitre lu. Un plan neuf compte 8 × 8 cases.
+  - *(choix par défaut)* Les plans font partie de l'aventure enregistrée. « Recommencer une aventure » les efface avec le reste. Après une mort en mode mortel, ils sont gardés, comme les notes : le lieu ne change pas d'une partie à l'autre. Une sauvegarde du mode simplifié ne les garde pas et la reprise les laisse tels quels, comme les notes.
 
 ## Évolution
 

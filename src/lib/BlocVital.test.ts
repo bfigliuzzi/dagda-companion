@@ -14,6 +14,7 @@ function enregistrerPersonnage(changement: Partial<Personnage> = {}) {
     sauvegardesUtilisees: 0,
     sauvegarde: null,
     notes: "",
+    plans: [],
     armes: [],
     besace: { objets: [], bourse: false, boulons: 0, boulonsForces: false },
     effets: [],

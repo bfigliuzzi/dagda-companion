@@ -1,7 +1,7 @@
 <script lang="ts">
   /**
-   * Section « Notes » de la feuille : du texte libre (indices, mots de passe,
-   * plans décrits en mots), pas de dessin. Le texte remonte à chaque frappe,
+   * Section « Notes » de la feuille : du texte libre (indices, mots de passe).
+   * Les plans dessinés ont leur propre section (Plans.svelte). Le texte remonte à chaque frappe,
    * l'enregistrement se fait donc au fil de l'écriture.
    */
   interface Props {
