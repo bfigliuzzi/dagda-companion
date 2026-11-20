@@ -11,7 +11,7 @@
    *
    * « Je suis ici » place le repère sur cette case (le plan s'en charge,
    * `onici`) et ferme le panneau ; il est au-dessus de « Vider la case ».
-   * C'est le bouton secondaire de la maquette (`.ghost` : contour `trait`,
+   * C'est le bouton secondaire de la maquette (`BoutonContour` : contour `trait`,
    * texte craie 700, 52 px), pas le jaune : tout s'enregistre déjà à chaque
    * modification, le jaune n'a pas d'action principale à porter ici.
    */
@@ -19,6 +19,7 @@
   import ChampNumerique from "./ChampNumerique.svelte";
   import ChampTexte from "./ChampTexte.svelte";
   import Indice from "./Indice.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import LienDiscret from "./LienDiscret.svelte";
   import Panneau from "./Panneau.svelte";
   import {
@@ -116,16 +117,14 @@
   {/if}
 
   <div class="boutons">
-    <button
-      class="ghost"
-      type="button"
+    <BoutonContour
       onclick={() => {
         onici();
         onfermer();
       }}
     >
       Je suis ici
-    </button>
+    </BoutonContour>
     <LienDiscret
       onclick={() => {
         onvider();
@@ -142,21 +141,5 @@
     display: grid;
     gap: 10px;
     margin-top: 14px;
-  }
-  /* Bouton secondaire de la maquette (« .ghost »). */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 52px;
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
-  }
-  .ghost:focus-visible {
-    outline: 2px solid var(--jaune);
-    outline-offset: 3px;
   }
 </style>

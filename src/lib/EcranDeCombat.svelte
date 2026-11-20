@@ -10,6 +10,7 @@
    * remonte les appuis. Les règles sont dans combat.ts.
    */
   import BoutonPlein from "./BoutonPlein.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import Icone from "./Icone.svelte";
   import { estCritique } from "./aventure";
   import { ennemiAchevable, toursJoues, type Combat, type Jet } from "./combat";
@@ -169,10 +170,10 @@
   </button>
 
   <Dock variante="combat">
-    <button class="ghost" type="button" onclick={onfinir}>
+    <BoutonContour onclick={onfinir}>
       <Icone nom="finir" />
       Finir
-    </button>
+    </BoutonContour>
     <BoutonPlein onclick={ontour}>Tour suivant</BoutonPlein>
   </Dock>
 </main>
@@ -387,16 +388,4 @@
   }
 
   /* Dock de combat */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    min-height: 52px;
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
-  }
 </style>

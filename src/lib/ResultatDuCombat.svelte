@@ -19,6 +19,7 @@
   import Indice from "./Indice.svelte";
   import BoutonPlein from "./BoutonPlein.svelte";
   import Icone from "./Icone.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
   import ConfirmerLaReprise from "./ConfirmerLaReprise.svelte";
@@ -131,28 +132,20 @@
     -->
     <div class="issues">
       {#if avecSauvegardes && sauvegarde}
-        <button
-          class="ghost"
-          type="button"
-          onclick={() => (confirmation = true)}
-        >
+        <BoutonContour ecarte onclick={() => (confirmation = true)}>
           <span>Reprendre la sauvegarde · § {sauvegarde.chapitre}</span>
           <Icone nom="relancer" />
-        </button>
+        </BoutonContour>
       {/if}
-      <button class="ghost" type="button" onclick={onretour}>
+      <BoutonContour ecarte onclick={onretour}>
         <span>Le livre me laisse continuer</span>
         <Icone nom="finir" />
-      </button>
+      </BoutonContour>
       {#if recommencerALaMort}
-        <button
-          class="ghost danger"
-          type="button"
-          onclick={() => (recommencement = true)}
-        >
+        <BoutonContour danger ecarte onclick={() => (recommencement = true)}>
           <span>Recommencer au chapitre 1</span>
           <Icone nom="relancer" />
-        </button>
+        </BoutonContour>
       {/if}
     </div>
     {#if avecSauvegardes}
@@ -285,27 +278,6 @@
     display: grid;
     gap: 10px;
     padding: 26px var(--gutter) 0;
-  }
-
-  /* Bouton secondaire : contour `trait`, libellé à gauche, icône à droite. */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    min-height: 52px;
-    padding: 0 var(--esp-lg);
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
-  }
-
-  /* Variante de danger : texte rouge, contour rouge sombre (maquette). */
-  .ghost.danger {
-    color: var(--rouge);
-    border-color: var(--rouge-trait);
   }
 
   /* Indice non bloquant sous les issues : voir DESIGN.md, « Hints ». */

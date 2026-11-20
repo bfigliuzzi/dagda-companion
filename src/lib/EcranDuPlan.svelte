@@ -25,6 +25,7 @@
   import EnTeteDEcran from "./EnTeteDEcran.svelte";
   import GrilleDuPlan from "./GrilleDuPlan.svelte";
   import Indice from "./Indice.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import PanneauDeCase from "./PanneauDeCase.svelte";
   import PanneauDeConfirmation from "./PanneauDeConfirmation.svelte";
   import {
@@ -135,13 +136,9 @@
         Le <b>§ {chapitre}</b> n'est pas sur ce plan.
       </Indice>
     {/if}
-    <button
-      class="ghost danger"
-      type="button"
-      onclick={() => (confirmation = true)}
-    >
+    <BoutonContour danger onclick={() => (confirmation = true)}>
       Supprimer ce plan
-    </button>
+    </BoutonContour>
   </div>
 
   <Dock variante="plan">
@@ -153,14 +150,9 @@
         { valeur: "cases", libelle: "Cases" },
       ]}
     />
-    <button
-      class="ghost"
-      type="button"
-      disabled={traits.length === 0}
-      onclick={annuler}
-    >
+    <BoutonContour disabled={traits.length === 0} onclick={annuler}>
       Annuler
-    </button>
+    </BoutonContour>
   </Dock>
 </main>
 
@@ -213,30 +205,5 @@
     display: grid;
     gap: var(--esp-section);
     padding: var(--esp-section) var(--gutter) 0;
-  }
-  /* Bouton secondaire de danger : texte rouge, contour rouge sombre, 52 px. */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 52px;
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
-  }
-  /* « Annuler » sans rien à défaire : contour et texte en craie pâle. */
-  .ghost:disabled {
-    color: var(--craie-3);
-    cursor: default;
-  }
-  .ghost.danger {
-    color: var(--rouge);
-    border-color: var(--rouge-trait);
-  }
-  .ghost:focus-visible {
-    outline: 2px solid var(--jaune);
-    outline-offset: 3px;
   }
 </style>

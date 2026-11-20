@@ -27,6 +27,7 @@
    * Il n'empêche rien et ne décide rien ; les autres modes n'en ont pas.
    */
   import Icone from "./Icone.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import Indice from "./Indice.svelte";
   import {
     ajouterUnPointDeVie,
@@ -267,14 +268,10 @@
           avec un nouveau personnage. Si le livre en dispose autrement, continuez&nbsp;:
           rien n'est décidé sans vous.
         </span>
-        <button
-          class="ghost danger"
-          type="button"
-          onclick={() => (confirmation = true)}
-        >
+        <BoutonContour danger ecarte onclick={() => (confirmation = true)}>
           <span>Recommencer au chapitre 1</span>
           <Icone nom="relancer" />
-        </button>
+        </BoutonContour>
         <button class="link" type="button" onclick={onignorer}>Ignorer</button>
       </div>
     </div>
@@ -530,32 +527,10 @@
     gap: 10px;
   }
 
-  /* Bouton secondaire de danger : texte rouge, contour rouge sombre, libellé à gauche, icône à droite. */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    min-height: 52px;
-    padding: 0 var(--esp-lg);
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
-  }
-
-  .ghost.danger {
-    color: var(--rouge);
-    border-color: var(--rouge-trait);
-  }
-
-  .ghost :global(svg) {
-    flex: none;
+  /* L'icône de ce bouton secondaire fait 24 px, un peu plus que celle des autres. */
+  .suite :global(.contour svg) {
     width: 24px;
     height: 24px;
-    margin: 0;
-    color: inherit;
   }
 
   /* Lien discret : craie grise soulignée (maquette, `.link`). */

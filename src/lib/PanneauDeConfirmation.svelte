@@ -9,6 +9,7 @@
    */
   import Indice from "./Indice.svelte";
   import BoutonPlein from "./BoutonPlein.svelte";
+  import BoutonContour from "./BoutonContour.svelte";
   import type { Snippet } from "svelte";
   import Panneau from "./Panneau.svelte";
 
@@ -31,7 +32,7 @@
   <Indice {icone} marge="var(--esp-md) 0 0">{@render children()}</Indice>
   <div class="btns">
     <BoutonPlein onclick={onconfirmer}>{confirmer}</BoutonPlein>
-    <button class="ghost" type="button" onclick={onfermer}>Annuler</button>
+    <BoutonContour onclick={onfermer}>Annuler</BoutonContour>
   </div>
 </Panneau>
 
@@ -41,17 +42,5 @@
     display: grid;
     gap: 10px;
     margin-top: 14px;
-  }
-  /* Bouton secondaire : contour `trait`, texte craie 700, 52 px. */
-  .ghost {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 52px;
-    border: 2px solid var(--trait);
-    border-radius: var(--r);
-    font-weight: 700;
-    color: var(--craie);
   }
 </style>
