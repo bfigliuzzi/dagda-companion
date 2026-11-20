@@ -6,7 +6,7 @@
    * de la feuille (« Rien ne se perd ») : il n'y a pas de bouton de validation.
    * Il ne touche pas à la sauvegarde déjà posée.
    */
-  import Icone from "./Icone.svelte";
+  import Indice from "./Indice.svelte";
   import { SAUVEGARDES_DU_LIVRE } from "./aventure";
   import Panneau from "./Panneau.svelte";
 
@@ -39,13 +39,10 @@
       {/each}
     </div>
   </div>
-  <div class="hint">
-    <Icone nom="info" />
-    <span>
-      Le livre en donne <b>{SAUVEGARDES_DU_LIVRE} pour toute l'aventure</b>.
-      Corrigez ici celles que vous avez déjà utilisées en dehors de l'app.
-    </span>
-  </div>
+  <Indice icone="info">
+    Le livre en donne <b>{SAUVEGARDES_DU_LIVRE} pour toute l'aventure</b>.
+    Corrigez ici celles que vous avez déjà utilisées en dehors de l'app.
+  </Indice>
 </Panneau>
 
 <style>
@@ -86,23 +83,4 @@
   }
 
   /* Indice non bloquant : voir DESIGN.md, « Hints ». */
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-  .hint b {
-    color: var(--craie);
-  }
 </style>

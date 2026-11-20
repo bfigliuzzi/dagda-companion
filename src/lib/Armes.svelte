@@ -10,6 +10,7 @@
    * valeursEffectives.ts), en vert avec la ligne « base +1 · rage +2 » quand un effet le
    * change, et la trace de craie quand il change.
    */
+  import Indice from "./Indice.svelte";
   import Icone from "./Icone.svelte";
   import {
     ARMES_MAX,
@@ -110,13 +111,10 @@
   {/if}
 
   {#if depasse}
-    <div class="hint" role="note">
-      <Icone nom="alerte" />
-      <span>
-        Les règles permettent <b>{ARMES_MAX} armes</b>. Gardez-la si le livre
-        l'autorise, sinon retirez-en une.
-      </span>
-    </div>
+    <Indice icone="alerte" role="note" sousListe={armes.length > 0}>
+      Les règles permettent <b>{ARMES_MAX} armes</b>. Gardez-la si le livre
+      l'autorise, sinon retirez-en une.
+    </Indice>
   {/if}
 
   {#if enAjout}
@@ -213,30 +211,6 @@
     width: 18px;
     height: 18px;
   }
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-  ul + .hint {
-    border-top: 0;
-    padding-top: var(--esp-xs);
-  }
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--rouge);
-  }
-  .hint b {
-    color: var(--craie);
-  }
-
   .actions {
     display: flex;
     justify-content: space-between;

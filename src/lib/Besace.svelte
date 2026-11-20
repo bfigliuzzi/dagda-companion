@@ -7,6 +7,7 @@
    * lecteur peut le forcer. Chaque changement remonte aussitôt, donc
    * s'enregistre aussitôt.
    */
+  import Indice from "./Indice.svelte";
   import Icone from "./Icone.svelte";
   import {
     EMPLACEMENTS_MAX,
@@ -129,29 +130,23 @@
   </ul>
 
   {#if !besace.bourse}
-    <div class="hint">
-      <Icone nom="info" />
-      <span>
-        Il faut une bourse pour garder des boulons.
-        <button
-          class="lien"
-          type="button"
-          onclick={() => (besace.boulonsForces = !besace.boulonsForces)}
-        >
-          {besace.boulonsForces ? "Ne plus compter" : "Compter quand même"}
-        </button>
-      </span>
-    </div>
+    <Indice icone="info" sousListe>
+      Il faut une bourse pour garder des boulons.
+      <button
+        class="lien"
+        type="button"
+        onclick={() => (besace.boulonsForces = !besace.boulonsForces)}
+      >
+        {besace.boulonsForces ? "Ne plus compter" : "Compter quand même"}
+      </button>
+    </Indice>
   {/if}
 
   {#if depasse}
-    <div class="hint" role="note">
-      <Icone nom="alerte" class="warn" />
-      <span>
-        La besace est pleine. L'objet est ajouté quand même&nbsp;: retirez-en un
-        si le livre le demande.
-      </span>
-    </div>
+    <Indice icone="alerte" role="note" sousListe={besace.bourse}>
+      La besace est pleine. L'objet est ajouté quand même&nbsp;: retirez-en un
+      si le livre le demande.
+    </Indice>
   {/if}
 
   {#if enAjout}
@@ -282,30 +277,6 @@
     width: 18px;
     height: 18px;
   }
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-  ul + .hint {
-    border-top: 0;
-    padding-top: var(--esp-xs);
-  }
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-  .hint :global(svg.warn) {
-    color: var(--rouge);
-  }
-
   .actions {
     display: flex;
     justify-content: space-between;

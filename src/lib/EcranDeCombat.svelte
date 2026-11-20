@@ -9,6 +9,7 @@
    * L'écran ne joue rien lui-même : il montre le combat que lui passe App et
    * remonte les appuis. Les règles sont dans combat.ts.
    */
+  import BoutonPlein from "./BoutonPlein.svelte";
   import Icone from "./Icone.svelte";
   import { estCritique } from "./aventure";
   import { ennemiAchevable, toursJoues, type Combat, type Jet } from "./combat";
@@ -172,7 +173,7 @@
       <Icone nom="finir" />
       Finir
     </button>
-    <button class="cta" type="button" onclick={ontour}>Tour suivant</button>
+    <BoutonPlein onclick={ontour}>Tour suivant</BoutonPlein>
   </Dock>
 </main>
 
@@ -397,20 +398,5 @@
     border-radius: var(--r);
     font-weight: 700;
     color: var(--craie);
-  }
-
-  .cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--esp-md);
-    width: 100%;
-    min-height: 58px;
-    background: var(--jaune);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--noir);
-    font-size: 20px;
-    font-weight: 800;
   }
 </style>

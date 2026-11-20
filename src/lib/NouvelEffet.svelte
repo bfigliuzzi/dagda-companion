@@ -6,7 +6,8 @@
    * l'histoire. L'indice annonce ce qui va changer sur la feuille, calculé
    * par valeursEffectives.ts. Rien n'est ajouté avant l'appui sur le bouton jaune.
    */
-  import Icone from "./Icone.svelte";
+  import Indice from "./Indice.svelte";
+  import BoutonPlein from "./BoutonPlein.svelte";
   import type { Arme, Personnage } from "./aventure";
   import ChampNumerique from "./ChampNumerique.svelte";
   import {
@@ -165,45 +166,42 @@
       </label>
     {/if}
 
-    <div class="hint">
-      <Icone nom="info" />
-      <span>
-        {#if rappel}
-          Un simple rappel ne change aucune valeur. Vous le retirerez quand le
-          livre le dira.
-        {:else}
-          {#if apercu}
-            {@const { avant, apres } = apercu}
-            {#if apercu.cible === "pointsDeVie"}
-              PV passeront {@render passage(
-                avant.pointsDeVie,
-                apres.pointsDeVie,
-              )}.
-            {:else if apercu.cible === "pointsDeVieMax"}
-              PV max passera {@render passage(
-                avant.pointsDeVieMax,
-                apres.pointsDeVieMax,
-              )}.
-            {:else if apercu.cible === "chance"}
-              CHANCE passera {@render passage(avant.chance, apres.chance)}.
-            {:else if apercu.cible === "dexterite"}
-              DEX passera {@render passage(avant.dexterite, apres.dexterite)}.
-            {:else}
-              Bonus de dommage passera {@render passage(
-                formaterUnBonus(avant.degats),
-                formaterUnBonus(apres.degats),
-              )}.
-            {/if}
+    <Indice icone="info" marge="var(--esp-md) 0 0">
+      {#if rappel}
+        Un simple rappel ne change aucune valeur. Vous le retirerez quand le
+        livre le dira.
+      {:else}
+        {#if apercu}
+          {@const { avant, apres } = apercu}
+          {#if apercu.cible === "pointsDeVie"}
+            PV passeront {@render passage(
+              avant.pointsDeVie,
+              apres.pointsDeVie,
+            )}.
+          {:else if apercu.cible === "pointsDeVieMax"}
+            PV max passera {@render passage(
+              avant.pointsDeVieMax,
+              apres.pointsDeVieMax,
+            )}.
+          {:else if apercu.cible === "chance"}
+            CHANCE passera {@render passage(avant.chance, apres.chance)}.
+          {:else if apercu.cible === "dexterite"}
+            DEX passera {@render passage(avant.dexterite, apres.dexterite)}.
+          {:else}
+            Bonus de dommage passera {@render passage(
+              formaterUnBonus(avant.degats),
+              formaterUnBonus(apres.degats),
+            )}.
           {/if}
-          Vous retirerez l'effet quand le livre le dira.
         {/if}
-      </span>
-    </div>
+        Vous retirerez l'effet quand le livre le dira.
+      {/if}
+    </Indice>
 
     <div class="btns">
-      <button class="cta" type="submit" aria-disabled={manque !== null}>
+      <BoutonPlein type="submit" inactif={manque !== null}>
         {manque ?? (rappel ? "Ajouter le rappel" : "Ajouter l'effet")}
-      </button>
+      </BoutonPlein>
     </div>
   </form>
 </Panneau>
@@ -295,47 +293,9 @@
   }
 
   /* Indice non bloquant : voir DESIGN.md, « Hints ». */
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: var(--esp-md);
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-  .hint b {
-    color: var(--craie);
-  }
-
   .btns {
     display: grid;
     gap: 10px;
     margin-top: 14px;
-  }
-  .cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 58px;
-    background: var(--jaune);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--noir);
-  }
-  .cta[aria-disabled="true"] {
-    background: none;
-    border-color: var(--craie-3);
-    color: var(--craie-3);
   }
 </style>

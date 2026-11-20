@@ -5,7 +5,7 @@
    * d'un combat (un seul à la fois). Le bouton retour, à gauche du titre,
    * ramène à la feuille.
    */
-  import Icone from "./Icone.svelte";
+  import EnTeteDEcran from "./EnTeteDEcran.svelte";
   import type { CombatDeLHistorique } from "./combat";
   import { resumeDeLHistorique } from "./historique";
   import LigneDeCombat from "./LigneDeCombat.svelte";
@@ -31,18 +31,9 @@
 </script>
 
 <main class="ecran">
-  <div class="screen-h">
-    <button
-      class="retour"
-      type="button"
-      aria-label="Retour à la feuille"
-      onclick={onretour}
-    >
-      <Icone nom="retour" />
-    </button>
-    <h1>Combats</h1>
-  </div>
-  <p class="intro">{resumeDeLHistorique(combats)}</p>
+  <EnTeteDEcran titre="Combats" retour="Retour à la feuille" {onretour}>
+    {#snippet intro()}{resumeDeLHistorique(combats)}{/snippet}
+  </EnTeteDEcran>
   <section>
     <ul>
       {#each lignes as { combat, rang } (rang)}
@@ -63,41 +54,6 @@
     max-width: 480px;
     margin: 0 auto;
     padding-bottom: calc(var(--esp-section) + env(safe-area-inset-bottom));
-  }
-
-  .screen-h {
-    display: flex;
-    align-items: center;
-    gap: var(--esp-sm);
-    padding: var(--gutter) var(--gutter) var(--esp-xs);
-    padding-top: max(var(--gutter), env(safe-area-inset-top));
-  }
-
-  .retour {
-    display: grid;
-    place-items: center;
-    width: var(--cible);
-    height: var(--cible);
-    margin-left: -12px;
-    color: var(--craie-2);
-  }
-
-  .retour:focus-visible {
-    outline: 2px solid var(--jaune);
-    outline-offset: 3px;
-  }
-
-  h1 {
-    flex: 1;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-  }
-
-  .intro {
-    padding: 0 var(--gutter);
-    font-size: 15px;
-    color: var(--craie-2);
   }
 
   section {

@@ -29,18 +29,12 @@
    */
   interface Props {
     nom: NomIcone;
-    /** Classe en plus de `i`, pour qu'un parent cible une icône précise. */
-    class?: string;
   }
 
-  let { nom, class: classe }: Props = $props();
+  let { nom }: Props = $props();
 </script>
 
-<svg
-  class={classe ? `i ${classe}` : "i"}
-  aria-hidden="true"
-  viewBox="0 0 24 24"
->
+<svg class="i" aria-hidden="true" viewBox="0 0 24 24">
   {#if nom === "alerte"}
     <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
   {:else if nom === "chance"}

@@ -7,8 +7,9 @@
    * comme c'était. Le texte arrive en contenu ; ConfirmerLaReprise et
    * ConfirmerLeRecommencement lui donnent les mots de chaque cas.
    */
+  import Indice from "./Indice.svelte";
+  import BoutonPlein from "./BoutonPlein.svelte";
   import type { Snippet } from "svelte";
-  import Icone from "./Icone.svelte";
   import Panneau from "./Panneau.svelte";
 
   interface Props {
@@ -27,60 +28,19 @@
 </script>
 
 <Panneau {titre} {onfermer}>
-  <div class="hint" class:alerte={icone === "alerte"}>
-    <Icone nom={icone} />
-    <span>{@render children()}</span>
-  </div>
+  <Indice {icone} marge="var(--esp-md) 0 0">{@render children()}</Indice>
   <div class="btns">
-    <button class="cta" type="button" onclick={onconfirmer}>
-      {confirmer}
-    </button>
+    <BoutonPlein onclick={onconfirmer}>{confirmer}</BoutonPlein>
     <button class="ghost" type="button" onclick={onfermer}>Annuler</button>
   </div>
 </Panneau>
 
 <style>
   /* Indice non bloquant : voir DESIGN.md, « Hints ». */
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: var(--esp-md);
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-  .hint.alerte :global(svg) {
-    color: var(--rouge);
-  }
-  .hint :global(b) {
-    color: var(--craie);
-  }
-
   .btns {
     display: grid;
     gap: 10px;
     margin-top: 14px;
-  }
-  .cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 58px;
-    background: var(--jaune);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--noir);
   }
   /* Bouton secondaire : contour `trait`, texte craie 700, 52 px. */
   .ghost {

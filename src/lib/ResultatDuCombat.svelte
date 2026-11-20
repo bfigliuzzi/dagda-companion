@@ -15,6 +15,9 @@
    * laisse continuer », en rouge : le lecteur accepte (après confirmation) ou
    * ignore, l'app ne décide pas de la mort.
    */
+  import LienDiscret from "./LienDiscret.svelte";
+  import Indice from "./Indice.svelte";
+  import BoutonPlein from "./BoutonPlein.svelte";
   import Icone from "./Icone.svelte";
   import { MODES, type Mode, type Sauvegarde } from "./aventure";
   import { bilanDuCombat, type Combat } from "./combat";
@@ -114,14 +117,12 @@
     </ul>
 
     <Dock>
-      <button class="cta" type="button" onclick={onretour}>
-        Retour à la feuille
-      </button>
-      <button class="link" type="button" onclick={ondetail}>
+      <BoutonPlein onclick={onretour}>Retour à la feuille</BoutonPlein>
+      <LienDiscret onclick={ondetail}>
         {bilan.tours > 1
           ? `Voir le détail des ${bilan.tours} tours`
           : "Voir le détail du tour"}
-      </button>
+      </LienDiscret>
     </Dock>
   {:else}
     <!--
@@ -155,24 +156,21 @@
       {/if}
     </div>
     {#if avecSauvegardes}
-      <div class="hint">
-        <Icone nom="info" />
-        <span>
-          {#if sauvegarde}
-            Mode simplifié&nbsp;: on reprend toujours la <b>
-              sauvegarde la plus récente
-            </b>.
-          {:else}
-            Mode simplifié&nbsp;: aucune sauvegarde posée, il n'y a rien à
-            reprendre.
-          {/if}
-          {#if sauvegardesRestantes > 0}
-            Il vous en reste <b>{sauvegardesRestantes}</b>.
-          {:else}
-            Il ne vous en reste plus.
-          {/if}
-        </span>
-      </div>
+      <Indice icone="info" marge="18px var(--gutter) 0">
+        {#if sauvegarde}
+          Mode simplifié&nbsp;: on reprend toujours la <b>
+            sauvegarde la plus récente
+          </b>.
+        {:else}
+          Mode simplifié&nbsp;: aucune sauvegarde posée, il n'y a rien à
+          reprendre.
+        {/if}
+        {#if sauvegardesRestantes > 0}
+          Il vous en reste <b>{sauvegardesRestantes}</b>.
+        {:else}
+          Il ne vous en reste plus.
+        {/if}
+      </Indice>
     {/if}
   {/if}
 </main>
@@ -311,53 +309,5 @@
   }
 
   /* Indice non bloquant sous les issues : voir DESIGN.md, « Hints ». */
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin: 18px var(--gutter) 0;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-
-  .hint b {
-    color: var(--craie);
-  }
-
   /* Lien discret sous le bouton : craie grise soulignée (maquette, `.link`). */
-  .link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: var(--cible);
-    color: var(--craie-2);
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-color: var(--craie-3);
-  }
-
-  .cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 58px;
-    background: var(--jaune);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--noir);
-    font-size: 20px;
-    font-weight: 800;
-  }
 </style>

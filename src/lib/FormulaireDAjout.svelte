@@ -10,6 +10,7 @@
    * vide. La section ne reçoit que le nom épuré, jamais vide.
    */
   import type { Snippet } from "svelte";
+  import BoutonPlein from "./BoutonPlein.svelte";
 
   interface Props {
     /** Nom accessible du formulaire : « Nouvelle arme ». */
@@ -64,9 +65,9 @@
   </label>
   {@render children?.()}
   <div class="btns">
-    <button class="valider" type="submit" aria-disabled={nomVide}>
+    <BoutonPlein type="submit" inactif={nomVide}>
       {nomVide ? manque : valider}
-    </button>
+    </BoutonPlein>
     <button class="annuler" type="button" onclick={onannuler}>Annuler</button>
   </div>
 </form>
@@ -103,21 +104,6 @@
     display: grid;
     gap: 10px;
     margin-top: 14px;
-  }
-  .valider {
-    width: 100%;
-    min-height: 58px;
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    background: var(--jaune);
-    color: var(--noir);
-    font-size: 20px;
-    font-weight: 800;
-  }
-  .valider[aria-disabled="true"] {
-    background: none;
-    border-color: var(--craie-3);
-    color: var(--craie-3);
   }
   .annuler {
     min-height: 52px;

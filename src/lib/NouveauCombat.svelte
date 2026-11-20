@@ -12,6 +12,9 @@
    * demandées que si le combat se joue, soit au-delà de 5 adversaires, soit
    * parce que le lecteur choisit « Jouer le combat aux dés ».
    */
+  import Indice from "./Indice.svelte";
+  import EnTeteDEcran from "./EnTeteDEcran.svelte";
+  import BoutonPlein from "./BoutonPlein.svelte";
   import Icone from "./Icone.svelte";
   import { untrack } from "svelte";
   import { MODES, type Mode } from "./aventure";
@@ -101,18 +104,13 @@
   />
 {:else}
   <main class="ecran">
-    <div class="screen-h">
-      <button
-        class="retour"
-        type="button"
-        aria-label="Annuler le combat"
-        onclick={onannuler}
-      >
-        <Icone nom="retour" />
-      </button>
-      <h1>Nouveau combat</h1>
-    </div>
-    <p class="intro">Recopiez la fiche de l'ennemi donnée par le livre.</p>
+    <EnTeteDEcran
+      titre="Nouveau combat"
+      retour="Annuler le combat"
+      onretour={onannuler}
+    >
+      {#snippet intro()}Recopiez la fiche de l'ennemi donnée par le livre.{/snippet}
+    </EnTeteDEcran>
 
     <form aria-label="Fiche de l'ennemi" onsubmit={commencer}>
       <ChampNumerique
@@ -163,31 +161,25 @@
         </label>
       {/if}
       {#if MODES[mode].issueAuChoix}
-        <div class="hint">
-          <Icone nom="info" />
-          <span>
-            Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue
-            aux dés, même en mode narratif.
-          </span>
-        </div>
+        <Indice icone="info">
+          Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue
+          aux dés, même en mode narratif.
+        </Indice>
       {/if}
       {#if sejoue}
-        <div class="hint">
-          <Icone nom="info" />
-          <span>
-            Vous&nbsp;: <b>DEX {lecteur.dexterite}</b>, dégâts <b>{degats}</b>.
-            Plusieurs adversaires comptent comme un seul.
-          </span>
-        </div>
+        <Indice icone="info">
+          Vous&nbsp;: <b>DEX {lecteur.dexterite}</b>, dégâts <b>{degats}</b>.
+          Plusieurs adversaires comptent comme un seul.
+        </Indice>
       {/if}
 
       <Dock>
-        <button class="cta" type="submit" aria-disabled={manque !== null}>
+        <BoutonPlein type="submit" inactif={manque !== null}>
           {#if sejoue}
             <Icone nom="epees" />
           {/if}
           {manque ?? (sejoue ? "Commencer le combat" : "Continuer")}
-        </button>
+        </BoutonPlein>
       </Dock>
     </form>
   </main>
@@ -199,36 +191,6 @@
     margin: 0 auto;
     /* Place pour le dock fixe : 12 + 58 + 22 px, plus la zone de sécurité. */
     padding-bottom: calc(92px + env(safe-area-inset-bottom));
-  }
-
-  .screen-h {
-    display: flex;
-    align-items: center;
-    gap: var(--esp-sm);
-    padding: var(--gutter) var(--gutter) var(--esp-xs);
-    padding-top: max(var(--gutter), env(safe-area-inset-top));
-  }
-
-  .retour {
-    display: grid;
-    place-items: center;
-    width: var(--cible);
-    height: var(--cible);
-    margin-left: -12px;
-    color: var(--craie-2);
-  }
-
-  h1 {
-    flex: 1;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-  }
-
-  .intro {
-    padding: 0 var(--gutter);
-    font-size: 15px;
-    color: var(--craie-2);
   }
 
   form {
@@ -290,53 +252,5 @@
     outline-offset: 3px;
   }
 
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
-
-  .hint b {
-    color: var(--craie);
-  }
-
-  .cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--esp-md);
-    width: 100%;
-    min-height: 58px;
-    background: var(--jaune);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--noir);
-    font-size: 20px;
-    font-weight: 800;
-  }
-
-  .cta :global(svg) {
-    width: 26px;
-    height: 26px;
-  }
-
   /* Désactivé : le libellé dit ce qui manque. */
-  .cta[aria-disabled="true"] {
-    background: none;
-    border-color: var(--craie-3);
-    color: var(--craie-3);
-    cursor: default;
-  }
 </style>

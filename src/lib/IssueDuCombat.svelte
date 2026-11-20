@@ -7,6 +7,9 @@
    * place du lecteur. Le lien « Jouer le combat aux dés » laisse jouer le combat
    * normalement.
    */
+  import LienDiscret from "./LienDiscret.svelte";
+  import Indice from "./Indice.svelte";
+  import EnTeteDEcran from "./EnTeteDEcran.svelte";
   import Icone from "./Icone.svelte";
   import { ADVERSAIRES_MAX_EN_NARRATIF, type CombatNarratif } from "./combat";
 
@@ -22,21 +25,12 @@
 </script>
 
 <main class="ecran">
-  <div class="screen-h">
-    <button
-      class="retour"
-      type="button"
-      aria-label="Annuler"
-      onclick={onannuler}
-    >
-      <Icone nom="retour" />
-    </button>
-    <h1>Combat</h1>
-  </div>
-  <p class="intro">
-    Mode narratif · §&nbsp;{chapitre} · {adversaires}
-    {adversaires > 1 ? "adversaires" : "adversaire"}
-  </p>
+  <EnTeteDEcran titre="Combat" retour="Annuler" onretour={onannuler}>
+    {#snippet intro()}
+      Mode narratif · §&nbsp;{chapitre} · {adversaires}
+      {adversaires > 1 ? "adversaires" : "adversaire"}
+    {/snippet}
+  </EnTeteDEcran>
 
   <div class="result">
     <h2 class="big">Comment s'est terminé ce combat&nbsp;?</h2>
@@ -54,18 +48,13 @@
   </div>
 
   <div class="jouer">
-    <button class="link" type="button" onclick={onjouer}>
-      Jouer le combat aux dés
-    </button>
+    <LienDiscret onclick={onjouer}>Jouer le combat aux dés</LienDiscret>
   </div>
 
-  <div class="hint">
-    <Icone nom="info" />
-    <span>
-      Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue aux
-      dés, même en mode narratif.
-    </span>
-  </div>
+  <Indice icone="info" marge="0 var(--gutter)">
+    Au-delà de {ADVERSAIRES_MAX_EN_NARRATIF} adversaires, le combat se joue aux dés,
+    même en mode narratif.
+  </Indice>
 </main>
 
 <style>
@@ -73,36 +62,6 @@
     max-width: 480px;
     margin: 0 auto;
     padding-bottom: calc(var(--gutter) + env(safe-area-inset-bottom));
-  }
-
-  .screen-h {
-    display: flex;
-    align-items: center;
-    gap: var(--esp-sm);
-    padding: var(--gutter) var(--gutter) var(--esp-xs);
-    padding-top: max(var(--gutter), env(safe-area-inset-top));
-  }
-
-  .retour {
-    display: grid;
-    place-items: center;
-    width: var(--cible);
-    height: var(--cible);
-    margin-left: -12px;
-    color: var(--craie-2);
-  }
-
-  h1 {
-    flex: 1;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-  }
-
-  .intro {
-    padding: 0 var(--gutter);
-    font-size: 15px;
-    color: var(--craie-2);
   }
 
   .result {
@@ -152,34 +111,4 @@
   }
 
   /* Lien discret : craie grise soulignée (maquette, `.link`). */
-  .link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: var(--cible);
-    color: var(--craie-2);
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-color: var(--craie-3);
-  }
-
-  .hint {
-    display: flex;
-    gap: 10px;
-    margin: 0 var(--gutter);
-    padding: 10px 0 0;
-    border-top: 2px solid var(--trait);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  .hint :global(svg) {
-    flex: none;
-    width: 20px;
-    height: 20px;
-    margin-top: 1px;
-    color: var(--jaune);
-  }
 </style>
