@@ -9,10 +9,11 @@
  * quand la grille grandit à gauche ou en haut, les coordonnées déjà
  * enregistrées ne changent pas, seule `grille` s'étend. Les murs sont posés
  * sur les bords des cases, repérés dans ces mêmes coordonnées (voir murs.ts).
- * Les cases numérotées et le repère « vous êtes ici » viendront s'ajouter au
- * plan avec leurs propres tickets, sur ces mêmes coordonnées.
+ * Les cases notées (numéro de chapitre, note : voir cases.ts) sont repérées
+ * dans ces mêmes coordonnées ; le repère « vous êtes ici » viendra avec son ticket.
  */
 
+import { estUneCase, type Case } from "./cases";
 import { estUnBord, type Bord } from "./murs";
 
 /** Un plan neuf compte 8 × 8 cases. */
@@ -40,6 +41,8 @@ export interface Plan {
   grille: Grille;
   /** Les murs, dans l'ordre où ils ont été posés (voir murs.ts). */
   murs: Bord[];
+  /** Les cases qui portent un numéro ou une note (voir cases.ts). */
+  cases: Case[];
 }
 
 /** Un plan neuf : 8 × 8 cases, encore vide, avec le numéro qui suit les autres. */
@@ -54,19 +57,22 @@ export function unNouveauPlan(nom: string, existants: readonly Plan[]): Plan {
       lignes: LIGNES_DE_DEPART,
     },
     murs: [],
+    cases: [],
   };
 }
 
 /** Vérifie un plan relu depuis l'appareil, dont on ne sait rien. */
 export function estUnPlan(valeur: unknown): valeur is Plan {
   if (typeof valeur !== "object" || valeur === null) return false;
-  const { id, nom, grille, murs } = valeur as Plan;
+  const { id, nom, grille, murs, cases } = valeur as Plan;
   return (
     Number.isInteger(id) &&
     typeof nom === "string" &&
     estUneGrille(grille) &&
     Array.isArray(murs) &&
-    murs.every(estUnBord)
+    murs.every(estUnBord) &&
+    Array.isArray(cases) &&
+    cases.every(estUneCase)
   );
 }
 

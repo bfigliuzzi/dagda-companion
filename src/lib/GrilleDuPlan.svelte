@@ -34,9 +34,25 @@
    * Deux doigts font défiler le plan, dans les deux modes ; si le second se
    * pose pendant un trait, le trait est abandonné sans rien changer (il n'est
    * appliqué qu'au lever du doigt), et le geste reste un défilement jusqu'à
-   * ce que tous les doigts soient levés. En mode Cases, un doigt seul est
-   * laissé libre pour toucher une case (ticket 04). La molette d'une souris
-   * fait aussi défiler.
+   * ce que tous les doigts soient levés. La molette d'une souris fait aussi
+   * défiler.
+   *
+   * LES CASES. Les cases notées montrent leur numéro (13 px, craie) au milieu
+   * de la case, et une note par un petit trait de craie pâle dans le coin en
+   * haut à droite. En mode Cases (`actif` faux), chaque case de la grille est
+   * en plus un vrai bouton nommé (cases.ts, `nomAccessible`), posé sur le
+   * dessin : « Case 3-5, chapitre 47, note : clé ». Ces boutons n'existent
+   * qu'en mode Cases : en mode Murs, 900 boutons de plus ne servent à rien et
+   * alourdissent le DOM. Un appui est un doigt seul qui se pose sur une case
+   * et se lève sans avoir bougé de plus de 10 px : le `click` du bouton ouvre
+   * alors la case (`oncase`). Dès que le doigt glisse, ou qu'un second doigt se
+   * pose, `aGlisse` passe à vrai et le `click` qui suit est ignoré : rien ne
+   * s'ouvre et rien ne se trace. C'est le `click`, et non la levée du doigt,
+   * qui ouvre : le panneau et son voile n'existent qu'après, sinon le `click`
+   * du même appui tomberait sur le voile et le fermerait aussitôt. Un doigt
+   * seul n'est pas « capturé » en mode Cases, pour que le `click` arrive au
+   * bouton touché. Le clavier et les lecteurs d'écran cliquent sans doigt
+   * (`detail` à 0) : ils ouvrent toujours.
    */
   import { untrack } from "svelte";
   import {
@@ -49,6 +65,7 @@
     type Position,
     type Trait,
   } from "./murs";
+  import { nomAccessible, type Case } from "./cases";
   import { COTE_D_UNE_CASE, type Grille } from "./plans";
   import { DUREE_TRACE_MS } from "./TraceDeCraie.svelte";
   import { deplacerLaVue, vueDOuverture, type Vue } from "./vueDuPlan";
@@ -56,12 +73,22 @@
   interface Props {
     grille: Grille;
     murs: Bord[];
-    /** Faux en mode Cases : la grille ne trace pas. */
+    cases?: Case[];
+    /** Faux en mode Cases : la grille ne trace pas, ses cases sont des boutons. */
     actif?: boolean;
     ontrait?: (changement: Changement) => void;
+    /** Le lecteur a touché une case (coordonnées du plan). */
+    oncase?: (colonne: number, ligne: number) => void;
   }
 
-  let { grille, murs, actif = true, ontrait }: Props = $props();
+  let {
+    grille,
+    murs,
+    cases = [],
+    actif = true,
+    ontrait,
+    oncase,
+  }: Props = $props();
 
   const uid = $props.id();
   const motif = `points-${uid}`;
@@ -96,6 +123,12 @@
   const doigts = new Map<number, { x: number; y: number }>();
   /** Le doigt qui trace, s'il y en a un. */
   let doigtDuTrait: number | null = null;
+  /** Au-delà de ce déplacement, en px, un doigt n'appuie plus : il glisse. */
+  const SEUIL_D_UN_APPUI = 10;
+  /** Où le doigt s'est posé en mode Cases, pour savoir s'il appuie ou glisse. */
+  let departDuDoigt = { x: 0, y: 0 };
+  /** Le doigt a glissé (ou un second s'est posé) : le `click` qui suit n'ouvre rien. */
+  let aGlisse = false;
   /** Deux doigts se sont posés : jusqu'au dernier levé, le geste fait défiler. */
   let defilement = false;
 
@@ -123,25 +156,37 @@
     };
   }
 
-  function poser(evenement: PointerEvent) {
-    if (evenement.pointerType === "mouse" && evenement.button !== 0) return;
-    const id = evenement.pointerId;
-    doigts.set(id, { x: evenement.clientX, y: evenement.clientY });
-    // Le geste continue même si le doigt sort du cadre. La capture peut être
-    // refusée (pointeur déjà relâché, jsdom) : le geste se fait sans elle.
+  /** La capture peut être refusée (pointeur déjà relâché, jsdom) : le geste se fait sans elle. */
+  function capturer(evenement: PointerEvent, id: number) {
     try {
       (evenement.currentTarget as Element).setPointerCapture?.(id);
     } catch {
       // Sans capture, les mouvements hors du cadre sont simplement perdus.
+    }
+  }
+
+  function poser(evenement: PointerEvent) {
+    if (evenement.pointerType === "mouse" && evenement.button !== 0) return;
+    const id = evenement.pointerId;
+    doigts.set(id, { x: evenement.clientX, y: evenement.clientY });
+    // Le geste continue même si le doigt sort du cadre. En mode Cases, un
+    // doigt seul n'est pas capturé : la capture ferait recevoir le `click` au
+    // cadre au lieu du bouton touché. Il l'est dès qu'un second doigt se pose.
+    if (actif || doigts.size >= 2) {
+      for (const doigt of doigts.keys()) capturer(evenement, doigt);
     }
     if (doigts.size >= 2) {
       // Un second doigt : le trait en cours est abandonné, on fait défiler.
       defilement = true;
       doigtDuTrait = null;
       trait = null;
+      aGlisse = true;
     } else if (actif && !defilement) {
       doigtDuTrait = id;
       trait = commencerUnTrait(murs, grille, position(evenement));
+    } else if (!actif && !defilement) {
+      departDuDoigt = { x: evenement.clientX, y: evenement.clientY };
+      aGlisse = false;
     }
   }
 
@@ -154,6 +199,15 @@
   function glisser(evenement: PointerEvent) {
     const id = evenement.pointerId;
     if (!doigts.has(id)) return;
+    if (
+      !aGlisse &&
+      Math.hypot(
+        evenement.clientX - departDuDoigt.x,
+        evenement.clientY - departDuDoigt.y,
+      ) > SEUIL_D_UN_APPUI
+    ) {
+      aGlisse = true;
+    }
     if (id === doigtDuTrait && trait) {
       doigts.set(id, { x: evenement.clientX, y: evenement.clientY });
       trait = prolongerLeTrait(trait, position(evenement));
@@ -192,6 +246,7 @@
       trait = null;
       doigtDuTrait = null;
     }
+    aGlisse = true;
     oublier(evenement.pointerId);
   }
 
@@ -246,6 +301,19 @@
   const clesAffichees = $derived(new Set(affiches.map(cle)));
   const tracesVisibles = $derived(
     traces.filter((trace) => !clesAffichees.has(cle(trace.bord))),
+  );
+
+  /** Les cases qui portent quelque chose, par coordonnées : « colonne,ligne ». */
+  const casesParPosition = $derived(
+    new Map(cases.map((c) => [`${c.colonne},${c.ligne}`, c])),
+  );
+
+  /** Toutes les cases de la grille, ligne par ligne, pour les boutons du mode Cases. */
+  const cellules = $derived(
+    Array.from({ length: grille.colonnes * grille.lignes }, (_, i) => ({
+      colonne: grille.colonne + (i % grille.colonnes),
+      ligne: grille.ligne + Math.floor(i / grille.colonnes),
+    })),
   );
 
   /** Les deux bouts d'un bord, en px du plan. */
@@ -315,7 +383,57 @@
       {#each tracesVisibles as trace (trace.n)}
         <line {...bouts(trace.bord)} data-etat="efface" />
       {/each}
+      {#each cases as c (`${c.colonne},${c.ligne}`)}
+        {#if c.chapitre !== null}
+          <text
+            x={(c.colonne + 0.5) * COTE_D_UNE_CASE}
+            y={(c.ligne + 0.5) * COTE_D_UNE_CASE}
+          >
+            {c.chapitre}
+          </text>
+        {/if}
+        {#if c.note !== ""}
+          <!-- Le trait en coin : en haut à droite de la case, à 5 px des bords. -->
+          <line
+            x1={(c.colonne + 1) * COTE_D_UNE_CASE - 15}
+            y1={c.ligne * COTE_D_UNE_CASE + 5}
+            x2={(c.colonne + 1) * COTE_D_UNE_CASE - 5}
+            y2={c.ligne * COTE_D_UNE_CASE + 15}
+            data-etat="note"
+          />
+        {/if}
+      {/each}
     </svg>
+    {#if !actif}
+      <div
+        class="cases"
+        role="group"
+        aria-label="Cases du plan"
+        style:width="{largeur}px"
+        style:grid-template-columns="repeat({grille.colonnes}, {COTE_D_UNE_CASE}px)"
+      >
+        {#each cellules as cellule, i (i)}
+          <button
+            type="button"
+            data-colonne={cellule.colonne}
+            data-ligne={cellule.ligne}
+            aria-label={nomAccessible(
+              grille,
+              cellule.colonne,
+              cellule.ligne,
+              casesParPosition.get(`${cellule.colonne},${cellule.ligne}`),
+            )}
+            onclick={(evenement) => {
+              // Un clic de doigt ou de souris compte s'il n'a pas glissé ; sans
+              // doigt (clavier, lecteur d'écran), `detail` vaut 0.
+              if (evenement.detail === 0 || !aGlisse) {
+                oncase?.(cellule.colonne, cellule.ligne);
+              }
+            }}
+          ></button>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>
 
@@ -362,6 +480,38 @@
     stroke: var(--craie);
     stroke-width: 3;
     stroke-linecap: round;
+  }
+  /* Le numéro d'une case : 13 px graisse 700 en craie, au milieu de la case. */
+  text {
+    fill: var(--craie);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
+  /* Le trait en coin d'une case qui porte une note : craie grise, 2 px, bouts arrondis. */
+  line[data-etat="note"] {
+    stroke: var(--craie-2);
+    stroke-width: 2;
+  }
+  /* Les cases du mode Cases : des boutons de 44 px, invisibles, sur le dessin. */
+  .cases {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    grid-auto-rows: 44px;
+  }
+  .cases button {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 0;
+  }
+  .cases button:focus-visible {
+    outline: 2px solid var(--jaune);
+    outline-offset: -3px;
   }
   /* Le mur effacé : craie rouge, puis fondu de 1,2 s en sortie exponentielle. */
   line[data-etat="efface"] {

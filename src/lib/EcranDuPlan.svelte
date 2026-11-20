@@ -18,6 +18,7 @@
   import EnTeteDEcran from "./EnTeteDEcran.svelte";
   import GrilleDuPlan from "./GrilleDuPlan.svelte";
   import Indice from "./Indice.svelte";
+  import PanneauDeCase from "./PanneauDeCase.svelte";
   import PanneauDeConfirmation from "./PanneauDeConfirmation.svelte";
   import {
     agrandirLaGrille,
@@ -26,6 +27,7 @@
     type Bord,
     type Changement,
   } from "./murs";
+  import { definirLaCase, type Case, type Contenu } from "./cases";
   import type { Grille, Plan } from "./plans";
 
   interface Props {
@@ -35,15 +37,26 @@
     onmurs: (murs: Bord[]) => void;
     /** Un mur tracé sur le bord a fait grandir la grille : le plan l'enregistre. */
     ongrille: (grille: Grille) => void;
+    /** Une case a été écrite ou vidée : le plan enregistre les cases. */
+    oncases: (cases: Case[]) => void;
     onretour: () => void;
     /** Le lecteur a confirmé : le plan est effacé. */
     onsupprimer: () => void;
   }
 
-  let { plan, onrenommer, onmurs, ongrille, onretour, onsupprimer }: Props =
-    $props();
+  let {
+    plan,
+    onrenommer,
+    onmurs,
+    ongrille,
+    oncases,
+    onretour,
+    onsupprimer,
+  }: Props = $props();
 
   let confirmation = $state(false);
+  /** La case dont le panneau est ouvert, en coordonnées du plan. */
+  let selection = $state<{ colonne: number; ligne: number } | null>(null);
   let outil = $state<"murs" | "cases">("murs");
   /** Les traits de cet écran, du plus ancien au dernier. */
   let traits = $state.raw<Changement[]>([]);
@@ -53,6 +66,17 @@
     if (grille !== plan.grille) ongrille(grille);
     onmurs(appliquerLeTrait(plan.murs, changement));
     traits = [...traits, changement];
+  }
+
+  function ecrireLaCase(contenu: Contenu) {
+    if (!selection) return;
+    const cases = definirLaCase(
+      plan.cases,
+      selection.colonne,
+      selection.ligne,
+      contenu,
+    );
+    if (cases !== plan.cases) oncases(cases);
   }
 
   function annuler() {
@@ -73,8 +97,10 @@
   <GrilleDuPlan
     grille={plan.grille}
     murs={plan.murs}
+    cases={plan.cases}
     actif={outil === "murs"}
     ontrait={tracer}
+    oncase={(colonne, ligne) => (selection = { colonne, ligne })}
   />
   <div class="bas">
     {#if plan.murs.length === 0}
@@ -110,6 +136,18 @@
     </button>
   </Dock>
 </main>
+
+{#if selection}
+  <PanneauDeCase
+    grille={plan.grille}
+    cases={plan.cases}
+    colonne={selection.colonne}
+    ligne={selection.ligne}
+    onmodifier={ecrireLaCase}
+    onvider={() => ecrireLaCase({ chapitre: null, note: "" })}
+    onfermer={() => (selection = null)}
+  />
+{/if}
 
 {#if confirmation}
   <PanneauDeConfirmation

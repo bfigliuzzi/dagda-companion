@@ -189,3 +189,61 @@ test("la grille grandit par le haut et par la gauche sans que rien ne bouge à l
   await expect(murs).toHaveCount(6);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
 });
+
+test("en mode Cases, un vrai appui tactile ouvre le panneau qui glisse, un glissé non ; le numéro est écrit en 13 px", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Nouveau plan" }).click();
+  await page.getByLabel("Nom du plan").fill("Tour");
+  await page.getByRole("button", { name: "Créer le plan" }).click();
+  await page.getByRole("button", { name: "Tour" }).click();
+  await page.getByRole("radio", { name: "Cases" }).check({ force: true });
+
+  const cdp = await page.context().newCDPSession(page);
+  const touche = async (
+    type: "touchStart" | "touchMove" | "touchEnd",
+    x: number,
+    y: number,
+  ) =>
+    cdp.send("Input.dispatchTouchEvent", {
+      type,
+      touchPoints: type === "touchEnd" ? [] : [{ x, y, id: 1 }],
+    });
+  const bouton = page.getByRole("button", { name: "Case 3-2", exact: true });
+  const { x, y, width, height } = (await bouton.boundingBox())!;
+  expect(width).toBe(44);
+  expect(height).toBe(44);
+  const centre = { x: x + 22, y: y + 22 };
+
+  // Un glissé qui part de la case n'ouvre rien et ne trace rien.
+  await touche("touchStart", centre.x, centre.y);
+  for (let pas = 1; pas <= 6; pas++) {
+    await touche("touchMove", centre.x + pas * 10, centre.y);
+  }
+  await touche("touchEnd", centre.x + 60, centre.y);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator('line[data-etat="mur"]')).toHaveCount(0);
+
+  // Un appui ouvre le panneau, qui glisse depuis le bas.
+  await touche("touchStart", centre.x, centre.y);
+  await touche("touchEnd", centre.x, centre.y);
+  const panneau = page.getByRole("dialog", { name: "Case 3-2" });
+  await expect(panneau).toBeVisible();
+  expect(
+    await panneau.evaluate((e) => getComputedStyle(e).animationName),
+  ).toContain("glisser");
+
+  await page.getByRole("spinbutton", { name: "Chapitre" }).fill("47");
+  await page.getByRole("textbox", { name: "Note" }).fill("clé");
+  await page.getByRole("button", { name: "Fermer" }).click();
+
+  const numero = page.locator("svg text", { hasText: "47" });
+  await expect(numero).toHaveCount(1);
+  expect(await numero.evaluate((e) => getComputedStyle(e).fontSize)).toBe(
+    "13px",
+  );
+  await expect(
+    page.getByRole("button", { name: "Case 3-2, chapitre 47, note : clé" }),
+  ).toBeVisible();
+});

@@ -57,10 +57,10 @@ describe("stockage de l'aventure", () => {
     expect(lireAventure(localStorage)).toEqual(herboriste);
   });
 
-  it("enregistre l'aventure avec le numéro de version 12", () => {
+  it("enregistre l'aventure avec le numéro de version 13", () => {
     ecrireAventure(localStorage, herboriste);
     expect(JSON.parse(localStorage.getItem(CLE_STOCKAGE)!)).toEqual({
-      version: 12,
+      version: 13,
       aventure: herboriste,
     });
   });
@@ -213,7 +213,25 @@ describe("stockage de l'aventure", () => {
       }),
     );
     expect(lireAventure(localStorage)?.plans).toEqual([
-      { id: 1, nom: "Tour", grille, murs: [] },
+      { id: 1, nom: "Tour", grille, murs: [], cases: [] },
+    ]);
+  });
+
+  it("migre un enregistrement de la version 12 : ses plans n'ont aucune case notée", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    const murs = [{ sens: "vertical", colonne: 1, ligne: 1 }];
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 12,
+        aventure: {
+          ...herboriste,
+          plans: [{ id: 1, nom: "Tour", grille, murs }],
+        },
+      }),
+    );
+    expect(lireAventure(localStorage)?.plans).toEqual([
+      { id: 1, nom: "Tour", grille, murs, cases: [] },
     ]);
   });
 
@@ -229,6 +247,10 @@ describe("stockage de l'aventure", () => {
           murs: [
             { sens: "horizontal", colonne: -2, ligne: -1 },
             { sens: "vertical", colonne: 3, ligne: 0 },
+          ],
+          cases: [
+            { colonne: -2, ligne: -1, chapitre: 47, note: "clé", ordre: 2 },
+            { colonne: 3, ligne: 0, chapitre: null, note: "porte", ordre: 0 },
           ],
         },
       ],
@@ -253,7 +275,7 @@ describe("stockage de l'aventure", () => {
     localStorage.setItem(
       CLE_STOCKAGE,
       JSON.stringify({
-        version: 12,
+        version: 13,
         aventure: {
           ...herboriste,
           plans: [
@@ -262,6 +284,32 @@ describe("stockage de l'aventure", () => {
               nom: "Tour",
               grille,
               murs: [{ sens: "diagonal", colonne: 0, ligne: 0 }],
+              cases: [],
+            },
+          ],
+        },
+      }),
+    );
+    expect(lireAventure(localStorage)).toBeNull();
+  });
+
+  it("ne trouve aucune aventure si une case est mal formée", () => {
+    const grille = { colonne: 0, ligne: 0, colonnes: 8, lignes: 8 };
+    localStorage.setItem(
+      CLE_STOCKAGE,
+      JSON.stringify({
+        version: 13,
+        aventure: {
+          ...herboriste,
+          plans: [
+            {
+              id: 1,
+              nom: "Tour",
+              grille,
+              murs: [],
+              cases: [
+                { colonne: 0, ligne: 0, chapitre: 0, note: "", ordre: 1 },
+              ],
             },
           ],
         },

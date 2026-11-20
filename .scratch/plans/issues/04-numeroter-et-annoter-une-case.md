@@ -8,9 +8,9 @@ Références : `.scratch/plans/spec.md` (Interaction, Contraintes), `DESIGN.md` 
 
 **Status:** ready-for-agent
 
-- [ ] En mode Cases, un appui sur une case ouvre le panneau avec un champ numérique (chapitre) et un champ de note courte ; un glissé ne trace plus de mur.
-- [ ] Le numéro s'affiche dans la case en 13 px ; une note se signale par un petit trait en coin.
-- [ ] « Vider la case » retire le numéro et la note.
-- [ ] Un numéro déjà présent dans une autre case affiche un indice non bloquant.
-- [ ] Chaque case est un bouton nommé pour les lecteurs d'écran (« Case 3-5, chapitre 47, note : clé »).
-- [ ] Numéros et notes sont enregistrés et retrouvés après rechargement.
+- [x] En mode Cases, un appui sur une case ouvre le panneau avec un champ numérique (chapitre) et un champ de note courte ; un glissé ne trace plus de mur.
+- [x] Le numéro s'affiche dans la case en 13 px ; une note se signale par un petit trait en coin.
+- [x] « Vider la case » retire le numéro et la note.
+- [x] Un numéro déjà présent dans une autre case affiche un indice non bloquant.
+- [x] Chaque case est un bouton nommé pour les lecteurs d'écran (« Case 3-5, chapitre 47, note : clé »).
+- [x] Numéros et notes sont enregistrés et retrouvés après rechargement.

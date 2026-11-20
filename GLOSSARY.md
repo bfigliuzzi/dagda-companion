@@ -17,7 +17,7 @@ Le dessin d'un lieu du livre (labyrinthe, souterrains, tour), nommé par le lect
 _À éviter_ : carte (le livre a ses propres cartes, que l'app ne reproduit pas)
 
 **Case** :
-Un carré de la grille d'un plan, de 44 px de côté. Elle peut recevoir un numéro de chapitre et une note courte. Ce n'est pas un emplacement de la besace.
+Un carré de la grille d'un plan, de 44 px de côté. Elle peut recevoir un numéro de chapitre (de 1 à 9999) et une note courte (60 caractères au plus) ; une case qui n'a ni l'un ni l'autre n'est pas enregistrée. Pour le lecteur elle s'appelle « colonne-ligne » à partir de 1 depuis le coin en haut à gauche de la grille (« Case 3-5 »). Ce n'est pas un emplacement de la besace.
 _À éviter_ : cellule, emplacement (réservé à la besace)
 
 **Mur** :
