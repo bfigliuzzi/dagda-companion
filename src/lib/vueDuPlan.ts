@@ -61,11 +61,12 @@ export function vueDOuverture(grille: Grille, taille: Taille): Vue {
 
 /**
  * La vue à l'ouverture d'un plan qui a un repère (`repere`, le milieu de sa
- * case, en cases). Chaque axe a sa règle : là où la grille tient dans le cadre
- * avec ses marges d'une case, elle s'ouvre comme sans repère (`vueDOuverture`),
- * et le repère y est forcément visible ; là où elle ne tient pas, la vue se
- * centre sur le repère, puis s'arrête une case au-delà du bord de la grille,
- * aux mêmes limites que quand on la fait défiler (`deplacerLaVue`).
+ * case, en cases). Chaque axe a sa règle : là où la grille tient entière dans
+ * le cadre, même sans ses marges (un plan neuf de 352 px sur un téléphone de
+ * 412 px), elle s'ouvre comme sans repère (`vueDOuverture`), et le repère y est
+ * forcément visible ; là où elle ne tient pas, la vue se centre sur le repère,
+ * puis s'arrête une case au-delà du bord de la grille, aux mêmes limites que
+ * quand on la fait défiler (`deplacerLaVue`).
  */
 export function vueDOuvertureSur(
   repere: Position,
@@ -99,8 +100,8 @@ function aLOuverture(
   nombre: number,
   cadre: number,
 ): number {
+  if (nombre * COTE_D_UNE_CASE <= cadre) return sansRepere;
   const [a, b] = limites(debut, nombre);
-  if (b - a <= cadre) return sansRepere;
   return Math.min(b - cadre, Math.max(a, centree));
 }
 

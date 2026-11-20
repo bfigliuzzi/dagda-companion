@@ -43,24 +43,21 @@ describe("la vue à l'ouverture d'un plan", () => {
 });
 
 describe("la vue à l'ouverture d'un plan qui a un repère", () => {
-  /** Un téléphone de 412 px de large : 8 cases et leurs marges (440 px) n'y tiennent pas. */
+  /**
+   * Un téléphone de 412 px de large : 8 cases (352 px) y tiennent, mais pas
+   * avec leurs marges d'une case (440 px).
+   */
   const telephone = { largeur: 412, hauteur: 600 };
 
-  it("un repère au coin d'un plan neuf : la grille entière reste visible, bord gauche à une case du cadre, en haut", () => {
-    // Centrer sur la case (0, 0) couperait la grille à gauche ; bornée, la vue
-    // garde la marge d'une case à gauche (-44) et la grille en haut.
-    expect(vueDOuvertureSur({ x: 0.5, y: 0.5 }, neuf, telephone)).toEqual({
-      x: -44,
-      y: -44,
-    });
-  });
-
-  it("un repère à l'autre coin d'un plan neuf : bornée de l'autre côté", () => {
-    // Bord droit de la grille + une case : 396 px au bord droit du cadre.
-    expect(vueDOuvertureSur({ x: 7.5, y: 7.5 }, neuf, telephone)).toEqual({
-      x: 396 - 412,
-      y: -44,
-    });
+  it("un plan neuf tient dans la largeur : centré, quel que soit le coin du repère", () => {
+    // 352 px centrés dans 412 px : 30 px de chaque côté ; en haut, à une case.
+    const centre = { x: 176 - 206, y: -44 };
+    expect(vueDOuvertureSur({ x: 0.5, y: 0.5 }, neuf, telephone)).toEqual(
+      centre,
+    );
+    expect(vueDOuvertureSur({ x: 7.5, y: 7.5 }, neuf, telephone)).toEqual(
+      centre,
+    );
   });
 
   it("une petite grille qui tient sur les deux axes s'ouvre comme sans repère", () => {
