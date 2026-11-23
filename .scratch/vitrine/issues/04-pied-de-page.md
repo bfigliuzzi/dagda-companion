@@ -12,5 +12,6 @@ Références : `.scratch/vitrine/spec.md` (Pied de page), maquette (ticket 02).
 - [ ] L'icône GitHub a un nom accessible et ouvre <https://github.com/bfigliuzzi/dagda-companion>.
 - [ ] « Mentions légales » ouvre la page du ticket 03.
 - [ ] Le dock de dés ne masque jamais le pied de page.
+- [ ] Le dock de dés passe de `position: fixed` à `position: sticky; bottom: 0` (`Dock.svelte`), placé à la fin de la feuille avant le pied de page : il s'arrête au-dessus du pied de page en fin de défilement, et la marge de 92 px gardée en bas de `.feuille` (`App.svelte`) disparaît. Les docks de combat et de plan ne changent pas.
 - [ ] Le pied de page est absent des écrans de combat, de plan, de l'historique et de « Nouvel apprenti ».
 - [ ] Il suit la maquette.

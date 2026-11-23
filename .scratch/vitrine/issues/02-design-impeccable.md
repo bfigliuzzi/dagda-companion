@@ -6,11 +6,11 @@ Références : `.scratch/vitrine/spec.md` (tout), `PRODUCT.md`, `DESIGN.md`, `de
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-human
+**Status:** done
 
-- [ ] L'Accueil est dans la maquette : nom de l'app, ce qu'elle fait, mention « projet de fan non officiel », « Commencer », tutoriel d'installation (bouton natif, étapes, « Autre appareil ? »), pied de page.
-- [ ] Le pied de page est dans la maquette, en bas de la feuille : nom, version, icône GitHub, « Mentions légales », « Installer l'app ».
-- [ ] La page « Mentions légales » est dans la maquette, avec ses cinq sections et « Retour à l'app ».
-- [ ] L'image de l'aperçu de partage (1200 × 630) existe, sans rien reproduire du livre.
-- [ ] Rien ne contredit `DESIGN.md` (fond noir pur, craie, aucune animation continue) ; `DESIGN.md` est complété si le design introduit un nouveau motif.
-- [ ] L'utilisateur a validé chacun des quatre éléments.
+- [x] L'Accueil est dans la maquette : nom de l'app, ce qu'elle fait, mention « projet de fan non officiel », « Commencer », tutoriel d'installation (bouton natif, étapes, « Autre appareil ? »), pied de page.
+- [x] Le pied de page est dans la maquette, en bas de la feuille : nom, version, icône GitHub, « Mentions légales », « Installer l'app ».
+- [x] La page « Mentions légales » est dans la maquette, avec ses cinq sections et « Retour à l'app ».
+- [x] L'image de l'aperçu de partage (1200 × 630) existe, sans rien reproduire du livre.
+- [x] Rien ne contredit `DESIGN.md` (fond noir pur, craie, aucune animation continue) ; `DESIGN.md` est complété si le design introduit un nouveau motif.
+- [x] L'utilisateur a validé chacun des quatre éléments.

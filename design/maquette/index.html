@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Maquette — Feuille de personnage · La Saga de Dagda (compagnon)</title>
+<title>Maquette : feuille de personnage · La Saga de Dagda (compagnon)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -237,6 +237,80 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
 .detail b{color:var(--craie)}
 .detail b.lost{color:var(--rouge)}
 .stats-in{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ===== Vitrine : pied de page ===== */
+.pied{margin:32px 18px 0;padding-top:12px;border-top:2px solid var(--trait)}
+.pied .qui{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pied .nom{font-size:15px;font-weight:700}
+.pied .nom small{display:block;font-size:14px;font-weight:400;color:var(--craie-3)}
+.pied .gh{width:44px;height:44px;display:grid;place-items:center;margin-right:-10px;color:var(--craie-2)}
+.pied nav{display:flex;flex-wrap:wrap;column-gap:22px;margin-top:2px}
+.lien{min-height:44px;display:inline-flex;align-items:center;gap:6px;color:var(--craie-2);font-size:15px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--craie-3)}
+.lien svg{width:18px;height:18px}
+
+/* ===== Vitrine : Accueil ===== */
+.acc-h{padding:22px 18px 0}
+.acc-h h1{font-size:28px;font-weight:800;letter-spacing:-.015em;line-height:1.1;text-wrap:balance}
+.acc-h p{margin-top:8px;color:var(--craie-2)}
+.apercu{position:relative;height:410px;margin-top:22px;overflow:hidden;border-bottom:2px solid var(--trait)}
+.tel{position:absolute;left:50%;top:0;width:390px;height:844px;margin-left:-195px;transform:scale(.62);transform-origin:top center;border:3px solid var(--craie-3);border-radius:46px;padding-top:34px;pointer-events:none}
+.tel::before{content:"";position:absolute;top:12px;left:50%;width:90px;height:8px;margin-left:-45px;border-radius:4px;background:var(--trait)}
+.tel .top{padding-top:12px}
+.tel section{padding-top:16px}
+.legende{margin-top:10px;text-align:center;font-size:15px;color:var(--craie-2)}
+.dock .mention{margin-top:8px;text-align:center;font-size:13px;color:var(--craie-3)}
+.acc-dock{background:var(--noir);border-top:1px solid var(--trait)}
+/* Dock sticky arrivé au bout de la feuille : il s'arrête au-dessus du pied de page */
+.dock.pose{position:static;margin-top:20px}
+.dock.pose+.pied{margin-top:12px}
+
+/* ===== Vitrine : tutoriel d'installation ===== */
+.inst{padding:28px 18px 0}
+.inst .pourquoi{margin-top:10px;color:var(--craie-2);font-size:15px}
+.inst .detecte{margin-top:16px;font-size:14px;color:var(--craie-2)}
+.inst .detecte b{color:var(--craie);font-weight:700}
+.etape{display:grid;grid-template-columns:28px 1fr;gap:6px;align-items:baseline;min-height:48px;padding:12px 0;border-bottom:1px solid var(--trait)}
+.etape>b{font-size:18px;font-weight:800;color:var(--craie-3)}
+.etape svg{width:20px;height:20px;vertical-align:-4px;margin:0 2px;color:var(--craie)}
+.inst .ghost{margin-top:14px}
+.inst .ghost svg{width:22px;height:22px}
+.inst .cta{margin-top:16px}
+.autre{margin-top:6px;justify-content:flex-start}
+.autre[aria-expanded="true"] svg{transform:rotate(180deg)}
+.appareils{margin-top:4px}
+.appareil{padding:10px 0;border-bottom:1px solid var(--trait)}
+.appareil .a{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;font-size:16px;font-weight:700}
+.appareil .a small{font-size:13px;font-weight:400;color:var(--craie-3);white-space:nowrap}
+.appareil .a .ici{font-style:normal;font-size:13px;font-weight:400;color:var(--craie);border:1.5px solid var(--trait);border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+.appareil .n{font-size:14px;color:var(--craie-2);margin-top:2px}
+.appareil .n svg{width:18px;height:18px;vertical-align:-4px;color:var(--craie)}
+.appareil .n b{color:var(--craie);font-weight:700}
+
+/* ===== Vitrine : mentions légales ===== */
+.ml{padding:6px 18px 0}
+.ml .retour{margin-left:-6px}
+.ml h1{font-size:28px;font-weight:800;letter-spacing:-.015em;margin-top:10px}
+.ml .maj{font-size:14px;color:var(--craie-3);margin-top:4px}
+.ml section{padding:26px 0 0}
+.ml h2{display:inline-block}
+.ml p{margin-top:10px;font-size:16px;line-height:1.55;max-width:30em}
+.ml p a{color:var(--craie);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--craie-3)}
+.ml address{font-style:normal;margin-top:10px;line-height:1.55}
+.ml .ghost{margin-top:32px}
+a.ghost{color:var(--craie);text-decoration:none}
+.bureau{width:960px;height:600px;background:var(--noir);border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px #2a2a28, 0 24px 60px rgba(0,0,0,.5)}
+.bureau .barre{height:36px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--trait);font-size:13px;color:var(--craie-3)}
+.bureau .barre i{width:10px;height:10px;border-radius:50%;background:var(--trait)}
+.bureau .barre span{margin-left:12px;flex:1;background:var(--ardoise-2);border-radius:8px;padding:3px 12px}
+.bureau .ml{max-width:calc(30em + 36px);margin:0 auto;padding-top:28px}
+figure.large{width:960px}
+figure.large figcaption{max-width:560px}
+
+/* ===== Vitrine : aperçu de partage ===== */
+figure.og{width:600px}
+figure.og figcaption{max-width:560px}
+.og-cadre{width:600px;height:315px;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px #2a2a28}
+.og-cadre iframe{width:1200px;height:630px;border:0;transform:scale(.5);transform-origin:0 0;display:block}
 </style>
 </head>
 <body>
@@ -258,12 +332,17 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6"/></symbol>
-  <symbol id="i-forward" viewBox="0 0 24 24"><path d="M5 6l7 6-7 6M13 6l7 6-7 6"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.4a3 3 0 0 0-.9-2.3c2.9-.3 6-1.4 6-6.4a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.4s-1.1-.3-3.6 1.3a12.4 12.4 0 0 0-6.4 0C6.1 1.7 5 2 5 2a4.6 4.6 0 0 0-.1 3.4A5 5 0 0 0 3.5 9c0 5 3.1 6.1 6 6.4a3 3 0 0 0-.9 2.3V21"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4M8 11H6v10h12V11h-2"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+<symbol id="i-install" viewBox="0 0 24 24"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5M5 17v3h14v-3"/></symbol>
+<symbol id="i-forward"viewBox="0 0 24 24"><path d="M5 6l7 6-7 6M13 6l7 6-7 6"/></symbol>
 </svg>
 
 <div class="doc">
-  <h1>Feuille de personnage — maquette</h1>
-  <p>Direction «&nbsp;Ardoise de l'Académie&nbsp;». Fond noir pur pour les écrans OLED, texte craie, trois craies de couleur à rôle fixe. Chaque écran est montré à 390 × 844 px. Les noms d'objets, d'ennemis et les notes sont des exemples inventés pour la maquette, pas du contenu du livre.</p>
+  <h1>Feuille de personnage : maquette</h1>
+  <p>Direction «&nbsp;Ardoise de l'Académie&nbsp;». Fond noir pur pour les écrans OLED, texte craie, trois craies de couleur à rôle fixe. Chaque écran est montré à 390 × 844 px. Les noms d'objets, d'ennemis et les notes sont des exemples inventés pour la maquette, pas du contenu du livre. Les écrans 13 à 16 montrent la vitrine&nbsp;: Accueil, installation, mentions légales et aperçu de partage&nbsp;; le pied de page est au bas de l'écran 2.</p>
   <div class="legend">
     <span><i style="background:var(--jaune)"></i>Jaune&nbsp;: action principale</span>
     <span><i style="background:var(--rouge)"></i>Rouge&nbsp;: PV perdus, danger</span>
@@ -308,12 +387,12 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
       </section>
       <div class="dock"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
     </div>
-    <figcaption><b>1 · Feuille, premier écran</b>Tout l'état vital sans défiler. La valeur remplacée (31) reste barrée en rouge juste avant la nouvelle, puis s'efface en 1,2 s (fondu en sortie exponentielle)&nbsp;: c'est la trace de craie. Partout, l'ancienne valeur barrée précède la nouvelle. Seul le bouton de dés reste fixe.</figcaption>
+    <figcaption><b>1 · Feuille, premier écran</b>Tout l'état vital sans défiler. La valeur remplacée (31) reste barrée en rouge juste avant la nouvelle, puis s'efface en 1,2 s (fondu en sortie exponentielle)&nbsp;: c'est la trace de craie. Partout, l'ancienne valeur barrée précède la nouvelle. Seul le bouton de dés reste collé en bas.</figcaption>
   </figure>
 
   <!-- 2. Feuille entière -->
   <figure>
-    <div class="phone tall">
+    <div class="phone tall" style="padding-bottom:24px">
       <div class="top"><span>Herbologie · Mode simplifié</span><button class="chap">§ 112<svg class="i"><use href="#i-pen"/></svg></button></div>
       <div class="vitals">
         <div class="pv">
@@ -367,9 +446,16 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
         <div class="row"><span class="n">Reprendre la sauvegarde · § 87</span><svg class="i" style="color:var(--craie-2)"><use href="#i-redo"/></svg></div>
         <div class="row"><span class="n danger">Recommencer une aventure</span></div>
       </div>
-      <div class="dock"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
+      <div class="dock pose"><button class="cta"><svg class="i"><use href="#i-dice"/></svg>Lancer les dés</button></div>
+      <footer class="pied">
+        <div class="qui">
+          <p class="nom">Compagnon de La Saga de Dagda<small>Version 0.1.0</small></p>
+          <a class="gh" href="https://github.com/bfigliuzzi/dagda-companion" aria-label="Code source sur GitHub"><svg class="i"><use href="#i-github"/></svg></a>
+        </div>
+        <nav aria-label="Pied de page"><a class="lien" href="#mentions">Mentions légales</a><a class="lien" href="#installer">Installer l'app</a></nav>
+      </footer>
     </div>
-    <figcaption><b>2 · Feuille entière</b>Une seule page, dans l'ordre de la feuille papier. La besace compte ses 24 emplacements en traits de craie. Les derniers combats sont résumés avant les notes. La section Aventure (sauvegardes, recommencer) est rangée tout en bas, loin du pouce.</figcaption>
+    <figcaption><b>2 · Feuille entière</b>Une seule page, dans l'ordre de la feuille papier. La besace compte ses 24 emplacements en traits de craie. Les derniers combats sont résumés avant les notes. La section Aventure (sauvegardes, recommencer) est rangée tout en bas, loin du pouce. Tout en bas, le pied de page&nbsp;: nom, version, GitHub, «&nbsp;Mentions légales&nbsp;» et «&nbsp;Installer l'app&nbsp;» (absent quand l'app tourne installée). Le dock de dés est collant (<code>sticky</code>)&nbsp;: il reste en bas de l'écran pendant toute la feuille, puis s'arrête à sa fin, au-dessus du pied de page, qui défile sous lui.</figcaption>
   </figure>
 
   <!-- 3. Dés -->
@@ -430,7 +516,7 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
       </section>
       <div class="dock"><button class="cta" style="border-color:var(--craie-3);color:var(--craie-3)" aria-disabled="true">Lancez d'abord la CHANCE</button></div>
     </div>
-    <figcaption><b>4 · Premier lancement, nouvelle aventure</b>Un seul écran, pas d'assistant en étapes. L'onglet «&nbsp;Déjà en route&nbsp;» sert à ceux qui ont commencé le livre sur papier. Le bouton final reste éteint et dit ce qui manque, au lieu d'un message d'erreur.</figcaption>
+    <figcaption><b>4 · Premier lancement, nouvelle aventure</b>Tout tient sur un seul écran, sans assistant en étapes. L'onglet «&nbsp;Déjà en route&nbsp;» sert à ceux qui ont commencé le livre sur papier. Le bouton final reste éteint et dit ce qui manque, au lieu d'un message d'erreur.</figcaption>
   </figure>
 
   <!-- 4b. Déjà en route -->
@@ -648,6 +734,187 @@ h2{font-size:22px;font-weight:800;line-height:1.1;padding-bottom:4px;border-bott
       </section>
     </div>
     <figcaption><b>12 · Historique des combats</b>Du plus récent au plus ancien, chaque combat repéré par son chapitre. Un appui déplie le détail&nbsp;: PV et CHANCE avant/après, puis chaque jet. Ouvert depuis la feuille ou depuis la fin d'un combat.</figcaption>
+  </figure>
+
+  <!-- 13. Accueil, premier écran -->
+  <figure id="accueil">
+    <div class="phone">
+      <div class="acc-h">
+        <h1>Compagnon de La Saga de Dagda</h1>
+        <p>La feuille d'aventure du livre-jeu, sur le téléphone posé à côté du livre. Vous lisez, l'app tient les comptes.</p>
+      </div>
+      <div class="apercu" role="img" aria-label="Exemple de feuille : 28 points de vie sur 32 (avant : 31), CHANCE 4, DEXTÉRITÉ 8 grâce à une potion, une épée courte et une dague, 9 objets sur 24 dans la besace.">
+        <div class="tel" aria-hidden="true">
+          <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 112</span></div>
+          <div class="vitals">
+            <div class="pv"><div class="label">Points de vie</div><div class="num"><s class="was">31</s><b>28</b><span>/ 32</span></div></div>
+            <div class="side"><div class="stat"><span class="label">Chance</span><b>4</b></div><div class="stat"><span class="label">Dextérité</span><b class="eff">8</b></div></div>
+          </div>
+          <section><div class="sh"><h2>Armes</h2><span class="meta">2 / 2</span></div><div class="row"><span class="n">Épée courte</span><span class="v">+1</span></div><div class="row"><span class="n">Dague</span><span class="v">0</span></div></section>
+          <section><div class="sh"><h2>Effets</h2><span class="meta">1 actif</span></div><div class="row effect"><span class="n">Potion d'adresse</span><span class="d">DEX +1</span></div></section>
+          <section><div class="sh"><h2>Besace</h2><span class="meta">9 / 24</span></div><div class="tally"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="row"><span class="n">Corde</span></div><div class="row"><span class="n">Pièces d'or</span><span class="v">12</span></div></section>
+        </div>
+      </div>
+      <p class="legende">Une feuille d'exemple. La vôtre commence vierge.</p>
+      <section class="inst"><div class="sh"><h2>Installer l'app</h2><span class="meta">iPhone · Safari</span></div></section>
+      <div class="dock acc-dock"><button class="cta">Commencer</button><p class="mention">Projet de fan non officiel · tout reste sur votre téléphone</p></div>
+    </div>
+    <figcaption><b>13 · Accueil, premier écran</b>Seulement à l'ouverture, quand aucune aventure n'est enregistrée. La feuille d'exemple est une image&nbsp;: un téléphone dessiné en craie pâle, réduit, coupé par un trait, avec sa légende. Elle ne se touche pas. «&nbsp;Commencer&nbsp;» ouvre «&nbsp;Nouvel apprenti&nbsp;» ; il reste collé en bas comme le bouton de dés, sur fond noir plein.</figcaption>
+  </figure>
+
+  <!-- 13b. Accueil entier -->
+  <figure>
+    <div class="phone tall" style="padding-bottom:24px">
+      <div class="acc-h">
+        <h1>Compagnon de La Saga de Dagda</h1>
+        <p>La feuille d'aventure du livre-jeu, sur le téléphone posé à côté du livre. Vous lisez, l'app tient les comptes.</p>
+      </div>
+      <div class="apercu" role="img" aria-label="Exemple de feuille : 28 points de vie sur 32 (avant : 31), CHANCE 4, DEXTÉRITÉ 8 grâce à une potion, une épée courte et une dague, 9 objets sur 24 dans la besace.">
+        <div class="tel" aria-hidden="true">
+          <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 112</span></div>
+          <div class="vitals">
+            <div class="pv"><div class="label">Points de vie</div><div class="num"><s class="was">31</s><b>28</b><span>/ 32</span></div></div>
+            <div class="side"><div class="stat"><span class="label">Chance</span><b>4</b></div><div class="stat"><span class="label">Dextérité</span><b class="eff">8</b></div></div>
+          </div>
+          <section><div class="sh"><h2>Armes</h2><span class="meta">2 / 2</span></div><div class="row"><span class="n">Épée courte</span><span class="v">+1</span></div><div class="row"><span class="n">Dague</span><span class="v">0</span></div></section>
+          <section><div class="sh"><h2>Effets</h2><span class="meta">1 actif</span></div><div class="row effect"><span class="n">Potion d'adresse</span><span class="d">DEX +1</span></div></section>
+          <section><div class="sh"><h2>Besace</h2><span class="meta">9 / 24</span></div><div class="tally"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="row"><span class="n">Corde</span></div><div class="row"><span class="n">Pièces d'or</span><span class="v">12</span></div></section>
+        </div>
+      </div>
+      <p class="legende">Une feuille d'exemple. La vôtre commence vierge.</p>
+      <section class="inst" id="installer-accueil">
+        <div class="sh"><h2>Installer l'app</h2><span class="meta">iPhone · Safari</span></div>
+        <p class="pourquoi">Installée, elle s'ouvre en plein écran depuis son icône et marche sans réseau.</p>
+        <div class="etape"><b>1</b><span>Touchez le bouton Partager <svg class="i" aria-label="Partager"><use href="#i-share"/></svg> en bas de l'écran.</span></div>
+        <div class="etape"><b>2</b><span>Choisissez «&nbsp;Sur l'écran d'accueil&nbsp;».</span></div>
+        <div class="etape"><b>3</b><span>Touchez «&nbsp;Ajouter&nbsp;».</span></div>
+        <button class="lien autre" aria-expanded="false">Autre appareil&nbsp;? <svg class="i"><use href="#i-down"/></svg></button>
+      </section>
+      <div class="dock acc-dock pose"><button class="cta">Commencer</button><p class="mention">Projet de fan non officiel · tout reste sur votre téléphone</p></div>
+      <footer class="pied">
+        <div class="qui">
+          <p class="nom">Compagnon de La Saga de Dagda<small>Version 0.1.0</small></p>
+          <a class="gh" href="https://github.com/bfigliuzzi/dagda-companion" aria-label="Code source sur GitHub"><svg class="i"><use href="#i-github"/></svg></a>
+        </div>
+        <nav aria-label="Pied de page"><a class="lien" href="#mentions">Mentions légales</a><a class="lien" href="#installer-accueil">Installer l'app</a></nav>
+      </footer>
+    </div>
+    <figcaption><b>13b · Accueil entier</b>Sous l'exemple, le tutoriel d'installation pour l'appareil deviné, nommé à droite du titre (ici un iPhone avec Safari)&nbsp;: les étapes, numérotées parce que l'ordre compte. Le bouton Partager est dessiné tel qu'il apparaît à l'écran. «&nbsp;Autre appareil&nbsp;?&nbsp;» déplie toutes les marches à suivre (écran 14). «&nbsp;Commencer&nbsp;» est collant comme le bouton de dés&nbsp;: arrivé au bout de l'Accueil, il s'arrête au-dessus du pied de page. App déjà installée&nbsp;: ni tutoriel, ni «&nbsp;Installer l'app&nbsp;».</figcaption>
+  </figure>
+
+  <!-- 13c. Accueil, Android avec Chrome -->
+  <figure>
+    <div class="phone" style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:24px">
+      <div class="apercu" aria-hidden="true" style="flex:none;margin-top:0;height:410px">
+        <div class="tel" aria-hidden="true">
+          <div class="top"><span>Herbologie · Mode simplifié</span><span class="chap">§ 112</span></div>
+          <div class="vitals">
+            <div class="pv"><div class="label">Points de vie</div><div class="num"><s class="was">31</s><b>28</b><span>/ 32</span></div></div>
+            <div class="side"><div class="stat"><span class="label">Chance</span><b>4</b></div><div class="stat"><span class="label">Dextérité</span><b class="eff">8</b></div></div>
+          </div>
+          <section><div class="sh"><h2>Armes</h2><span class="meta">2 / 2</span></div><div class="row"><span class="n">Épée courte</span><span class="v">+1</span></div><div class="row"><span class="n">Dague</span><span class="v">0</span></div></section>
+          <section><div class="sh"><h2>Effets</h2><span class="meta">1 actif</span></div><div class="row effect"><span class="n">Potion d'adresse</span><span class="d">DEX +1</span></div></section>
+          <section><div class="sh"><h2>Besace</h2><span class="meta">9 / 24</span></div><div class="tally"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="row"><span class="n">Corde</span></div><div class="row"><span class="n">Pièces d'or</span><span class="v">12</span></div></section>
+        </div>
+      </div>
+      <p class="legende" style="flex:none">Une feuille d'exemple. La vôtre commence vierge.</p>
+      <section class="inst">
+        <div class="sh"><h2>Installer l'app</h2><span class="meta">Android · Chrome</span></div>
+        <p class="pourquoi">Installée, elle s'ouvre en plein écran depuis son icône et marche sans réseau.</p>
+        <button class="ghost"><svg class="i"><use href="#i-install"/></svg>Installer</button>
+        <button class="lien autre" aria-expanded="false">Autre appareil&nbsp;? <svg class="i"><use href="#i-down"/></svg></button>
+      </section>
+      <div class="dock acc-dock pose"><button class="cta">Commencer</button><p class="mention">Projet de fan non officiel · tout reste sur votre téléphone</p></div>
+      <footer class="pied">
+        <div class="qui">
+          <p class="nom">Compagnon de La Saga de Dagda<small>Version 0.1.0</small></p>
+          <a class="gh" href="https://github.com/bfigliuzzi/dagda-companion" aria-label="Code source sur GitHub"><svg class="i"><use href="#i-github"/></svg></a>
+        </div>
+        <nav aria-label="Pied de page"><a class="lien" href="#mentions">Mentions légales</a><a class="lien" href="#installer-accueil">Installer l'app</a></nav>
+      </footer>
+    </div>
+    <figcaption><b>13c · Accueil sur Android avec Chrome</b>L'Accueil défilé jusqu'en bas&nbsp;: «&nbsp;Commencer&nbsp;» s'est arrêté au-dessus du pied de page. Le navigateur propose l'installation&nbsp;: le bouton «&nbsp;Installer&nbsp;» du navigateur remplace les étapes. Il est en bouton secondaire (contour gris, texte craie) pour laisser le jaune à «&nbsp;Commencer&nbsp;». Une fois l'app installée, il disparaît avec toute la section.</figcaption>
+  </figure>
+
+  <!-- 14. Installer l'app (depuis le pied de page) -->
+  <figure id="installer">
+    <div class="phone tall" style="padding-bottom:24px">
+      <div class="screen-h"><button class="close" style="margin:0 0 0 -12px" aria-label="Retour à la feuille"><svg class="i"><use href="#i-back"/></svg></button><h1>Installer l'app</h1></div>
+      <p class="intro">Installée, elle s'ouvre en plein écran depuis son icône et marche sans réseau. Votre aventure reste la même.</p>
+      <section class="inst" style="padding-top:6px">
+        <p class="detecte">Sur <b>Android avec Chrome</b>, votre navigateur propose l'installation&nbsp;:</p>
+        <button class="cta"><svg class="i"><use href="#i-install"/></svg>Installer</button>
+        <button class="lien autre" aria-expanded="true">Autre appareil&nbsp;? <svg class="i"><use href="#i-down"/></svg></button>
+        <div class="appareils">
+          <div class="appareil"><div class="a"><span>Android <em class="ici">votre appareil</em></span><small>Chrome, Edge, Samsung Internet</small></div><p class="n">Le bouton «&nbsp;Installer&nbsp;» apparaît en haut de cet écran quand le navigateur le propose.</p></div>
+          <div class="appareil"><div class="a">Android<small>Firefox</small></div><p class="n">Menu <svg class="i" aria-label="trois points"><use href="#i-more"/></svg> puis <b>«&nbsp;Installer&nbsp;»</b>.</p></div>
+          <div class="appareil"><div class="a">iPhone, iPad<small>Safari, Chrome, Edge</small></div><p class="n">Bouton Partager <svg class="i" aria-label="Partager"><use href="#i-share"/></svg> puis <b>«&nbsp;Sur l'écran d'accueil&nbsp;»</b>.</p></div>
+          <div class="appareil"><div class="a">Ordinateur<small>Chrome, Edge</small></div><p class="n">Le bouton «&nbsp;Installer&nbsp;» apparaît en haut de cet écran quand le navigateur le propose.</p></div>
+          <div class="appareil"><div class="a">Mac<small>Safari</small></div><p class="n">Menu Fichier puis <b>«&nbsp;Ajouter au Dock&nbsp;»</b>.</p></div>
+          <div class="appareil"><div class="a">Ordinateur<small>Firefox</small></div><p class="n">Ce navigateur n'installe pas les apps web&nbsp;; l'app marche très bien dans un onglet.</p></div>
+        </div>
+      </section>
+    </div>
+    <figcaption><b>14 · Installer l'app</b>Écran plein ouvert par «&nbsp;Installer l'app&nbsp;» dans le pied de page de la feuille&nbsp;; le retour rend la feuille. Ici, le navigateur propose l'installation&nbsp;: le bouton «&nbsp;Installer&nbsp;» du navigateur, en contour jaune puisque c'est l'action de l'écran (sur l'Accueil, écran 13c, il est en contour gris pour laisser le jaune à «&nbsp;Commencer&nbsp;»). «&nbsp;Autre appareil&nbsp;?&nbsp;» est déplié&nbsp;: les six cas du tableau, l'appareil en gras, les navigateurs en gris, l'appareil deviné marqué «&nbsp;votre appareil&nbsp;».</figcaption>
+  </figure>
+
+  <!-- 15. Mentions légales, téléphone -->
+  <figure id="mentions">
+    <div class="phone tall" style="padding-bottom:24px">
+      <div class="ml">
+        <a class="lien retour" href="#accueil"><svg class="i"><use href="#i-back"/></svg>Retour à l'app</a>
+        <h1>Mentions légales</h1>
+        <p class="maj">Compagnon de La Saga de Dagda · mises à jour le 23 novembre 2026</p>
+        <section><h2>Éditeur</h2>
+          <p>Ce site est édité par Benoît Figliuzzi, à titre personnel et non professionnel. Pour le contacter, ouvrez un ticket («&nbsp;issue&nbsp;») sur le <a href="https://github.com/bfigliuzzi/dagda-companion/issues">dépôt GitHub du projet</a>.</p></section>
+        <section><h2>Hébergeur</h2>
+          <address>GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107<br>États-Unis</address></section>
+        <section><h2>Propriété intellectuelle</h2>
+          <p>«&nbsp;La Saga de Dagda&nbsp;», ses règles, ses noms et son univers appartiennent à leurs auteurs et à leur éditeur. Cette app est un projet de fan non officiel, sans lien avec eux&nbsp;; elle ne reproduit ni le texte ni les illustrations du livre.</p>
+          <p>Le code de l'app est sous licence MIT.</p></section>
+        <section><h2>Données personnelles</h2>
+          <p>L'app ne collecte rien. Votre aventure reste sur votre appareil, dans le stockage du navigateur, et n'est envoyée nulle part.</p>
+          <p>GitHub, qui héberge le site, conserve des journaux techniques, dont l'adresse IP des visiteurs. Voir sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p></section>
+        <section><h2>Responsabilité</h2>
+          <p>L'app est fournie telle quelle, sans garantie. Votre aventure n'existe que sur votre appareil&nbsp;: vider les données du navigateur l'efface.</p>
+          <p>En cas de désaccord entre l'app et le livre, le livre fait foi.</p></section>
+        <a class="ghost" href="#accueil">Retour à l'app</a>
+      </div>
+    </div>
+    <figcaption><b>15 · Mentions légales</b>Une page HTML à part, avec sa propre adresse, lisible sans lancer l'app et hors ligne. Même ardoise, même police. Cinq sections soulignées comme celles de la feuille, texte courant en craie pour qu'il se lise, «&nbsp;Retour à l'app&nbsp;» en haut et en bas.</figcaption>
+  </figure>
+
+  <!-- 15b. Mentions légales, ordinateur -->
+  <figure class="large">
+    <div class="bureau">
+      <div class="barre"><i></i><i></i><i></i><span>bfigliuzzi.github.io/dagda-companion/mentions-legales.html</span></div>
+      <div class="ml">
+        <a class="lien retour" href="#accueil"><svg class="i"><use href="#i-back"/></svg>Retour à l'app</a>
+        <h1>Mentions légales</h1>
+        <p class="maj">Compagnon de La Saga de Dagda · mises à jour le 23 novembre 2026</p>
+        <section><h2>Éditeur</h2>
+          <p>Ce site est édité par Benoît Figliuzzi, à titre personnel et non professionnel. Pour le contacter, ouvrez un ticket («&nbsp;issue&nbsp;») sur le <a href="https://github.com/bfigliuzzi/dagda-companion/issues">dépôt GitHub du projet</a>.</p></section>
+        <section><h2>Hébergeur</h2>
+          <address>GitHub, Inc.<br>88 Colin P. Kelly Jr. Street<br>San Francisco, CA 94107<br>États-Unis</address></section>
+        <section><h2>Propriété intellectuelle</h2>
+          <p>«&nbsp;La Saga de Dagda&nbsp;», ses règles, ses noms et son univers appartiennent à leurs auteurs et à leur éditeur. Cette app est un projet de fan non officiel, sans lien avec eux&nbsp;; elle ne reproduit ni le texte ni les illustrations du livre.</p>
+          <p>Le code de l'app est sous licence MIT.</p></section>
+        <section><h2>Données personnelles</h2>
+          <p>L'app ne collecte rien. Votre aventure reste sur votre appareil, dans le stockage du navigateur, et n'est envoyée nulle part.</p>
+          <p>GitHub, qui héberge le site, conserve des journaux techniques, dont l'adresse IP des visiteurs. Voir sa <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p></section>
+        <section><h2>Responsabilité</h2>
+          <p>L'app est fournie telle quelle, sans garantie. Votre aventure n'existe que sur votre appareil&nbsp;: vider les données du navigateur l'efface.</p>
+          <p>En cas de désaccord entre l'app et le livre, le livre fait foi.</p></section>
+        <a class="ghost" href="#accueil">Retour à l'app</a>
+      </div>
+    </div>
+    <figcaption><b>15b · Mentions légales sur ordinateur</b>La colonne de lecture s'arrête à 30&nbsp;em (environ 70 caractères par ligne) et se centre&nbsp;; rien d'autre ne change.</figcaption>
+  </figure>
+
+  <!-- 16. Aperçu de partage -->
+  <figure class="og">
+    <img class="og-cadre" src="../../public/apercu-partage.png" width="600" height="315" alt="Aperçu de partage : nom de l'app, phrase, mention non officielle, et 28 points de vie sur 32, l'ancien 31 barré en rouge.">
+    <figcaption><b>16 · Aperçu de partage</b>Image de 1200 × 630, montrée ici à moitié. Le nom, ce que fait l'app et «&nbsp;Projet de fan non officiel&nbsp;» à gauche&nbsp;; à droite, les PV de l'exemple avec la trace de craie. Rien du livre&nbsp;: ni texte, ni illustration. Source&nbsp;: <code>design/apercu-partage/apercu.html</code>.</figcaption>
   </figure>
 
   </div>

@@ -71,6 +71,11 @@ typography:
     fontWeight: 400
     lineHeight: 1.45
     fontFeature: "tnum"
+  reading:
+    fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.55
   meta:
     fontFamily: "Atkinson Hyperlegible Next, system-ui, sans-serif"
     fontSize: "14px"
@@ -205,6 +210,25 @@ components:
   plan-wall:
     textColor: "{colors.craie}"
     width: "3px"
+  start-dock:
+    backgroundColor: "{colors.noir}"
+    padding: "12px 18px 22px"
+  install-step:
+    textColor: "{colors.craie}"
+    typography: "{typography.body}"
+    height: "48px"
+    padding: "12px 0"
+  device-pill:
+    textColor: "{colors.craie}"
+    rounded: "{rounded.pill}"
+    padding: "1px 8px"
+  footer-github:
+    textColor: "{colors.craie-2}"
+    size: "44px"
+  drawn-phone:
+    rounded: "46px"
+    width: "390px"
+    height: "844px"
 ---
 
 # Design System: Compagnon de La Saga de Dagda
@@ -219,20 +243,22 @@ La densité est celle d'une fiche consultée par coups d'œil, téléphone posé
 
 La signature : quand une valeur change, l'ancienne reste un instant barrée en craie rouge juste avant la nouvelle, puis s'efface. Le même geste (ancienne valeur barrée, puis la nouvelle) revient partout où une valeur est remplacée : PV, total des dés ajusté, bilan de fin de combat.
 
+La vitrine (Accueil, tutoriel d'installation, pied de page, mentions légales, image de partage) reste sur la même ardoise. Elle n'ajoute ni couleur, ni police, ni ombre. Sa seule figure nouvelle est le téléphone dessiné de l'Accueil : une feuille d'exemple montrée comme une image, pour qu'on ne la confonde jamais avec sa propre feuille.
+
 **Key Characteristics:**
 - Noir pur `#000` comme fond de la feuille, pour l'économie d'énergie OLED.
 - Trois craies de couleur à rôle fixe : jaune = action principale, rouge = PV perdus et danger, vert = effet actif.
 - Une seule famille, Atkinson Hyperlegible Next, chiffres tabulaires partout.
 - Structure par traits de craie, sans cartes ni ombres portées ni texture.
 - Ancienne valeur barrée en rouge avant la nouvelle, puis fondu de 1,2 s.
-- Un seul élément fixe sur la feuille : le bouton « Lancer les dés ».
+- Un seul élément collant sur la feuille : le bouton « Lancer les dés », en bas de l'écran jusqu'à la fin de la feuille.
 
 ## Colors
 
 Une ardoise noire, des craies neutres légèrement chaudes, et trois couleurs saturées employées en petites surfaces, chacune liée à un seul sens.
 
 ### Primary
-- **Craie jaune** (`jaune`) : l'action principale et rien d'autre. Contour et texte du bouton « Lancer les dés », bouton plein de validation dans un panneau, bouton « Lancer » d'un jet, puce sélectionnée, bouton radio coché, champ en cours de saisie, icône des indices, badge « CHANCE dépensée automatiquement », anneau de focus, sélection de texte et curseur de saisie.
+- **Craie jaune** (`jaune`) : l'action principale et rien d'autre. Contour et texte du bouton « Lancer les dés », bouton plein de validation dans un panneau, bouton « Lancer » d'un jet, puce sélectionnée, bouton radio coché, champ en cours de saisie, icône des indices, badge « CHANCE dépensée automatiquement », anneau de focus, sélection de texte et curseur de saisie. Dans la vitrine : contour et texte de « Commencer » sur l'Accueil, et du bouton « Installer » sur l'écran « Installer l'app », où c'est l'action de l'écran.
 
 ### Secondary
 - **Craie rouge** (`rouge`) : ce qu'on perd et ce qui menace. Ancienne valeur barrée, bouton « − » des PV, PV en état critique et leur barre, compteur en dépassement (« 3 / 2 », trait de besace en trop), bandeau d'état critique, icône d'avertissement, issue « Perdu », dégâts subis.
@@ -248,10 +274,12 @@ Une ardoise noire, des craies neutres légèrement chaudes, et trois couleurs sa
 - **Trait discret** (`trait`) : filets entre lignes (1 px), séparations de bloc (2 px), contours neutres (puces, petits boutons ronds, bouton secondaire), cases vides des traits de comptage, fond des barres de PV, points de la grille du plan.
 - **Craie** (`craie`) : texte principal (17,6:1 sur noir), soulignés de titre de section, gros chiffres, contour des boutons + / −, segment actif, murs du plan, disque du repère.
 - **Craie grise** (`craie-2`) : texte secondaire (8,4:1) : étiquettes, méta à droite des titres, indices, sous-textes, tours de combat passés, trait de note d'une case du plan.
-- **Craie pâle** (`craie-3`) : indications, valeurs vides, icônes de suppression, état désactivé, « N » du plan, repère pâle (5,5:1 sur noir, 4,5:1 sur `ardoise-2`). Jamais pour un texte qu'il faut lire pour agir.
+- **Craie pâle** (`craie-3`) : indications, valeurs vides, icônes de suppression, état désactivé, « N » du plan, repère pâle (5,5:1 sur noir, 4,5:1 sur `ardoise-2`). Jamais pour un texte qu'il faut lire pour agir. Dans la vitrine : contour du téléphone dessiné, numéros des étapes d'installation, navigateurs de la liste des appareils, version du pied de page, mention non officielle, date de mise à jour des mentions légales.
 
 ### Named Rules
 **The Three Chalks Rule.** Jaune, rouge et vert ont chacun un rôle unique et ne s'échangent jamais. Une couleur qui n'annonce ni l'action principale, ni une perte ou un danger, ni un effet actif reste en craie.
+
+Sur l'Accueil, le jaune reste à « Commencer » : le bouton « Installer » du tutoriel y est un bouton secondaire (contour `trait`). Sur l'écran « Installer l'app », il n'y a pas d'autre action : « Installer » y prend le contour jaune. Dans la feuille d'exemple, le rouge ne marque que l'ancienne valeur barrée et le vert que l'effet : ils gardent leur sens.
 
 **The OLED Ground Rule.** Le fond de la feuille est `#000`, pas un gris très sombre. Les couleurs claires restent sur de petites surfaces ; les seuls aplats clairs sont le segment actif, le bouton jaune plein de validation dans un panneau et le disque de 36px du repère d'un plan.
 
@@ -273,8 +301,11 @@ Une ardoise noire, des craies neutres légèrement chaudes, et trois couleurs sa
 - **Action** (800, 20px) : texte du bouton de dés et des deux grands choix.
 - **Value** (700, 18px) : valeur en bout de ligne, chapitre dans l'en-tête, numéro de chapitre d'un combat.
 - **Body** (400, 16px, 1.45) : texte courant et noms dans les lignes. Notes libres en 15px, interligne 1.55.
+- **Reading** (400, 16px, 1.55) : texte courant de la page de lecture (mentions légales). Il est en craie, pas en craie grise, pour qu'il se lise ; la ligne s'arrête à 30em.
 - **Meta** (400, 14px) : méta des sections, indices, en-tête de feuille, sous-textes.
 - **Label** (400, 13px, 0.02em) : étiquette au-dessus d'une valeur ou d'un champ, en casse normale.
+
+Dans la vitrine, les tailles existantes servent telles quelles : nom de l'app en titre d'écran (28px 800, interligne 1.1, `text-wrap: balance`), « Installer l'app » et les titres des mentions légales en titre de section souligné (22px), numéros d'étape en 18px 800, nom de l'app du pied de page en 15px 700. L'image de partage, vue réduite dans un fil de messages, a sa propre échelle (voir « Aperçu de partage »).
 
 ### Named Rules
 **The Numbers First Rule.** Les chiffres sont le contenu : ils sont toujours plus gros et plus gras que leur étiquette, et toujours tabulaires.
@@ -289,11 +320,19 @@ Le bloc vital est une grille de deux colonnes (1.45fr / 1fr, écart 16px) : les 
 
 Rythme : sections espacées de 20px en haut ; lignes d'au moins 48px ; champs de 52px ; bouton de dés de 58px ; aucune cible tactile sous 44px. Les écarts internes suivent 4, 6, 8, 12 et 16px.
 
-Éléments fixes : sur la feuille, seul le dock de dés reste collé en bas (padding 12px 18px 22px), sur un dégradé du noir opaque (70 %) vers le transparent pour que la page passe dessous. Sur les écrans de combat, le dock porte deux boutons (1fr / 1.35fr), sur fond noir opaque avec un filet `trait` en haut. Sur l'écran d'un plan, la barre du bas a le même fond et le même filet, et porte le contrôle « Murs / Cases » (1.35fr) puis « Annuler » (1fr) ; l'écran garde sous son dernier bouton la hauteur de la barre plus 20px. Les écrans de combat et l'historique s'ouvrent en plein écran avec un bouton retour à gauche du titre ; dés et ajout d'effet s'ouvrent en panneau par-dessus la feuille.
+Éléments fixes : sur la feuille, seul le dock de dés reste collé en bas (padding 12px 18px 22px), sur un dégradé du noir opaque (70 %) vers le transparent pour que la page passe dessous. Il est collant (`position: sticky; bottom: 0`), pas fixe : placé à la fin de la feuille, juste après la section Aventure et avant le pied de page, il reste en bas de l'écran pendant toute la feuille, puis s'arrête à sa fin et remonte avec elle quand le pied de page arrive. Le pied de page défile donc sous le bouton, jamais dessous, et la feuille n'a pas à garder de place vide en bas. Sur les écrans de combat, le dock porte deux boutons (1fr / 1.35fr), sur fond noir opaque avec un filet `trait` en haut. Sur l'écran d'un plan, la barre du bas a le même fond et le même filet, et porte le contrôle « Murs / Cases » (1.35fr) puis « Annuler » (1fr) ; l'écran garde sous son dernier bouton la hauteur de la barre plus 20px. Les écrans de combat et l'historique s'ouvrent en plein écran avec un bouton retour à gauche du titre ; dés et ajout d'effet s'ouvrent en panneau par-dessus la feuille.
+
+Vitrine. L'Accueil se lit de haut en bas : le nom et une phrase (padding 22px 18px 0), la feuille d'exemple coupée à 410px de haut, sa légende, le tutoriel d'installation, le pied de page. « Commencer » est collant comme le bouton de dés, mais sur fond noir opaque avec un filet `trait` de 1px en haut, comme le dock de combat. La mention non officielle tient dans ce dock, sous le bouton. Il est placé après le tutoriel et avant le pied de page : arrivé au bout de l'Accueil, il s'arrête au-dessus du pied de page.
+
+Le pied de page ferme la feuille : sous la section Aventure et sous le dock de dés arrivé au bout de la feuille (12px plus bas), qui ne le cache donc jamais. Il ferme aussi l'Accueil. Il n'apparaît jamais sur les écrans de combat, de plan, d'historique ni de création.
+
+La page de lecture (mentions légales) est une page à part. Sur téléphone, elle garde la marge de 18px. Sur ordinateur, la colonne s'arrête à 30em (environ 70 caractères par ligne) et se centre ; rien d'autre ne change.
 
 ## Elevation & Depth
 
 Le système est plat. La feuille n'a aucune ombre portée ; les plans se distinguent par le ton. Un seul plan monte au-dessus de la feuille : le panneau glissé depuis le bas, sur `ardoise-1`, bordé en haut d'un trait de craie de 2 px, au-dessus d'un voile noir à 72 % (`rgba(0,0,0,.72)`). Les champs sont des creux en `ardoise-2`, pas des reliefs.
+
+Le téléphone dessiné de l'Accueil n'a ni fond ni ombre : c'est un contour posé à plat sur la feuille. Les ombres autour des téléphones et de la fenêtre d'ordinateur de la maquette appartiennent à la planche de présentation, pas à l'app.
 
 ### Named Rules
 **The Chalk Line Rule.** On sépare par un trait, pas par une boîte : filet `trait` de 1 px entre les lignes, trait `trait` de 2 px entre les blocs, trait `craie` de 2 px sous un titre de section et en haut du panneau.
@@ -306,7 +345,11 @@ Des coins doux et réguliers, un seul rayon de référence (`--r`, 12px) pour to
 
 Les contours font 2px partout (craie, jaune, rouge ou `trait` selon le rôle), sauf le badge automatique (1,5px) et les dés (3px).
 
+Exception d'illustration : le téléphone dessiné de l'Accueil a des coins de 46px et un contour de 3px en craie pâle. Il ne se touche pas : il dessine un appareil. La règle du rayon de 12px vaut pour ce qu'on touche ; ce rayon de 46px est donc voulu, et un détecteur qui le signale relève cette exception. Aucun élément touchable ne le reprend. L'encoche du téléphone est une barre de 90 × 8px à coins de 4px, en `trait`. La pastille « votre appareil » a un contour de 1,5px, comme le badge automatique. Le trait vertical de l'image de partage fait 4px, à l'échelle de l'image.
+
 Icônes : pictogrammes dessinés pour l'app, en SVG en ligne sur une grille de 24, trait de 2px, extrémités et jonctions arrondies, sans remplissage, en `currentColor`. Affichées entre 18 et 30px selon le contexte (22px par défaut). Aucune image matricielle.
+
+Icônes ajoutées pour la vitrine, sur la même grille et le même trait : `i-github` (lien vers le code source), `i-share` (le bouton Partager du navigateur, dessiné tel qu'il apparaît à l'écran), `i-more` (le menu à trois points), `i-down` (chevron de « Autre appareil ? », retourné de 180° quand la liste est dépliée), `i-install` (bouton « Installer »).
 
 ## Components
 
@@ -386,6 +429,44 @@ L'écran d'un plan s'ouvre en plein écran, comme celui des combats. Il n'a pas 
 ### Signature : la trace de craie
 Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graisse 700, trait de barre de 3px, 2px dans les lignes) juste avant la nouvelle, puis s'efface en 1,2 s avec un fondu en sortie exponentielle. L'ancienne valeur précède toujours la nouvelle, dans le sens de lecture. C'est la seule animation d'une valeur. Le même geste vaut pour un mur effacé sur un plan : le trait passe en craie rouge, puis s'efface en 1,2 s. Le système n'a qu'un autre mouvement, le glissement du panneau (voir « Bottom sheet »), et aucun des deux ne se répète : chacun se joue une fois, et `prefers-reduced-motion` les supprime tous les deux.
 
+### Accueil
+Le premier écran, seulement quand aucune aventure n'est enregistrée.
+- **En-tête:** le nom de l'app en titre d'écran (28px 800, interligne 1.1), puis une phrase en craie grise.
+- **Feuille d'exemple (téléphone dessiné):** une image, pas une feuille. Elle montre les vrais motifs de la feuille (en-tête, bloc vital avec 31 barré puis 28, Armes, Effets, Besace et ses traits) dans le contour d'un téléphone de 390 × 844px réduit à 62 % (`transform: scale(.62)`) : contour craie pâle de 3px, coins de 46px, encoche, ni fond ni ombre. Le cadre la coupe net à 410px de haut, sur un trait `trait` de 2px. Elle ne se touche pas (`pointer-events: none`) et se lit comme une seule image (`role="img"` et une description des valeurs).
+- **Légende:** « Une feuille d'exemple. La vôtre commence vierge. », 15px craie grise, centrée, 10px sous le trait.
+- **Dock « Commencer »:** le bouton de dés (contour jaune, 58px, 20px 800), sans icône, collant en bas (`sticky`, arrêté avant le pied de page) sur fond noir opaque avec un filet `trait` de 1px en haut. Dessous, centrée à 8px, la mention « Projet de fan non officiel · tout reste sur votre téléphone » en 13px craie pâle.
+
+**The Sample Is A Picture Rule.** Une feuille d'exemple se montre toujours réduite, dans le contour du téléphone dessiné, coupée par un trait, avec sa légende, et sans rien de touchable. Une vraie feuille est à taille réelle et sans contour : les deux se distinguent d'un coup d'œil.
+
+### Tutoriel d'installation
+- **Titre:** titre de section souligné « Installer l'app », avec l'appareil deviné en méta à droite (14px craie grise, « iPhone · Safari »). Dessous, une phrase de 15px en craie grise dit pourquoi installer.
+- **Étapes:** numérotées, parce que l'ordre compte. Grille 28px / 1fr, hauteur minimale 48px, padding 12px 0, filet `trait` en bas. Numéro 18px 800 en craie pâle, texte 16px en craie. Les boutons du navigateur sont dessinés dans la phrase (icône 20px, craie), tels qu'ils apparaissent à l'écran.
+- **Bouton « Installer »:** le vrai bouton, quand le navigateur propose l'installation ; il remplace alors les étapes. Icône `i-install` de 22px. Sur l'Accueil, c'est un bouton secondaire (contour `trait`, texte craie 700, 52px), pour laisser le jaune à « Commencer ». Sur l'écran « Installer l'app », c'est le bouton de dés (contour jaune, 58px), parce que c'est l'action de l'écran.
+- **« Autre appareil ? »:** un lien suivi du chevron `i-down` de 18px, retourné quand la liste est dépliée.
+- **Liste des appareils:** une ligne par cas, padding 10px 0, filet `trait` en bas. L'appareil en 16px 700 craie à gauche, les navigateurs en 13px craie pâle à droite ; dessous, la marche à suivre en 14px craie grise, avec les libellés à toucher en craie 700 et les icônes dessinées de 18px. L'appareil deviné porte la pastille « votre appareil » : 13px craie, contour `trait` de 1,5px, pilule, padding 1px 8px.
+- **Écran « Installer l'app »:** ouvert depuis le pied de page, en plein écran, avec un bouton retour à gauche du titre, comme l'historique des combats. Une phrase d'intro de 15px en craie grise, l'appareil deviné écrit en toutes lettres (« Sur **Android avec Chrome**, … », 14px), puis le bouton et la liste dépliée.
+- **App déjà installée:** pas de tutoriel sur l'Accueil, pas de lien « Installer l'app » dans le pied de page.
+
+### Pied de page
+- **Place:** il ferme la feuille sous la section Aventure (32px plus bas, marge 18px) et le bas de l'Accueil. Jamais sur les écrans de combat, de plan, d'historique ni de création.
+- **Forme:** trait `trait` de 2px en haut, puis 12px d'espace. À gauche, le nom de l'app (15px 700, craie) et dessous la version (14px craie pâle). À droite, le lien vers GitHub : un bouton icône de 44px en craie grise.
+- **Liens:** « Mentions légales » et « Installer l'app », côte à côte (écart 22px), dans le style lien : 15px 700 craie grise, souligné en craie pâle décalé de 4px, 44px de haut.
+
+### Page de lecture
+Les mentions légales : une page HTML à part, avec sa propre adresse, lisible hors ligne sans lancer l'app. Même ardoise, même police.
+- **Haut:** le lien « Retour à l'app » précédé de la flèche `i-back`, le titre en titre d'écran (28px), la date de mise à jour en 14px craie pâle.
+- **Sections:** soulignées comme celles de la feuille (22px 800, trait craie de 2px, à la largeur du titre), 26px au-dessus de chacune.
+- **Texte:** Reading (16px, interligne 1.55) en craie, ligne de 30em au plus. Les liens du texte sont en craie, soulignés en craie pâle.
+- **Bas:** « Retour à l'app » en bouton secondaire, 32px sous le texte.
+- **Ordinateur:** la colonne (30em plus les marges) se centre ; rien d'autre ne change.
+
+### Aperçu de partage
+L'image de 1200 × 630 (`public/apercu-partage.png`), exportée depuis `design/apercu-partage/apercu.html` par `design/apercu-partage/exporter.mjs`. Elle est vue réduite dans un fil de messages : elle a donc sa propre échelle, qui ne sert de modèle à aucun écran.
+- **Fond et grille:** noir pur, deux colonnes (1fr / 420px, écart 48px), marges 76px 72px 70px.
+- **À gauche:** l'icône de l'app (72px) ; le nom en 64px 800 (interligne 1.04, -0.025em) sur deux lignes, la seconde (« La Saga de Dagda ») soulignée d'un trait de craie de 4px ; une phrase en 30px craie grise (24ch au plus) ; « Projet de fan non officiel » en 24px craie pâle, posé en bas.
+- **À droite:** après un trait vertical `trait` de 4px, l'étiquette « Points de vie » en 26px craie grise, puis la trace de craie figée : 31 barré en rouge (48px 700, barre de 6px), 28 en 176px 800, « / 32 » en 44px 500 craie grise.
+- **Contenu:** rien du livre, ni texte ni illustration.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -397,6 +478,9 @@ Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graiss
 - **Do** dessiner les icônes en SVG en ligne, grille de 24, trait de 2px, extrémités arrondies.
 - **Do** prévenir par un indice non bloquant (icône jaune ou rouge, texte qui dit quoi faire) plutôt que bloquer.
 - **Do** héberger Atkinson Hyperlegible Next avec l'app pour le hors-ligne.
+- **Do** montrer une feuille d'exemple seulement dans le téléphone dessiné : réduite, coupée par un trait, légendée « La vôtre commence vierge. ».
+- **Do** laisser le jaune à « Commencer » sur l'Accueil : le bouton « Installer » n'y prend que le contour `trait`.
+- **Do** numéroter les étapes d'installation, parce que l'ordre compte.
 
 ### Don't:
 - **Don't** ajouter d'onglets ni de barre de navigation : la feuille est une seule page ; le contrôle segmenté ne change que le mode d'un formulaire ou d'un panneau.
@@ -405,3 +489,7 @@ Quand une valeur est remplacée, l'ancienne reste barrée en craie rouge (graiss
 - **Don't** utiliser d'animation continue ou en boucle ; seuls la trace de craie et le glissement du panneau bougent, chacun une fois.
 - **Don't** utiliser une seconde famille de caractères ni des chiffres proportionnels.
 - **Don't** donner un aplat de couleur au bouton de dés de la feuille : il reste en contour jaune ; l'aplat jaune sert à valider dans un panneau.
+- **Don't** rendre la feuille d'exemple touchable, ni la montrer à taille réelle.
+- **Don't** reprendre le rayon de 46px du téléphone dessiné sur un élément touchable.
+- **Don't** mettre le pied de page sur les écrans de combat, de plan, d'historique ou de création.
+- **Don't** mettre de contenu du livre (texte ou illustration) dans l'image de partage.
