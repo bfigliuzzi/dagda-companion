@@ -3,6 +3,7 @@
   export type NomIcone =
     | "alerte"
     | "chance"
+    | "chevron"
     | "crane"
     | "croix"
     | "crayon"
@@ -13,7 +14,10 @@
     | "finir"
     | "github"
     | "info"
+    | "installer"
+    | "menu"
     | "moins"
+    | "partager"
     | "plus"
     | "relancer"
     | "retour"
@@ -24,24 +28,35 @@
   /**
    * Un pictogramme en SVG en ligne : trait de 2 px, extrémités arrondies,
    * sans remplissage, en `currentColor` (le style `svg.i` est dans app.css).
-   * Il est toujours décoratif : le bouton qui le porte a son propre libellé.
+   * Il est décoratif : le bouton qui le porte a son propre libellé. Seul un
+   * bouton du navigateur dessiné dans une phrase (« Touchez le bouton
+   * Partager … ») porte un `nomAccessible`, lu à sa place.
    * Le contexte règle la taille : le composant parent cible l'icône avec
    * `.bouton :global(svg)`.
    */
   interface Props {
     nom: NomIcone;
+    nomAccessible?: string;
   }
 
-  let { nom }: Props = $props();
+  let { nom, nomAccessible }: Props = $props();
 </script>
 
-<svg class="i" aria-hidden="true" viewBox="0 0 24 24">
+<svg
+  class="i"
+  viewBox="0 0 24 24"
+  role={nomAccessible ? "img" : undefined}
+  aria-label={nomAccessible}
+  aria-hidden={nomAccessible ? undefined : "true"}
+>
   {#if nom === "alerte"}
     <path d="M12 3 2 20h20L12 3zM12 10v4M12 17h.01" />
   {:else if nom === "chance"}
     <path
       d="M12 12c-3-1-5-3-5-5a2.5 2.5 0 0 1 5-.5 2.5 2.5 0 0 1 5 .5c0 2-2 4-5 5zm0 0c1 3 3 5 5 5a2.5 2.5 0 0 0 .5-5M12 12c-1 3-3 5-5 5a2.5 2.5 0 0 1-.5-5M12 12v9"
     />
+  {:else if nom === "chevron"}
+    <path d="M6 9l6 6 6-6" />
   {:else if nom === "crane"}
     <path
       d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3zM9 11h.01M15 11h.01M10 20v-2M14 20v-2"
@@ -69,10 +84,20 @@
     />
   {:else if nom === "info"}
     <circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5h.01" />
+  {:else if nom === "installer"}
+    <path d="M12 3v11M7.5 9.5 12 14l4.5-4.5M5 17v3h14v-3" />
+  {:else if nom === "menu"}
+    <circle cx="12" cy="5" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle
+      cx="12"
+      cy="19"
+      r="1.2"
+    />
   {:else if nom === "moins"}
     <path d="M5 12h14" />
   {:else if nom === "plus"}
     <path d="M12 5v14M5 12h14" />
+  {:else if nom === "partager"}
+    <path d="M12 3v12M8 7l4-4 4 4M8 11H6v10h12V11h-2" />
   {:else if nom === "relancer"}
     <path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" />
   {:else if nom === "retour"}

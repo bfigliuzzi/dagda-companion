@@ -37,7 +37,7 @@ Le test affiche un vrai morceau de l'app, souvent la feuille entière, avec le v
 
 - Trouve les éléments comme un lecteur : `getByRole`, `getByLabelText`, `getByText`, avec le texte français affiché. Garde `data-testid` pour un élément qu'aucun rôle ni texte ne désigne (le dock, le voile). Pour un état que seul l'œil voit (valeur en rouge, ligne passée, trait de besace en trop), lis un attribut sémantique, `data-etat="critique"` : le CSS s'appuie sur le même attribut, et un test ne lit jamais une classe CSS.
 - Vérifie l'écran, pas les *détails d'implémentation* : un renommage interne qui ne change rien à l'écran laisse tous les tests verts.
-- Remplace seulement ce qui vient du navigateur ou du hasard : les dés (injectés), `navigator.wakeLock` (absent de jsdom), l'horloge si besoin. Nos propres modules tournent pour de vrai, sans `vi.mock`.
+- Remplace seulement ce qui vient du navigateur ou du hasard : les dés (injectés), `navigator.wakeLock` (absent de jsdom), l'identifiant du navigateur (`navigator.userAgent`), `matchMedia` (absent de jsdom) et l'événement `beforeinstallprompt` pour le tutoriel d'installation, l'horloge si besoin. Nos propres modules tournent pour de vrai, sans `vi.mock`.
 - Pour « Rien ne se perd » : modifie une valeur, démonte l'app, remonte-la, et vérifie que la valeur est toujours là.
 
 ### 4. Bout en bout : une fine couche
@@ -47,6 +47,7 @@ Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite b
 Les scénarios actuels, un par sujet :
 
 - `accueil.spec.ts` : sur un petit téléphone (375 × 667), « Commencer » est collant sur fond noir plein : il reste en bas de l'écran en haut de l'Accueil, puis s'arrête 12 px au-dessus du pied de page, qui finit la page sans que rien ne masque ses liens ;
+- `installation.spec.ts` : à 390 × 844, comme sur l'écran 13 de la maquette, le tutoriel d'installation allonge l'Accueil, et « Commencer » reste collé en bas de l'écran, le titre « Installer l'app » lisible juste au-dessus ;
 - `pwa.spec.ts` : l'app construite s'installe comme PWA (manifeste, service worker), se recharge hors ligne, y crée un personnage, y retrouve une valeur modifiée, ne fait aucune requête externe, sert sa police et son ardoise noire ;
 - `mentions-legales.spec.ts` : la page « Mentions légales » s'ouvre par son adresse avec ses cinq sections, sans contact autre que les issues ni requête externe, avec l'ardoise et la police de l'app, et « Retour à l'app » (en haut et en bas) rend l'app ; elle s'ouvre en mode avion, sans que le service worker la remplace par l'app ; sur un écran large, sa colonne de lecture mesure 30 em et se centre ;
 - `parcours.spec.ts` : un parcours de lecteur, créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure et l'historique ;

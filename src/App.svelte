@@ -5,6 +5,7 @@
   import BlocVital from "./lib/BlocVital.svelte";
   import DockDeDes from "./lib/DockDeDes.svelte";
   import EcranDeCombat from "./lib/EcranDeCombat.svelte";
+  import EcranDInstallation from "./lib/EcranDInstallation.svelte";
   import DerniersCombats from "./lib/DerniersCombats.svelte";
   import EcranDesCombats from "./lib/EcranDesCombats.svelte";
   import Effets from "./lib/Effets.svelte";
@@ -33,13 +34,16 @@
     apresLeTour,
     ecranDeDepart,
     fermerLHistorique,
+    fermerLInstallation,
     laFeuille,
     ouvrirLHistorique,
+    ouvrirLInstallation,
     retourDuCombat,
     type Ecran,
   } from "./lib/ecrans";
   import { baseApres, valeursEffectives } from "./lib/valeursEffectives";
   import { garderEcranAllume } from "./lib/ecranAllume";
+  import { InstallationDuNavigateur } from "./lib/navigateur.svelte";
   import {
     poserUneSauvegarde,
     reprendreLaSauvegarde,
@@ -55,9 +59,17 @@
   interface Props {
     /** Les tests injectent des dés fixés. */
     de?: De;
+    /**
+     * Ce que le navigateur dit de l'installation. main.ts le crée avant de
+     * monter l'app, pour ne pas manquer l'invitation de Chrome.
+     */
+    installation?: InstallationDuNavigateur;
   }
 
-  let { de = deAuHasard }: Props = $props();
+  let {
+    de = deAuHasard,
+    installation = new InstallationDuNavigateur(window),
+  }: Props = $props();
 
   const lue = lireAventure(localStorage);
   let aventure = $state<Aventure | null>(lue);
@@ -192,6 +204,7 @@
 
 {#if ecran.nom === "accueil"}
   <Accueil
+    {installation}
     oncommencer={() => aller({ nom: "nouvelApprenti", apresLaMort: null })}
   />
 {:else if !aventure || ecran.nom === "nouvelApprenti"}
@@ -238,6 +251,11 @@
     combats={aventure.combats}
     ouvertAuDepart={ecran.deplie}
     onretour={() => aller(fermerLHistorique(ecran))}
+  />
+{:else if ecran.nom === "installation"}
+  <EcranDInstallation
+    {installation}
+    onretour={() => aller(fermerLInstallation(ecran))}
   />
 {:else if planOuvert}
   {@const plan = planOuvert}
@@ -331,7 +349,14 @@
         aventure!.effets,
       ))}
   />
-  <PiedDePage />
+  <PiedDePage
+    installer={installation.installee
+      ? null
+      : {
+          href: "#installer",
+          onclick: () => aller(ouvrirLInstallation(ecran)),
+        }}
+  />
 {/if}
 
 <style>

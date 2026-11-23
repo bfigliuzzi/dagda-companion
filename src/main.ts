@@ -6,6 +6,11 @@ import "./app.css";
 import { mount } from "svelte";
 import App from "./App.svelte";
 import { deAuHasard, deDeLaGraine } from "./lib/des";
+import { InstallationDuNavigateur } from "./lib/navigateur.svelte";
+
+// Avant le montage : Chrome n'envoie qu'une fois son invitation à installer
+// (`beforeinstallprompt`), peu après le chargement.
+const installation = new InstallationDuNavigateur(window);
 
 // Graine de dés : seulement dans l'app construite pour les tests de bout en
 // bout (`vite build --mode test`). Ailleurs, ce bloc disparaît de la construction.
@@ -17,5 +22,5 @@ const de =
 
 export default mount(App, {
   target: document.getElementById("app")!,
-  props: { de },
+  props: { de, installation },
 });

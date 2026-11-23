@@ -54,9 +54,9 @@ describe("l'Accueil, à l'ouverture de l'app sans aventure enregistrée", () => 
     // La feuille dessinée n'est pas une feuille : ni titre de section, ni
     // bouton, ni champ pour les lecteurs d'écran.
     expect(screen.queryByRole("heading", { name: "Armes" })).toBeNull();
-    expect(screen.getAllByRole("button").map((b) => b.textContent)).toEqual([
-      "Commencer",
-    ]);
+    expect(exemple.querySelectorAll("a, button, input, textarea")).toHaveLength(
+      0,
+    );
   });
 
   it("« Commencer » ouvre « Nouvel apprenti » avec ses choix habituels", async () => {

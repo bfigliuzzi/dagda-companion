@@ -45,7 +45,12 @@ export type Ecran =
    */
   | { nom: "historique"; deplie: number | null; avant: AvantLeCombat }
   /** L'écran d'un plan, repéré par son `id` (plans.ts) ; le retour rend la feuille. */
-  | { nom: "plan"; id: number };
+  | { nom: "plan"; id: number }
+  /**
+   * L'écran « Installer l'app », ouvert depuis le pied de page de la
+   * feuille ; `avant` attend le retour sur la feuille.
+   */
+  | { nom: "installation"; avant: AvantLeCombat };
 
 export function laFeuille(avant: AvantLeCombat = {}): Ecran {
   return { nom: "feuille", avant };
@@ -85,4 +90,17 @@ export function ouvrirLHistorique(
 /** Quitte l'écran « Combats » pour la feuille, avec la trace qu'elle attendait. */
 export function fermerLHistorique(ecran: Ecran): Ecran {
   return laFeuille(ecran.nom === "historique" ? ecran.avant : {});
+}
+
+/** Ouvre l'écran « Installer l'app » ; le retour rendra la feuille telle qu'on l'a laissée. */
+export function ouvrirLInstallation(depuis: Ecran): Ecran {
+  return {
+    nom: "installation",
+    avant: depuis.nom === "feuille" ? depuis.avant : {},
+  };
+}
+
+/** Quitte l'écran « Installer l'app » pour la feuille, avec la trace qu'elle attendait. */
+export function fermerLInstallation(ecran: Ecran): Ecran {
+  return laFeuille(ecran.nom === "installation" ? ecran.avant : {});
 }

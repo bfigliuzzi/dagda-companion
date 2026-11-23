@@ -3,8 +3,9 @@
    * L'ACCUEIL (GLOSSARY.md ; DESIGN.md, « Accueil ») : seulement à
    * l'ouverture de l'app sans aventure enregistrée. Le nom de l'app et ce
    * qu'elle fait, une feuille d'exemple dessinée, puis « Commencer », collant
-   * en bas de l'écran, qui ouvre « Nouvel apprenti ». Le pied de page ferme
-   * l'écran.
+   * en bas de l'écran, qui ouvre « Nouvel apprenti ». Entre la feuille
+   * d'exemple et « Commencer », le tutoriel d'installation, tant que l'app ne
+   * tourne pas installée. Le pied de page ferme l'écran.
    *
    * La feuille d'exemple est une image, pas une feuille (« The Sample Is A
    * Picture Rule ») : un téléphone en craie pâle réduit à 62 %, coupé net à
@@ -12,13 +13,16 @@
    * Ses valeurs sont figées ici, à l'identique de la maquette.
    */
   import Dock from "./Dock.svelte";
+  import type { InstallationDuNavigateur } from "./navigateur.svelte";
   import PiedDePage from "./PiedDePage.svelte";
+  import TutorielDInstallation from "./TutorielDInstallation.svelte";
 
   interface Props {
+    installation: InstallationDuNavigateur;
     oncommencer: () => void;
   }
 
-  let { oncommencer }: Props = $props();
+  let { installation, oncommencer }: Props = $props();
 </script>
 
 <main class="accueil">
@@ -89,12 +93,9 @@
   </div>
   <p class="legende">Une feuille d'exemple. La vôtre commence vierge.</p>
 
-  <!--
-    Ticket 06 : la section « Installer l'app » (le tutoriel d'installation)
-    se pose ici, entre la légende et le dock « Commencer » (maquette,
-    écran 13b, « section.inst »). Le dock reste après elle, et le pied de
-    page tout en bas.
-  -->
+  {#if !installation.installee}
+    <TutorielDInstallation {installation} />
+  {/if}
 </main>
 
 <Dock collant variante="accueil">
@@ -107,7 +108,9 @@
     </p>
   </div>
 </Dock>
-<PiedDePage />
+<PiedDePage
+  installer={installation.installee ? null : { href: "#installer-accueil" }}
+/>
 
 <style>
   /* La colonne de la feuille (480 px). */

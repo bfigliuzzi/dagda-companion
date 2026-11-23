@@ -2,7 +2,7 @@
   /**
    * LE PIED DE PAGE (DESIGN.md, « Pied de page ») : le nom de l'app et sa
    * version, l'icône GitHub vers l'accueil du dépôt, puis les liens du bas
-   * (« Mentions légales »). Il ferme la feuille et l'Accueil ;
+   * (« Mentions légales », « Installer l'app »). Il ferme la feuille et l'Accueil ;
    * jamais les écrans de combat, de plan, d'historique ni de création.
    *
    * Emploi : le poser tout en bas de la page, juste après le dock collant
@@ -11,6 +11,17 @@
    */
   import Icone from "./Icone.svelte";
   import { version } from "./version";
+
+  interface Props {
+    /**
+     * Le lien « Installer l'app », absent (`null`) quand l'app tourne
+     * installée. Sur l'Accueil, il mène à la section du tutoriel ; sur la
+     * feuille, `onclick` ouvre l'écran « Installer l'app ».
+     */
+    installer: { href: string; onclick?: () => void } | null;
+  }
+
+  let { installer }: Props = $props();
 </script>
 
 <footer class="pied">
@@ -29,6 +40,20 @@
   <nav aria-label="Pied de page">
     <!-- Relatif : l'app est servie sous /dagda-companion/ sur GitHub Pages. -->
     <a class="lien" href="mentions-legales.html">Mentions légales</a>
+    {#if installer}
+      {@const { href, onclick } = installer}
+      <a
+        class="lien"
+        {href}
+        onclick={onclick &&
+          ((evenement) => {
+            evenement.preventDefault();
+            onclick();
+          })}
+      >
+        Installer l'app
+      </a>
+    {/if}
   </nav>
 </footer>
 
