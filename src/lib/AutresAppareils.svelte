@@ -36,7 +36,7 @@
 {/snippet}
 
 <button
-  class="autre"
+  class="lien-souligne autre"
   type="button"
   aria-expanded={ouvert}
   aria-controls="{id}-appareils"
@@ -111,25 +111,10 @@
 {/if}
 
 <style>
-  /* Maquette, « .lien.autre » : le style lien, aligné à gauche, chevron de 18 px. */
+  /* Maquette, « .lien.autre » : le style lien (app.css), aligné à gauche. */
   .autre {
-    display: inline-flex;
-    align-items: center;
     justify-content: flex-start;
-    gap: var(--esp-xs);
-    min-height: var(--cible);
     margin-top: var(--esp-xs);
-    color: var(--craie-2);
-    font-size: 15px;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-color: var(--craie-3);
-  }
-
-  .autre :global(svg) {
-    width: 18px;
-    height: 18px;
   }
 
   /* Le chevron se retourne quand la liste est dépliée. */

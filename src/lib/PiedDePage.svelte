@@ -39,11 +39,11 @@
   </div>
   <nav aria-label="Pied de page">
     <!-- Relatif : l'app est servie sous /dagda-companion/ sur GitHub Pages. -->
-    <a class="lien" href="mentions-legales.html">Mentions légales</a>
+    <a class="lien-souligne" href="mentions-legales.html">Mentions légales</a>
     {#if installer}
       {@const { href, onclick } = installer}
       <a
-        class="lien"
+        class="lien-souligne"
         {href}
         onclick={onclick &&
           ((evenement) => {
@@ -107,19 +107,5 @@
     flex-wrap: wrap;
     column-gap: 22px;
     margin-top: 2px;
-  }
-
-  /* Maquette, « .lien » : 15 px 700 craie grise, souligné en craie pâle. */
-  .lien {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--esp-xs);
-    min-height: var(--cible);
-    color: var(--craie-2);
-    font-size: 15px;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-color: var(--craie-3);
   }
 </style>
