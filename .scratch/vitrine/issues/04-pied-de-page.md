@@ -1,6 +1,6 @@
 # 04: Pied de page de la feuille
 
-**What to build:** tout en bas de la feuille, après la section « Aventure » et au-dessus de la place laissée au dock de dés, le lecteur trouve le nom de l'app, le numéro de version, une icône GitHub qui ouvre l'accueil du dépôt, et le lien « Mentions légales ». Le pied de page n'apparaît ni sur les écrans de combat, ni sur les plans, ni sur « Nouvel apprenti ».
+**What to build:** tout en bas de la feuille, après la section « Aventure » et sous le dock de dés, qui s'arrête au-dessus de lui en fin de défilement, le lecteur trouve le nom de l'app, le numéro de version, une icône GitHub qui ouvre l'accueil du dépôt, et le lien « Mentions légales ». Le pied de page n'apparaît ni sur les écrans de combat, ni sur les plans, ni sur « Nouvel apprenti ».
 
 Références : `.scratch/vitrine/spec.md` (Pied de page), maquette (ticket 02).
 
