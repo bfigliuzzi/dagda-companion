@@ -8,7 +8,11 @@ Références : `.scratch/vitrine/spec.md` (Aperçu de partage), maquette (ticket
 
 **Status:** ready-for-agent
 
-- [ ] La page de l'app porte les balises Open Graph (titre, description, image, adresse, langue) et l'équivalent pour les cartes Twitter/X.
-- [ ] L'adresse de l'image est absolue et pointe vers le site publié.
-- [ ] L'image fait 1200 × 630 et reste légère.
+- [x] La page de l'app porte les balises Open Graph (titre, description, image, adresse, langue) et l'équivalent pour les cartes Twitter/X.
+- [x] L'adresse de l'image est absolue et pointe vers le site publié.
+- [x] L'image fait 1200 × 630 et reste légère.
 - [ ] Un outil de vérification d'aperçu (par exemple celui de LinkedIn ou opengraph.xyz) montre l'aperçu attendu sur le site publié.
+
+## Comments
+
+- Balises posées dans `index.html`, test dans `src/index.html.test.ts`, image de 1200 × 630 pour 50 Ko, copiée dans `dist/`. Reste la dernière case : la vérification de l'aperçu sur le site publié, possible seulement après déploiement.
