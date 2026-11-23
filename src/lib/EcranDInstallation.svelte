@@ -11,11 +11,9 @@
    * le titre et la phrase d'intro.
    */
   import AutresAppareils from "./AutresAppareils.svelte";
-  import BoutonPrincipal from "./BoutonPrincipal.svelte";
   import EnTeteDEcran from "./EnTeteDEcran.svelte";
-  import EtapesDInstallation from "./EtapesDInstallation.svelte";
-  import Icone from "./Icone.svelte";
-  import { enToutesLettres, marcheAffichee } from "./installation";
+  import { marcheAffichee } from "./installation";
+  import MarcheDInstallation from "./MarcheDInstallation.svelte";
   import type { InstallationDuNavigateur } from "./navigateur.svelte";
 
   interface Props {
@@ -38,34 +36,7 @@
   </EnTeteDEcran>
   {#if !installation.installee}
     <section class="inst">
-      {#if marche.type === "bouton"}
-        <p class="detecte">
-          {#if appareil}
-            Sur <b>{enToutesLettres(appareil)}</b>, votre navigateur propose
-            l'installation&nbsp;:
-          {:else}
-            Votre navigateur propose l'installation&nbsp;:
-          {/if}
-        </p>
-        <div class="installer">
-          <BoutonPrincipal onclick={() => installation.installer()}>
-            <Icone nom="installer" />Installer
-          </BoutonPrincipal>
-        </div>
-      {:else if appareil && marche.type === "etapes"}
-        <p class="detecte">Sur <b>{enToutesLettres(appareil)}</b>&nbsp;:</p>
-        <EtapesDInstallation etapes={marche.etapes} />
-      {:else if appareil && marche.type === "aucune"}
-        <p class="detecte">
-          Sur <b>{enToutesLettres(appareil)}</b>, ce navigateur n'installe pas
-          les apps web&nbsp;; l'app marche très bien dans un onglet.
-        </p>
-      {:else if appareil && marche.type === "attente"}
-        <p class="detecte">
-          Sur <b>{enToutesLettres(appareil)}</b>, le bouton
-          «&nbsp;Installer&nbsp;» apparaît ici quand le navigateur le propose.
-        </p>
-      {/if}
+      <MarcheDInstallation {installation} {marche} surLEcran />
       <AutresAppareils
         cas={appareil?.cas ?? null}
         ouvertAuDepart
@@ -86,22 +57,5 @@
   /* Maquette, « .inst » de l'écran 14 : 6 px sous l'intro. */
   .inst {
     padding: var(--esp-xs) var(--gutter) 0;
-  }
-
-  /* L'appareil deviné en toutes lettres : 14 px craie grise, nom en craie 700. */
-  .detecte {
-    margin-top: var(--esp-lg);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  .detecte b {
-    color: var(--craie);
-    font-weight: 700;
-  }
-
-  /* Le bouton principal (maquette, « .inst .cta ») : 16 px sous la phrase. */
-  .installer {
-    margin-top: var(--esp-lg);
   }
 </style>

@@ -15,10 +15,8 @@
    * (`#installer-accueil`).
    */
   import AutresAppareils from "./AutresAppareils.svelte";
-  import BoutonContour from "./BoutonContour.svelte";
-  import EtapesDInstallation from "./EtapesDInstallation.svelte";
-  import Icone from "./Icone.svelte";
   import { marcheAffichee } from "./installation";
+  import MarcheDInstallation from "./MarcheDInstallation.svelte";
   import type { InstallationDuNavigateur } from "./navigateur.svelte";
 
   interface Props {
@@ -50,25 +48,7 @@
     Installée, elle s'ouvre en plein écran depuis son icône et marche sans
     réseau.
   </p>
-  {#if marche.type === "bouton"}
-    <div class="installer">
-      <BoutonContour onclick={() => installation.installer()}>
-        <Icone nom="installer" />Installer
-      </BoutonContour>
-    </div>
-  {:else if marche.type === "etapes"}
-    <EtapesDInstallation etapes={marche.etapes} />
-  {:else if marche.type === "aucune"}
-    <p class="detecte">
-      Ce navigateur n'installe pas les apps web&nbsp;; l'app marche très bien
-      dans un onglet.
-    </p>
-  {:else if marche.type === "attente"}
-    <p class="detecte">
-      Le bouton «&nbsp;Installer&nbsp;» apparaît ici quand le navigateur le
-      propose.
-    </p>
-  {/if}
+  <MarcheDInstallation {installation} {marche} />
   <AutresAppareils
     cas={appareil?.cas ?? null}
     ouvertAuDepart={marche.type === "inconnue"}
@@ -108,17 +88,5 @@
     margin-top: 10px;
     font-size: 15px;
     color: var(--craie-2);
-  }
-
-  /* Maquette, « .inst .detecte » : ce que fait le navigateur, en 14 px. */
-  .detecte {
-    margin-top: var(--esp-lg);
-    font-size: 14px;
-    color: var(--craie-2);
-  }
-
-  /* Maquette, « .inst .ghost » : 14 px sous la phrase, icône de 22 px. */
-  .installer {
-    margin-top: 14px;
   }
 </style>
