@@ -11,6 +11,7 @@
    * le titre et la phrase d'intro.
    */
   import AutresAppareils from "./AutresAppareils.svelte";
+  import BoutonPrincipal from "./BoutonPrincipal.svelte";
   import EnTeteDEcran from "./EnTeteDEcran.svelte";
   import EtapesDInstallation from "./EtapesDInstallation.svelte";
   import Icone from "./Icone.svelte";
@@ -46,13 +47,11 @@
             Votre navigateur propose l'installation&nbsp;:
           {/if}
         </p>
-        <button
-          class="installer"
-          type="button"
-          onclick={() => installation.installer()}
-        >
-          <Icone nom="installer" />Installer
-        </button>
+        <div class="installer">
+          <BoutonPrincipal onclick={() => installation.installer()}>
+            <Icone nom="installer" />Installer
+          </BoutonPrincipal>
+        </div>
       {:else if appareil && marche.type === "etapes"}
         <p class="detecte">Sur <b>{enToutesLettres(appareil)}</b>&nbsp;:</p>
         <EtapesDInstallation etapes={marche.etapes} />
@@ -101,24 +100,8 @@
     font-weight: 700;
   }
 
-  /* Le bouton de dés (maquette, « .inst .cta ») : contour jaune, 58 px, 16 px sous la phrase. */
+  /* Le bouton principal (maquette, « .inst .cta ») : 16 px sous la phrase. */
   .installer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--esp-md);
-    width: 100%;
-    min-height: 58px;
     margin-top: var(--esp-lg);
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--jaune);
-    font-size: 20px;
-    font-weight: 800;
-  }
-
-  .installer :global(svg) {
-    width: 26px;
-    height: 26px;
   }
 </style>

@@ -12,6 +12,7 @@
    * 410 px par un trait, rien de touchable, lu comme une seule image décrite.
    * Ses valeurs sont figées ici, à l'identique de la maquette.
    */
+  import BoutonPrincipal from "./BoutonPrincipal.svelte";
   import Dock from "./Dock.svelte";
   import type { InstallationDuNavigateur } from "./navigateur.svelte";
   import PiedDePage from "./PiedDePage.svelte";
@@ -100,9 +101,7 @@
 
 <Dock collant variante="accueil">
   <div>
-    <button class="commencer" type="button" onclick={oncommencer}>
-      Commencer
-    </button>
+    <BoutonPrincipal onclick={oncommencer}>Commencer</BoutonPrincipal>
     <p class="mention">
       Projet de fan non officiel · tout reste sur votre téléphone
     </p>
@@ -346,20 +345,6 @@
     text-align: center;
     font-size: 15px;
     color: var(--craie-2);
-  }
-
-  /* Le bouton de dés (maquette, « .cta ») : contour jaune, sans icône. */
-  .commencer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 58px;
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--jaune);
-    font-size: 20px;
-    font-weight: 800;
   }
 
   /* Maquette, « .dock .mention » : centrée, 8 px sous le bouton. */

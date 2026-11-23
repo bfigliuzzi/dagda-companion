@@ -4,6 +4,7 @@
    * pleine largeur) et le panneau de dés qu'il ouvre. Le dock est collant :
    * il se pose à la fin de la feuille, juste avant le pied de page.
    */
+  import BoutonPrincipal from "./BoutonPrincipal.svelte";
   import Icone from "./Icone.svelte";
   import type { De } from "./des";
   import Dock from "./Dock.svelte";
@@ -23,33 +24,12 @@
 </script>
 
 <Dock collant>
-  <button class="lancer" type="button" onclick={() => (ouvert = true)}>
+  <BoutonPrincipal onclick={() => (ouvert = true)}>
     <Icone nom="de" />
     Lancer les dés
-  </button>
+  </BoutonPrincipal>
 </Dock>
 
 {#if ouvert}
   <PanneauDeDes {de} {chance} {ondepenser} onfermer={() => (ouvert = false)} />
 {/if}
-
-<style>
-  .lancer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--esp-md);
-    width: 100%;
-    min-height: 58px;
-    border: 2px solid var(--jaune);
-    border-radius: var(--r);
-    color: var(--jaune);
-    font-size: 20px;
-    font-weight: 800;
-  }
-
-  .lancer :global(svg) {
-    width: 26px;
-    height: 26px;
-  }
-</style>
