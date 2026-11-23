@@ -6,7 +6,7 @@ Références : `.scratch/vitrine/spec.md` (Versions).
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Le tag `v0.1.0` est posé sur le commit `801ff95` (dernier commit avant ce chantier) et poussé sur GitHub. L'historique n'est pas réécrit.
 - [x] `commitlint` accepte exactement les types `ajout`, `correctif`, `dette`, `docs`, `tests`, `ci`, `outils`, avec une portée facultative et le `!` de changement cassant ; un message hors format fait échouer la CI.
