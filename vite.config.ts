@@ -40,6 +40,14 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: "index.html",
+        mentionsLegales: "mentions-legales.html",
+      },
+    },
+  },
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.ts"],

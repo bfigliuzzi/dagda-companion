@@ -8,6 +8,8 @@ Projet de fan, non officiel : il reprend les règles et le vocabulaire du jeu, p
 
 Version en ligne : <https://bfigliuzzi.github.io/dagda-companion/>
 
+Mentions légales : <https://bfigliuzzi.github.io/dagda-companion/mentions-legales.html>
+
 ## Ce que fait l'app
 
 Tout tient sur un seul écran, comme la feuille papier :

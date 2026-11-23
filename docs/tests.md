@@ -47,6 +47,7 @@ Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite b
 Les scénarios actuels, un par sujet :
 
 - `pwa.spec.ts` : l'app construite s'installe comme PWA (manifeste, service worker), se recharge hors ligne, y crée un personnage, y retrouve une valeur modifiée, ne fait aucune requête externe, sert sa police et son ardoise noire ;
+- `mentions-legales.spec.ts` : la page « Mentions légales » s'ouvre par son adresse avec ses cinq sections, sans contact autre que les issues ni requête externe, avec l'ardoise et la police de l'app, et « Retour à l'app » (en haut et en bas) rend l'app ; elle s'ouvre en mode avion, sans que le service worker la remplace par l'app ; sur un écran large, sa colonne de lecture mesure 30 em et se centre ;
 - `parcours.spec.ts` : un parcours de lecteur, créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure et l'historique ;
 - `trace-de-craie.spec.ts` : le fondu de 1,2 s est joué par le navigateur, et `prefers-reduced-motion` le supprime, pour une valeur comme pour un mur effacé sur un plan ; les valeurs du bloc vital ont une zone d'appui d'au moins 44 px ;
 - `des.spec.ts` : le dock de dés est le seul élément fixe et reste en bas quand la feuille défile ; le panneau glisse par-dessus la feuille, sauf avec `prefers-reduced-motion` ;
