@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Accueil from "./lib/Accueil.svelte";
   import Armes from "./lib/Armes.svelte";
   import Besace from "./lib/Besace.svelte";
   import BlocVital from "./lib/BlocVital.svelte";
@@ -91,7 +92,8 @@
 
   /*
    * L'ÉCRAN. Un seul écran à la fois (ecrans.ts) ; il est oublié au
-   * rechargement, sauf le combat en cours, qui vit dans l'aventure.
+   * rechargement, sauf le combat en cours, qui vit dans l'aventure. Sans
+   * aventure enregistrée, l'app s'ouvre sur l'Accueil.
    */
   let ecran = $state<Ecran>(ecranDeDepart(lue));
 
@@ -188,7 +190,11 @@
   }
 </script>
 
-{#if !aventure || ecran.nom === "nouvelApprenti"}
+{#if ecran.nom === "accueil"}
+  <Accueil
+    oncommencer={() => aller({ nom: "nouvelApprenti", apresLaMort: null })}
+  />
+{:else if !aventure || ecran.nom === "nouvelApprenti"}
   {@const mort = ecran.nom === "nouvelApprenti" ? ecran.apresLaMort : null}
   <NouvelApprenti
     {de}

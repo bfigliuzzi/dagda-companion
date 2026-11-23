@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { desFixes } from "./des";
+import { ouvrirNouvelApprenti } from "./test/ouvrirNouvelApprenti";
 
 const bouton = (nom: string | RegExp) =>
   screen.getByRole("button", { name: nom });
@@ -37,7 +38,7 @@ describe("déjà en route", () => {
   beforeEach(() => localStorage.clear());
 
   it("bascule le formulaire avec le contrôle segmenté, sans changer de page", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
 
     expect(screen.getByRole("radio", { name: "Déjà en route" })).toBeChecked();
@@ -60,7 +61,7 @@ describe("déjà en route", () => {
   });
 
   it("garde le TALENT et le mode choisis quand on change d'onglet", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = userEvent.setup();
     await lecteur.click(screen.getByRole("radio", { name: "Herbologie" }));
     await lecteur.click(screen.getByRole("radio", { name: "Mortel" }));
@@ -70,7 +71,7 @@ describe("déjà en route", () => {
   });
 
   it("saisit chaque valeur chiffrée par un champ numérique avec pas à pas", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
 
     for (const [champ, depart] of [
@@ -100,7 +101,7 @@ describe("déjà en route", () => {
   });
 
   it("n'affiche les sauvegardes utilisées qu'en mode simplifié", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     const nom = "Sauvegardes déjà utilisées";
 
@@ -126,7 +127,7 @@ describe("déjà en route", () => {
   });
 
   it("garde le bouton éteint en disant ce qui manque", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     expect(bouton("Choisissez d'abord un TALENT")).toBeDisabled();
     await lecteur.click(screen.getByRole("radio", { name: "Herbologie" }));
@@ -141,7 +142,7 @@ describe("déjà en route", () => {
   });
 
   it("donne un indice, sans bloquer, quand les PV actuels dépassent le maximum", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     await recopierHerboriste(lecteur);
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
@@ -157,7 +158,7 @@ describe("déjà en route", () => {
   });
 
   it("ouvre la feuille avec exactement les valeurs saisies, chapitre compris", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     await recopierHerboriste(lecteur);
     await lecteur.click(bouton("Ouvrir ma feuille"));
@@ -173,7 +174,7 @@ describe("déjà en route", () => {
   });
 
   it("ouvre la feuille avec des PV actuels au-dessus du maximum, tels que saisis", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     await recopierHerboriste(lecteur);
     await saisir(lecteur, "PV actuels", "40");
@@ -182,7 +183,7 @@ describe("déjà en route", () => {
   });
 
   it("retrouve le personnage recopié, et ses sauvegardes utilisées, après avoir fermé et rouvert l'app", async () => {
-    const { unmount } = render(App, { de: desFixes(3) });
+    const { unmount } = await ouvrirNouvelApprenti(desFixes(3));
     const lecteur = await ouvrirDejaEnRoute();
     await recopierHerboriste(lecteur);
     await lecteur.click(screen.getByRole("radio", { name: "2" }));

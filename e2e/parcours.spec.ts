@@ -19,7 +19,8 @@ test("parcours de lecteur : créer un personnage, mener un combat aux dés fixé
 }) => {
   await page.goto(`/?graine=${GRAINE}`);
 
-  // Créer le personnage.
+  // Créer le personnage, depuis l'Accueil.
+  await page.getByRole("button", { name: "Commencer" }).click();
   await page.getByText("Herbologie").click();
   await page.getByText("Simplifié", { exact: true }).click();
   await page.getByRole("button", { name: "Lancer les points de vie" }).click();

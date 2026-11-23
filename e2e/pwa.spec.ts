@@ -33,7 +33,8 @@ test("l'app s'installe comme PWA et s'ouvre en mode avion", async ({
   await context.setOffline(true);
   await page.reload();
 
-  // Premier lancement : on crée l'apprenti, hors ligne.
+  // Premier lancement : l'Accueil, puis on crée l'apprenti, hors ligne.
+  await page.getByRole("button", { name: "Commencer" }).click();
   await expect(
     page.getByRole("heading", { name: "Nouvel apprenti" }),
   ).toBeVisible();

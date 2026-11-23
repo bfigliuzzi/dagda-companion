@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import App from "../App.svelte";
 import { desFixes } from "./des";
+import { ouvrirNouvelApprenti } from "./test/ouvrirNouvelApprenti";
 
 const bouton = (nom: string | RegExp) =>
   screen.getByRole("button", { name: nom });
@@ -10,8 +11,8 @@ const bouton = (nom: string | RegExp) =>
 describe("nouvel apprenti", () => {
   beforeEach(() => localStorage.clear());
 
-  it("ouvre l'écran « Nouvel apprenti » quand aucune aventure n'est enregistrée", () => {
-    render(App, { de: desFixes(3) });
+  it("s'ouvre par « Commencer » sur l'Accueil, en « Nouvelle aventure », sans feuille", async () => {
+    await ouvrirNouvelApprenti(desFixes(3));
     expect(
       screen.getByRole("heading", { name: "Nouvel apprenti" }),
     ).toBeInTheDocument();
@@ -27,7 +28,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("propose les 7 TALENTS du livre, un seul à la fois", async () => {
-    render(App, { de: desFixes(3) });
+    await ouvrirNouvelApprenti(desFixes(3));
     const talents = within(screen.getByRole("radiogroup", { name: "Talent" }));
     const noms = [
       "Instinct",
@@ -50,7 +51,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("tire les POINTS DE VIE max (2d6 × 4) et la CHANCE (1d6) avec « Lancer »", async () => {
-    render(App, { de: desFixes(3, 5, 4) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 4));
     const lecteur = userEvent.setup();
 
     await lecteur.click(
@@ -66,7 +67,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("relance les POINTS DE VIE max et remplace la valeur", async () => {
-    render(App, { de: desFixes(3, 5, 6, 6) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 6, 6));
     const lecteur = userEvent.setup();
 
     await lecteur.click(
@@ -78,15 +79,15 @@ describe("nouvel apprenti", () => {
     expect(screen.getByLabelText("Points de vie maximum")).toHaveValue(48);
   });
 
-  it("affiche la DEXTÉRITÉ fixée à 7", () => {
-    render(App, { de: desFixes(3) });
+  it("affiche la DEXTÉRITÉ fixée à 7", async () => {
+    await ouvrirNouvelApprenti(desFixes(3));
     expect(
       screen.getByText("Fixée à 7 pour tous les apprentis"),
     ).toBeInTheDocument();
   });
 
-  it("propose les 3 modes de jeu, chacun avec une courte description", () => {
-    render(App, { de: desFixes(3) });
+  it("propose les 3 modes de jeu, chacun avec une courte description", async () => {
+    await ouvrirNouvelApprenti(desFixes(3));
     const modes = within(
       screen.getByRole("radiogroup", { name: "Mode de jeu" }),
     );
@@ -109,7 +110,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("garde la validation éteinte en disant ce qui manque, jusqu'à ce que tout soit rempli", async () => {
-    render(App, { de: desFixes(3, 5, 4) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 4));
     const lecteur = userEvent.setup();
 
     expect(bouton("Choisissez d'abord un TALENT")).toBeDisabled();
@@ -127,7 +128,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("demande de corriger une valeur saisie à la main qui n'est pas valable", async () => {
-    render(App, { de: desFixes(3, 5, 4) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 4));
     const lecteur = userEvent.setup();
     await lecteur.click(screen.getByRole("radio", { name: "Herbologie" }));
     await lecteur.click(screen.getByRole("radio", { name: "Mortel" }));
@@ -140,7 +141,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("ouvre la feuille avec les PV pleins, la CHANCE tirée, DEX 7 et le chapitre 1", async () => {
-    render(App, { de: desFixes(3, 5, 4) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 4));
     await creerHerboriste();
 
     expect(
@@ -154,7 +155,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("garde la valeur corrigée à la main", async () => {
-    render(App, { de: desFixes(3, 5, 4) });
+    await ouvrirNouvelApprenti(desFixes(3, 5, 4));
     const lecteur = userEvent.setup();
     await lecteur.click(bouton("Lancer les points de vie"));
     const champ = screen.getByLabelText("Points de vie maximum");
@@ -167,7 +168,7 @@ describe("nouvel apprenti", () => {
   });
 
   it("retrouve le personnage et le mode après avoir fermé et rouvert l'app", async () => {
-    const { unmount } = render(App, { de: desFixes(6, 6, 2) });
+    const { unmount } = await ouvrirNouvelApprenti(desFixes(6, 6, 2));
     await creerHerboriste("Mortel");
     unmount();
 

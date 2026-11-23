@@ -6,12 +6,12 @@ Références : `.scratch/vitrine/spec.md` (Accueil), `GLOSSARY.md` (Accueil), ma
 
 **Blocked by:** 02 (Design), 04 (Pied de page de la feuille)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Sans aventure enregistrée, l'app s'ouvre sur l'Accueil.
-- [ ] « Commencer » ouvre « Nouvel apprenti » avec ses choix habituels (« Nouvelle aventure » / « Déjà en route »).
-- [ ] Avec une aventure enregistrée, l'app s'ouvre comme avant (feuille, ou combat en cours).
-- [ ] « Recommencer une aventure » et la proposition de recommencer après une mort en mode mortel mènent directement à « Nouvel apprenti », sans Accueil.
-- [ ] Le pied de page est en bas de l'Accueil.
-- [ ] L'Accueil suit la maquette ; le texte n'invente rien du livre et ne se présente pas comme officiel.
-- [ ] Les tests d'intégration couvrent les trois chemins d'ouverture (sans aventure, avec aventure, après recommencer).
+- [x] Sans aventure enregistrée, l'app s'ouvre sur l'Accueil.
+- [x] « Commencer » ouvre « Nouvel apprenti » avec ses choix habituels (« Nouvelle aventure » / « Déjà en route »).
+- [x] Avec une aventure enregistrée, l'app s'ouvre comme avant (feuille, ou combat en cours).
+- [x] « Recommencer une aventure » et la proposition de recommencer après une mort en mode mortel mènent directement à « Nouvel apprenti », sans Accueil.
+- [x] Le pied de page est en bas de l'Accueil.
+- [x] L'Accueil suit la maquette ; le texte n'invente rien du livre et ne se présente pas comme officiel.
+- [x] Les tests d'intégration couvrent les trois chemins d'ouverture (sans aventure, avec aventure, après recommencer).

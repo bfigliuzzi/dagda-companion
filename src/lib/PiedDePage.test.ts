@@ -5,6 +5,7 @@ import App from "../App.svelte";
 import { commencerUnCombat, ficheDuLecteur, jouerJusquALaFin } from "./combat";
 import { desFixes } from "./des";
 import { unNouveauPlan } from "./plans";
+import { ouvrirNouvelApprenti } from "./test/ouvrirNouvelApprenti";
 import { enregistrerAventure, uneAventure } from "./test/uneAventure";
 import { valeursEffectives } from "./valeursEffectives";
 import { version } from "./version";
@@ -65,8 +66,8 @@ describe("pied de page de la feuille", () => {
 });
 
 describe("pas de pied de page", () => {
-  it("sur « Nouvel apprenti »", () => {
-    render(App);
+  it("sur « Nouvel apprenti »", async () => {
+    await ouvrirNouvelApprenti(desFixes(3));
     expect(
       screen.getByRole("heading", { name: "Nouvel apprenti" }),
     ).toBeVisible();

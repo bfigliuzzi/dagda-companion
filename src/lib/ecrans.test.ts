@@ -22,11 +22,8 @@ const auChapitre61: Combat = commencerUnCombat(
 );
 
 describe("l'écran à l'ouverture de l'app", () => {
-  it("sans aventure, « Nouvel apprenti »", () => {
-    expect(ecranDeDepart(null)).toEqual({
-      nom: "nouvelApprenti",
-      apresLaMort: null,
-    });
+  it("sans aventure, l'Accueil", () => {
+    expect(ecranDeDepart(null)).toEqual({ nom: "accueil" });
   });
 
   it("avec une aventure, la feuille, sans trace de craie", () => {

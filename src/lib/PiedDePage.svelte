@@ -2,7 +2,7 @@
   /**
    * LE PIED DE PAGE (DESIGN.md, « Pied de page ») : le nom de l'app et sa
    * version, l'icône GitHub vers l'accueil du dépôt, puis les liens du bas
-   * (« Mentions légales »). Il ferme la feuille, et plus tard l'Accueil ;
+   * (« Mentions légales »). Il ferme la feuille et l'Accueil ;
    * jamais les écrans de combat, de plan, d'historique ni de création.
    *
    * Emploi : le poser tout en bas de la page, juste après le dock collant

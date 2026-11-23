@@ -46,6 +46,7 @@ Playwright, Chromium seul, appareil « Pixel 7 », sur l'app construite (`vite b
 
 Les scénarios actuels, un par sujet :
 
+- `accueil.spec.ts` : sur un petit téléphone (375 × 667), « Commencer » est collant sur fond noir plein : il reste en bas de l'écran en haut de l'Accueil, puis s'arrête 12 px au-dessus du pied de page, qui finit la page sans que rien ne masque ses liens ;
 - `pwa.spec.ts` : l'app construite s'installe comme PWA (manifeste, service worker), se recharge hors ligne, y crée un personnage, y retrouve une valeur modifiée, ne fait aucune requête externe, sert sa police et son ardoise noire ;
 - `mentions-legales.spec.ts` : la page « Mentions légales » s'ouvre par son adresse avec ses cinq sections, sans contact autre que les issues ni requête externe, avec l'ardoise et la police de l'app, et « Retour à l'app » (en haut et en bas) rend l'app ; elle s'ouvre en mode avion, sans que le service worker la remplace par l'app ; sur un écran large, sa colonne de lecture mesure 30 em et se centre ;
 - `parcours.spec.ts` : un parcours de lecteur, créer un personnage, mener un combat avec des *dés fixés*, recharger, retrouver l'aventure et l'historique ;

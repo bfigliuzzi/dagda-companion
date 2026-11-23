@@ -63,8 +63,12 @@ test("la page « Mentions légales » s'ouvre par son adresse et ramène à l'ap
   await expect(retours).toHaveCount(2);
   await retours.first().click();
   await expect(page).toHaveURL("/");
+  // Sans aventure enregistrée, l'app rendue est l'Accueil.
   await expect(
-    page.getByRole("heading", { name: "Nouvel apprenti" }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Compagnon de La Saga de Dagda",
+    }),
   ).toBeVisible();
 
   await page.goto("/mentions-legales.html");

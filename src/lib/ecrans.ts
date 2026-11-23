@@ -5,7 +5,8 @@
  *
  * Seule l'aventure s'enregistre (le combat en cours compris) : l'écran ouvert
  * est oublié au rechargement, et l'app rouvre alors la feuille, ou le combat
- * s'il y en a un en cours (`ecranDeDepart`).
+ * s'il y en a un en cours, ou l'Accueil s'il n'y a pas d'aventure
+ * (`ecranDeDepart`).
  */
 import type { Aventure } from "./aventure";
 import type { Combat } from "./combat";
@@ -21,6 +22,11 @@ export interface AvantLeCombat {
 }
 
 export type Ecran =
+  /**
+   * L'Accueil (GLOSSARY.md) : seulement à l'ouverture de l'app sans aventure
+   * enregistrée. Recommencer une aventure va droit à « Nouvel apprenti ».
+   */
+  | { nom: "accueil" }
   /** Créer un personnage ; après une mort en mode mortel, avec les notes gardées. */
   | {
       nom: "nouvelApprenti";
@@ -45,9 +51,9 @@ export function laFeuille(avant: AvantLeCombat = {}): Ecran {
   return { nom: "feuille", avant };
 }
 
-/** À l'ouverture de l'app : le combat en cours, sinon la feuille, sinon « Nouvel apprenti ». */
+/** À l'ouverture de l'app : le combat en cours, sinon la feuille, sinon l'Accueil. */
 export function ecranDeDepart(aventure: Aventure | null): Ecran {
-  if (aventure === null) return { nom: "nouvelApprenti", apresLaMort: null };
+  if (aventure === null) return { nom: "accueil" };
   if (aventure.combat !== null) return { nom: "combat" };
   return laFeuille();
 }

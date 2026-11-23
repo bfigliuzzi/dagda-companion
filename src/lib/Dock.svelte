@@ -8,7 +8,7 @@
    * Le dock de la feuille porte « Lancer les dés » ; ceux de « Nouveau
    * combat » et du résultat portent leur bouton de validation.
    *
-   * `collant` : le dock de la feuille. Collant (`sticky`) au lieu de fixe, il
+   * `collant` : le dock de la feuille et celui de l'Accueil. Collant (`sticky`) au lieu de fixe, il
    * se pose à la fin de la page, 20 px sous le dernier contenu et juste avant
    * le pied de page : il reste en bas de l'écran pendant toute la page, puis
    * s'arrête au-dessus du pied de page, qui ne passe donc jamais dessous.
@@ -24,12 +24,16 @@
    * Variante `plan` : la barre de l'écran d'un plan, même fond noir plein et
    * même filet que le dock de combat, mais le contrôle « Murs / Cases »
    * d'abord, plus large (1.35fr), puis « Annuler » (1fr).
+   *
+   * Variante `accueil` : le dock « Commencer » de l'Accueil, même fond noir
+   * plein et même filet que le dock de combat, une seule colonne (DESIGN.md,
+   * « Accueil »).
    */
   import type { Snippet } from "svelte";
 
   interface Props {
     children: Snippet;
-    variante?: "degrade" | "combat" | "plan";
+    variante?: "degrade" | "combat" | "plan" | "accueil";
     collant?: boolean;
   }
 
@@ -41,6 +45,7 @@
   data-testid="dock"
   class:combat={variante === "combat"}
   class:plan={variante === "plan"}
+  class:accueil={variante === "accueil"}
   class:collant
 >
   <div class="contenu">{@render children()}</div>
@@ -65,7 +70,8 @@
   }
 
   .dock.combat,
-  .dock.plan {
+  .dock.plan,
+  .dock.accueil {
     background: var(--noir);
     border-top: 1px solid var(--trait);
   }
