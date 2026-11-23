@@ -10,6 +10,7 @@
   import EnTete from "./lib/EnTete.svelte";
   import EcranDuPlan from "./lib/EcranDuPlan.svelte";
   import Notes from "./lib/Notes.svelte";
+  import PiedDePage from "./lib/PiedDePage.svelte";
   import Plans from "./lib/Plans.svelte";
   import { memeRepere, poserLeRepere, repereApres } from "./lib/reperes";
   import SectionAventure from "./lib/SectionAventure.svelte";
@@ -324,13 +325,12 @@
         aventure!.effets,
       ))}
   />
+  <PiedDePage />
 {/if}
 
 <style>
   .feuille {
     max-width: 480px;
     margin: 0 auto;
-    /* Place pour le dock fixe : 12 + 58 + 22 px, plus la zone de sécurité. */
-    padding-bottom: calc(92px + env(safe-area-inset-bottom));
   }
 </style>

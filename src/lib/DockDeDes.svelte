@@ -1,7 +1,8 @@
 <script lang="ts">
   /**
    * Le dock de la feuille : le bouton « Lancer les dés » (contour jaune,
-   * pleine largeur) et le panneau de dés qu'il ouvre.
+   * pleine largeur) et le panneau de dés qu'il ouvre. Le dock est collant :
+   * il se pose à la fin de la feuille, juste avant le pied de page.
    */
   import Icone from "./Icone.svelte";
   import type { De } from "./des";
@@ -21,7 +22,7 @@
   let ouvert = $state(false);
 </script>
 
-<Dock>
+<Dock collant>
   <button class="lancer" type="button" onclick={() => (ouvert = true)}>
     <Icone nom="de" />
     Lancer les dés
